@@ -29,6 +29,9 @@ const messages = {
       vi: "Tiếng Việt",
       en: "English",
     },
+    header: {
+      logout: "Đăng xuất",
+    },
     auth: {
       login: {
         title: "Đăng nhập",
@@ -140,6 +143,9 @@ const messages = {
       label: "Language",
       vi: "Tiếng Việt",
       en: "English",
+    },
+    header: {
+      logout: "Logout",
     },
     auth: {
       login: {

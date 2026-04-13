@@ -11,12 +11,30 @@ export function persistAuthTokens(tokens: AuthTokens) {
     return;
   }
 
-  localStorage.setItem(ACCESS_TOKEN_KEY, tokens.accessToken);
-  localStorage.setItem(REFRESH_TOKEN_KEY, tokens.refreshToken);
+  const cookieDomains = resolveCookieDomains(window.location.hostname);
+  for (const domain of cookieDomains) {
+    setCookie(ACCESS_TOKEN_KEY, tokens.accessToken, domain);
+    setCookie(REFRESH_TOKEN_KEY, tokens.refreshToken, domain);
+  }
+  // Host-only cookie fallback.
+  setCookie(ACCESS_TOKEN_KEY, tokens.accessToken);
+  setCookie(REFRESH_TOKEN_KEY, tokens.refreshToken);
+}
 
-  const cookieDomain = resolveCookieDomain(window.location.hostname);
-  setCookie(ACCESS_TOKEN_KEY, tokens.accessToken, cookieDomain);
-  setCookie(REFRESH_TOKEN_KEY, tokens.refreshToken, cookieDomain);
+export function clearAuthTokens() {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  const cookieDomains = resolveCookieDomains(window.location.hostname);
+  for (const domain of cookieDomains) {
+    deleteCookie(ACCESS_TOKEN_KEY, domain);
+    deleteCookie(REFRESH_TOKEN_KEY, domain);
+  }
+
+  // Also clear host-only cookies if they exist.
+  deleteCookie(ACCESS_TOKEN_KEY);
+  deleteCookie(REFRESH_TOKEN_KEY);
 }
 
 export function getClientAuthTokens(): AuthTokens | null {
@@ -32,32 +50,33 @@ export function getClientAuthTokens(): AuthTokens | null {
       refreshToken: refreshTokenFromCookie,
     };
   }
-
-  const accessToken = localStorage.getItem(ACCESS_TOKEN_KEY);
-  const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
-  if (!accessToken || !refreshToken) {
-    return null;
-  }
-
-  return { accessToken, refreshToken };
+  return null;
 }
 
-function resolveCookieDomain(hostname: string) {
+function resolveCookieDomains(hostname: string) {
   if (hostname === "localhost" || hostname.endsWith(".localhost")) {
-    return "localhost";
+    // In local dev, different browsers handle localhost domains differently,
+    // so we set both variants for better subdomain compatibility.
+    return [".localhost", "localhost"];
   }
 
   const segments = hostname.split(".");
   if (segments.length <= 2) {
-    return hostname;
+    return [hostname];
   }
 
-  return segments.slice(-2).join(".");
+  return [`.${segments.slice(-2).join(".")}`];
 }
 
-function setCookie(name: string, value: string, domain: string) {
+function setCookie(name: string, value: string, domain?: string) {
   const encoded = encodeURIComponent(value);
-  document.cookie = `${name}=${encoded}; path=/; domain=${domain}; max-age=86400; samesite=lax`;
+  const domainPart = domain ? `; domain=${domain}` : "";
+  document.cookie = `${name}=${encoded}; path=/${domainPart}; max-age=86400; samesite=lax`;
+}
+
+function deleteCookie(name: string, domain?: string) {
+  const domainPart = domain ? `; domain=${domain}` : "";
+  document.cookie = `${name}=; path=/${domainPart}; expires=Thu, 01 Jan 1970 00:00:00 GMT; samesite=lax`;
 }
 
 function getCookieValue(name: string) {

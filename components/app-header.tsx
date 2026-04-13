@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { LogoutButton } from "@/components/logout-button";
 import { getMessages, Locale } from "@/lib/i18n";
 
 type AppHeaderProps = {
@@ -21,11 +22,14 @@ export function AppHeader({ locale, homeHref }: AppHeaderProps) {
           <span className="text-base">💬</span>
           <span className="font-medium text-slate-900">Nano Message Support</span>
         </Link>
-        <LanguageSwitcher
-          locale={locale}
-          vietnameseLabel={t.language.vi}
-          englishLabel={t.language.en}
-        />
+        <div className="flex items-center gap-2">
+          <LanguageSwitcher
+            locale={locale}
+            vietnameseLabel={t.language.vi}
+            englishLabel={t.language.en}
+          />
+          <LogoutButton locale={locale} label={t.header.logout} />
+        </div>
       </div>
     </header>
   );

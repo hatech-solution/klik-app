@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import { PlatformDashboard } from "@/components/platform/platform-dashboard";
+import { getServerAuthTokens } from "@/lib/auth-tokens-server";
 import { getMessages, isLocale } from "@/lib/i18n";
 import { PLATFORM_CONFIGS, isPlatformId } from "@/lib/platforms";
 
@@ -39,6 +40,11 @@ export default async function LocalePlatformPage({
 
   if (!isLocale(locale) || !isPlatformId(platform)) {
     notFound();
+  }
+
+  const tokens = await getServerAuthTokens();
+  if (!tokens?.accessToken) {
+    redirect(`/${locale}/login`);
   }
 
   const current = PLATFORM_CONFIGS[platform];

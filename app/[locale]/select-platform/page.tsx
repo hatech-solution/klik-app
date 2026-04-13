@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import { PlatformCard } from "@/components/platform/platform-card";
+import { getServerAuthTokens } from "@/lib/auth-tokens-server";
 import { buildPlatformUrl } from "@/lib/domain";
 import { getMessages, isLocale } from "@/lib/i18n";
 import { PLATFORM_CONFIGS, PLATFORM_IDS } from "@/lib/platforms";
@@ -32,6 +33,11 @@ export default async function LocaleSelectPlatformPage({
   const { locale } = await params;
   if (!isLocale(locale)) {
     notFound();
+  }
+
+  const tokens = await getServerAuthTokens();
+  if (!tokens?.accessToken) {
+    redirect(`/${locale}/login`);
   }
 
   const headerStore = await headers();

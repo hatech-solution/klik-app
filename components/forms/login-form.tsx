@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { FormEvent } from "react";
 
 import { AuthShell } from "@/components/auth-shell";
+import { persistAuthTokens } from "@/lib/auth-tokens";
 import { getMessages, Locale } from "@/lib/i18n";
 
 type LoginFormProps = {
@@ -17,6 +18,13 @@ export function LoginForm({ locale }: LoginFormProps) {
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    // Mock token generation for local development flow.
+    persistAuthTokens({
+      accessToken: `mock_access_${crypto.randomUUID()}`,
+      refreshToken: `mock_refresh_${crypto.randomUUID()}`,
+    });
+
     router.push(`/${locale}/select-platform`);
   }
 

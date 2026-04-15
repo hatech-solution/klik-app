@@ -11,13 +11,18 @@ const apiClient: AxiosInstance = axios.create({
     },
 });
 
-// Request Interceptor: Tự động đính kèm X-Platform-ID
+// Request Interceptor: Tự động đính kèm X-Platform-ID và X-Bot-ID
 apiClient.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
         if (typeof window !== 'undefined') {
             const platformId = localStorage.getItem('platform_id');
+            const botId = localStorage.getItem('bot_id');
+            
             if (platformId) {
                 config.headers.set('X-Platform-ID', platformId);
+            }
+            if (botId) {
+                config.headers.set('X-Bot-ID', botId);
             }
         }
         return config;

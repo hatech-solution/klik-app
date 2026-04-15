@@ -7,7 +7,7 @@ import { DASHBOARD_SECTIONS, INITIAL_BOTS, Bot } from "@/lib/mock-data";
 import { PlatformConfig, PlatformId, PLATFORM_CONFIGS } from "@/lib/platforms";
 import { usePlatformStore } from "@/store/usePlatformStore";
 
-const SESSION_BOT_KEY = "selected_bot_id";
+const SESSION_BOT_KEY = "bot_id";
 
 type PlatformDashboardProps = {
   locale: Locale;
@@ -25,21 +25,21 @@ export function PlatformDashboard({ locale }: PlatformDashboardProps) {
 
   const [bots, setBots] = useState<Bot[]>(INITIAL_BOTS[platform.id]);
   const [selectedBotId, setSelectedBotId] = useState<string>(() => {
-    if (typeof window === "undefined") {
-      return "";
-    }
-    return sessionStorage.getItem(makeBotKey(platform.id)) ?? "";
+    if (typeof window === "undefined") return "";
+    return localStorage.getItem(SESSION_BOT_KEY) ?? "";
   });
   const [newBotName, setNewBotName] = useState("");
+  const [apiKey, setApiKey] = useState("");
+  const [secretKey, setSecretKey] = useState("");
   const [activeSection, setActiveSection] = useState<DashboardSectionId>("store");
 
   useEffect(() => {
     if (!selectedBotId) {
-      sessionStorage.removeItem(makeBotKey(platform.id));
+      localStorage.removeItem(SESSION_BOT_KEY);
       return;
     }
-    sessionStorage.setItem(makeBotKey(platform.id), selectedBotId);
-  }, [platform.id, selectedBotId]);
+    localStorage.setItem(SESSION_BOT_KEY, selectedBotId);
+  }, [selectedBotId]);
 
   const selectedBot = useMemo(
     () => bots.find((bot) => bot.id === selectedBotId),
@@ -62,6 +62,8 @@ export function PlatformDashboard({ locale }: PlatformDashboardProps) {
     setBots((prev) => [...prev, newBot]);
     setSelectedBotId(newBot.id);
     setNewBotName("");
+    setApiKey("");
+    setSecretKey("");
   }
 
   return (
@@ -94,83 +96,111 @@ export function PlatformDashboard({ locale }: PlatformDashboardProps) {
         </div>
       </header>
 
-      <div className="mx-auto grid w-full max-w-7xl gap-6 p-6 lg:grid-cols-[260px_1fr]">
-        <aside className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-          <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-500">
-            {t.dashboard.menuTitle}
-          </h2>
-          <nav className="space-y-2">
-            {DASHBOARD_SECTIONS.map((section) => (
-              <button
-                key={section.id}
-                onClick={() => setActiveSection(section.id)}
-                className={`w-full rounded-lg px-3 py-2 text-left text-sm font-medium transition ${
-                  activeSection === section.id
-                    ? `${platform.accentClassName}`
-                    : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                }`}
-              >
-                {t.dashboard.section[section.id].title}
-              </button>
-            ))}
-          </nav>
-        </aside>
-
-        <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          {bots.length === 0 ? (
-            <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
-              <h3 className="text-lg font-semibold text-amber-900">
+      {!selectedBotId ? (
+        bots.length === 0 ? (
+          <div className="mx-auto w-full max-w-2xl p-6">
+            <div className="rounded-2xl border border-amber-200 bg-amber-50 p-6 shadow-sm">
+              <h3 className="mb-2 text-xl font-semibold text-amber-900">
                 {t.dashboard.noBotTitle(platform.name)}
               </h3>
-              <p className="mt-1 text-sm text-amber-800">
+              <p className="mb-6 text-sm text-amber-800">
                 {t.dashboard.noBotDescription}
               </p>
-              <form onSubmit={handleCreateBot} className="mt-4 flex flex-col gap-3 sm:flex-row">
-                <input
-                  value={newBotName}
-                  onChange={(event) => setNewBotName(event.target.value)}
-                  placeholder={t.dashboard.inputBotName}
-                  className="flex-1 rounded-lg border border-amber-300 bg-white px-3 py-2 text-sm outline-none ring-amber-500 focus:ring"
-                />
+              <form onSubmit={handleCreateBot} className="flex flex-col gap-4">
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-amber-900">
+                    {t.dashboard.inputBotName}
+                  </label>
+                  <input
+                    value={newBotName}
+                    onChange={(event) => setNewBotName(event.target.value)}
+                    placeholder={t.dashboard.inputBotName}
+                    className="w-full rounded-lg border border-amber-300 bg-white px-3 py-2 text-sm outline-none ring-amber-500 focus:ring"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-amber-900">API Key</label>
+                  <input
+                    value={apiKey}
+                    onChange={(event) => setApiKey(event.target.value)}
+                    placeholder="Nhập API Key"
+                    className="w-full rounded-lg border border-amber-300 bg-white px-3 py-2 text-sm outline-none ring-amber-500 focus:ring"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-amber-900">Secret Key</label>
+                  <input
+                    value={secretKey}
+                    onChange={(event) => setSecretKey(event.target.value)}
+                    type="password"
+                    placeholder="Nhập Secret Key"
+                    className="w-full rounded-lg border border-amber-300 bg-white px-3 py-2 text-sm outline-none ring-amber-500 focus:ring"
+                    required
+                  />
+                </div>
                 <button
                   type="submit"
-                  className={`rounded-lg px-4 py-2 text-sm font-medium ${platform.accentClassName} ${platform.hoverClassName}`}
+                  className={`mt-2 w-max rounded-lg px-6 py-2 text-sm font-medium ${platform.accentClassName} ${platform.hoverClassName}`}
                 >
                   {t.dashboard.createBot}
                 </button>
               </form>
             </div>
-          ) : !selectedBot ? (
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-              <h3 className="text-lg font-semibold text-slate-900">
-                {t.dashboard.selectBotTitle}
-              </h3>
-              <p className="mt-1 text-sm text-slate-600">
-                {t.dashboard.selectBotDescription}
-              </p>
-              <form onSubmit={handleCreateBot} className="mt-4 flex flex-col gap-3 sm:flex-row">
-                <input
-                  value={newBotName}
-                  onChange={(event) => setNewBotName(event.target.value)}
-                  placeholder={t.dashboard.quickCreateBot}
-                  className="flex-1 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none ring-slate-500 focus:ring"
-                />
-                <button
-                  type="submit"
-                  className={`rounded-lg px-4 py-2 text-sm font-medium ${platform.accentClassName} ${platform.hoverClassName}`}
-                >
-                  {t.dashboard.createBot}
-                </button>
-              </form>
+          </div>
+        ) : (
+          <div className="mx-auto w-full max-w-5xl p-6">
+            <div className="mb-8 mt-12 text-center">
+              <h2 className="text-3xl font-bold text-slate-900">{t.dashboard.selectBotTitle}</h2>
+              <p className="mt-2 text-slate-600">{t.dashboard.selectBotDescription}</p>
             </div>
-          ) : (
+            <div className="flex flex-wrap justify-center gap-6">
+              {bots.map((bot) => (
+                <button
+                  key={bot.id}
+                  onClick={() => setSelectedBotId(bot.id)}
+                  className="flex h-40 w-64 flex-col items-center justify-center gap-2 rounded-2xl border-2 border-slate-200 bg-white p-6 shadow-sm transition hover:border-slate-400 hover:shadow-md"
+                >
+                  <div className="text-4xl">{platform.logo}</div>
+                  <span className="text-lg font-semibold text-slate-900">{bot.name}</span>
+                  <span className="font-mono text-xs text-slate-500">{bot.id}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )
+      ) : (
+        <div className="mx-auto grid w-full max-w-7xl gap-6 p-6 lg:grid-cols-[260px_1fr]">
+          <aside className="h-fit rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-500">
+              {t.dashboard.menuTitle}
+            </h2>
+            <nav className="space-y-2">
+              {DASHBOARD_SECTIONS.map((section) => (
+                <button
+                  key={section.id}
+                  onClick={() => setActiveSection(section.id)}
+                  className={`w-full rounded-lg px-3 py-2 text-left text-sm font-medium transition ${
+                    activeSection === section.id
+                      ? `${platform.accentClassName}`
+                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  }`}
+                >
+                  {t.dashboard.section[section.id].title}
+                </button>
+              ))}
+            </nav>
+          </aside>
+
+          <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <div className="space-y-6">
               <div className={`rounded-xl border p-4 ${platform.surfaceClassName}`}>
                 <p className="text-sm text-slate-700">{t.dashboard.selectedBot}</p>
                 <h3 className="mt-1 text-xl font-semibold text-slate-900">
-                  {selectedBot.name}
+                  {selectedBot?.name}
                 </h3>
-                <p className="text-sm text-slate-600">bot_id: {selectedBot.id}</p>
+                <p className="font-mono text-sm text-slate-600">bot_id: {selectedBot?.id}</p>
               </div>
 
               {DASHBOARD_SECTIONS.filter((section) => section.id === activeSection).map(
@@ -197,13 +227,9 @@ export function PlatformDashboard({ locale }: PlatformDashboardProps) {
                 ),
               )}
             </div>
-          )}
-        </section>
-      </div>
+          </section>
+        </div>
+      )}
     </main>
   );
-}
-
-function makeBotKey(platformId: PlatformId) {
-  return `${SESSION_BOT_KEY}_${platformId}`;
 }

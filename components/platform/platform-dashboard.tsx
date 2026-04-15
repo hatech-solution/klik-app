@@ -4,19 +4,25 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 
 import { getMessages, Locale } from "@/lib/i18n";
 import { DASHBOARD_SECTIONS, INITIAL_BOTS, Bot } from "@/lib/mock-data";
-import { PlatformConfig, PlatformId } from "@/lib/platforms";
+import { PlatformConfig, PlatformId, PLATFORM_CONFIGS } from "@/lib/platforms";
+import { usePlatformStore } from "@/store/usePlatformStore";
 
 const SESSION_BOT_KEY = "selected_bot_id";
 
 type PlatformDashboardProps = {
   locale: Locale;
-  platform: PlatformConfig;
 };
 
 type DashboardSectionId = (typeof DASHBOARD_SECTIONS)[number]["id"];
 
-export function PlatformDashboard({ locale, platform }: PlatformDashboardProps) {
+export function PlatformDashboard({ locale }: PlatformDashboardProps) {
   const t = getMessages(locale);
+  const { platformId } = usePlatformStore();
+  
+  if (!platformId) return null;
+  const platform = PLATFORM_CONFIGS[platformId as PlatformId];
+  if (!platform) return null;
+
   const [bots, setBots] = useState<Bot[]>(INITIAL_BOTS[platform.id]);
   const [selectedBotId, setSelectedBotId] = useState<string>(() => {
     if (typeof window === "undefined") {

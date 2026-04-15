@@ -8,7 +8,7 @@ import { PlatformDashboard } from "@/components/platform/platform-dashboard";
 import { isPlatformId, PLATFORM_CONFIGS } from "@/lib/platforms";
 
 type LocaleDashboardPageProps = {
-  params: Promise<{ locale: string, platform: string }>;
+  params: Promise<{ locale: string }>;
 };
 
 export async function generateMetadata({
@@ -29,9 +29,9 @@ export async function generateMetadata({
 export default async function LocaleDashboardPage({
   params,
 }: LocaleDashboardPageProps) {
-  const { locale, platform } = await params;
+  const { locale } = await params;
 
-  if (!isLocale(locale) || !isPlatformId(platform)) {
+  if (!isLocale(locale)) {
     notFound();
   }
 
@@ -40,11 +40,9 @@ export default async function LocaleDashboardPage({
     redirect(`/${locale}/login`);
   }
 
-  const current = PLATFORM_CONFIGS[platform];
-
   return (
     <RouteGuard locale={locale}>
-      <PlatformDashboard locale={locale} platform={current} />
+      <PlatformDashboard locale={locale} />
     </RouteGuard>
   );
 }

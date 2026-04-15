@@ -6,9 +6,26 @@ import { getMessages, Locale } from "@/lib/i18n";
 import { DASHBOARD_SECTIONS, INITIAL_BOTS, Bot } from "@/lib/mock-data";
 import { PlatformConfig, PlatformId, PLATFORM_CONFIGS } from "@/lib/platforms";
 import { usePlatformStore } from "@/store/usePlatformStore";
+import { StoreManagement } from "./store-management";
 
 const SESSION_BOT_KEY = "bot_id";
 
+const AVATAR_COLORS = [
+  "bg-teal-600",
+  "bg-pink-600",
+  "bg-purple-600",
+  "bg-emerald-600",
+  "bg-sky-600",
+  "bg-indigo-600",
+  "bg-rose-600",
+  "bg-amber-600",
+];
+
+function getAvatarColor(id: string) {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) hash = id.charCodeAt(i) + ((hash << 5) - hash);
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+}
 type PlatformDashboardProps = {
   locale: Locale;
 };
@@ -32,6 +49,15 @@ export function PlatformDashboard({ locale }: PlatformDashboardProps) {
   const [activeSection, setActiveSection] = useState<DashboardSectionId>("store");
   const [editingBotId, setEditingBotId] = useState<string | null>(null);
   const [editingBotName, setEditingBotName] = useState("");
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [showAddModal, setShowAddModal] = useState(false);
+
+  useEffect(() => {
+    if (!openMenuId) return;
+    const handleClick = () => setOpenMenuId(null);
+    window.addEventListener("click", handleClick);
+    return () => window.removeEventListener("click", handleClick);
+  }, [openMenuId]);
 
   useEffect(() => {
     if (!selectedBotId) {
@@ -66,10 +92,12 @@ export function PlatformDashboard({ locale }: PlatformDashboardProps) {
     setNewBotName("");
     setApiKey("");
     setSecretKey("");
+    setShowAddModal(false);
   }
 
   function handleDeleteBot(botId: string, event: React.MouseEvent) {
     event.stopPropagation();
+    setOpenMenuId(null);
     if (confirm(t.dashboard.deleteConfirm)) {
       setBots((prev) => prev.filter((b) => b.id !== botId));
       if (selectedBotId === botId) {
@@ -82,6 +110,7 @@ export function PlatformDashboard({ locale }: PlatformDashboardProps) {
     event.stopPropagation();
     setEditingBotId(bot.id);
     setEditingBotName(bot.name);
+    setOpenMenuId(null);
   }
 
   function handleSaveEditBot(botId: string, event: React.MouseEvent | React.FormEvent) {
@@ -104,7 +133,8 @@ export function PlatformDashboard({ locale }: PlatformDashboardProps) {
   if (!platform) return null;
 
   return (
-    <main className="min-h-screen">
+    <>
+      <main className="min-h-screen">
       <header className={`${platform.headerClassName} border-b px-6 py-4 shadow-sm`}>
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
@@ -135,168 +165,134 @@ export function PlatformDashboard({ locale }: PlatformDashboardProps) {
       </header>
 
       {!selectedBotId ? (
-        bots.length === 0 ? (
-          <div className="mx-auto w-full max-w-2xl p-6">
-            <div className="rounded-2xl border border-amber-200 bg-amber-50 p-6 shadow-sm">
-              <h3 className="mb-2 text-xl font-semibold text-amber-900">
-                {t.dashboard.noBotTitle(platform.name)}
-              </h3>
-              <p className="mb-6 text-sm text-amber-800">
-                {t.dashboard.noBotDescription}
-              </p>
-              <form onSubmit={handleCreateBot} className="flex flex-col gap-4">
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-amber-900">
-                    {t.dashboard.inputBotName}
-                  </label>
-                  <input
-                    value={newBotName}
-                    onChange={(event) => setNewBotName(event.target.value)}
-                    placeholder={t.dashboard.inputBotName}
-                    className="w-full rounded-lg border border-amber-300 bg-white px-3 py-2 text-sm outline-none ring-amber-500 focus:ring"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-amber-900">API Key</label>
-                  <input
-                    value={apiKey}
-                    onChange={(event) => setApiKey(event.target.value)}
-                    placeholder="Nhập API Key"
-                    className="w-full rounded-lg border border-amber-300 bg-white px-3 py-2 text-sm outline-none ring-amber-500 focus:ring"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-amber-900">Secret Key</label>
-                  <input
-                    value={secretKey}
-                    onChange={(event) => setSecretKey(event.target.value)}
-                    type="password"
-                    placeholder="Nhập Secret Key"
-                    className="w-full rounded-lg border border-amber-300 bg-white px-3 py-2 text-sm outline-none ring-amber-500 focus:ring"
-                    required
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className={`mt-2 w-max rounded-lg px-6 py-2 text-sm font-medium ${platform.accentClassName} ${platform.hoverClassName}`}
-                >
-                  {t.dashboard.createBot}
-                </button>
-              </form>
-            </div>
+        <div className="mx-auto w-full max-w-5xl p-6">
+          <div className="mb-8 mt-12 text-center">
+            <h2 className="text-3xl font-bold text-slate-900">
+              {bots.length === 0 ? t.dashboard.noBotTitle(platform.name) : t.dashboard.selectBotTitle}
+            </h2>
+            <p className="mt-2 text-slate-600">
+              {bots.length === 0 ? t.dashboard.noBotDescription : t.dashboard.selectBotDescription}
+            </p>
           </div>
-        ) : (
-          <div className="mx-auto w-full max-w-5xl p-6">
-            <div className="mb-8 mt-12 text-center">
-              <h2 className="text-3xl font-bold text-slate-900">{t.dashboard.selectBotTitle}</h2>
-              <p className="mt-2 text-slate-600">{t.dashboard.selectBotDescription}</p>
-            </div>
-            <div className="flex flex-wrap justify-center gap-6">
-              {bots.map((bot) => (
-                <div
-                  key={bot.id}
-                  onClick={() => {
-                    if (editingBotId !== bot.id) {
-                      setSelectedBotId(bot.id);
-                    }
-                  }}
-                  className="group relative flex h-40 w-64 cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-slate-200 bg-white p-6 shadow-sm transition hover:border-slate-400 hover:shadow-md"
-                >
+          <div className="flex flex-wrap justify-center gap-6">
+            {bots.map((bot) => (
+              <div
+                key={bot.id}
+                onClick={() => {
+                  if (editingBotId !== bot.id) {
+                    setSelectedBotId(bot.id);
+                  }
+                }}
+                className="relative flex h-[240px] w-56 cursor-pointer flex-col justify-between rounded-[20px] bg-slate-50 p-5 shadow-sm transition hover:shadow-md"
+              >
+                {/* Top bar */}
+                <div className="flex w-full items-center justify-between">
+                  <span className="max-w-[140px] truncate text-[13px] font-semibold text-slate-700">
+                    {bot.id}
+                  </span>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setOpenMenuId(openMenuId === bot.id ? null : bot.id);
+                    }}
+                    className="rounded-full p-1 text-slate-500 hover:bg-slate-200"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                  </button>
+                  {openMenuId === bot.id && (
+                    <div className="absolute right-4 top-10 z-10 w-32 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg">
+                      <button
+                        onClick={(e) => handleEditBot(bot, e)}
+                        className="flex w-full items-center px-4 py-2.5 text-sm outline-none text-slate-700 hover:bg-slate-50"
+                      >
+                        {t.dashboard.editBot}
+                      </button>
+                      <button
+                        onClick={(e) => handleDeleteBot(bot.id, e)}
+                        className="flex w-full items-center border-t border-slate-100 px-4 py-2.5 outline-none text-sm text-red-600 hover:bg-red-50"
+                      >
+                        {t.dashboard.deleteBot}
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Center Avatar */}
+                <div className="flex flex-1 items-center justify-center pointer-events-none mt-2">
+                  <div className="relative">
+                    <div
+                      className={`flex h-[88px] w-[88px] items-center justify-center rounded-full text-4xl font-normal text-white ${getAvatarColor(bot.id)}`}
+                    >
+                      {bot.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="absolute bottom-0 right-0 flex h-7 w-7 items-center justify-center rounded-full bg-white p-1 shadow-[0_0_4px_rgba(0,0,0,0.1)] border border-slate-100">
+                      <img
+                        src={platform.logo}
+                        alt={platform.name}
+                        className="h-full w-full object-contain"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bottom section */}
+                <div className="pb-1 mt-auto w-full text-center">
                   {editingBotId === bot.id ? (
                     <form
                       onSubmit={(e) => handleSaveEditBot(bot.id, e)}
-                      className="flex w-full flex-col items-center gap-2"
+                      className="flex w-full flex-col gap-2"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <input
                         value={editingBotName}
                         onChange={(e) => setEditingBotName(e.target.value)}
-                        className="w-full rounded border border-slate-300 px-2 py-1 text-sm outline-none focus:border-slate-500"
+                        className="w-full rounded border border-slate-300 px-2 py-1.5 text-sm outline-none focus:border-slate-500"
                         autoFocus
                       />
-                      <div className="flex gap-2">
+                      <div className="flex gap-1">
                         <button
                           type="submit"
-                          className="rounded bg-slate-800 px-3 py-1 text-xs text-white hover:bg-slate-700"
+                          className="flex-1 rounded bg-slate-800 py-1 text-[11px] text-white hover:bg-slate-700"
                         >
                           {t.dashboard.save}
                         </button>
                         <button
                           type="button"
                           onClick={handleCancelEditBot}
-                          className="rounded bg-slate-100 px-3 py-1 text-xs text-slate-700 hover:bg-slate-200"
+                          className="flex-1 rounded bg-slate-200 py-1 text-[11px] text-slate-700 hover:bg-slate-300"
                         >
                           {t.dashboard.cancel}
                         </button>
                       </div>
                     </form>
                   ) : (
-                    <>
-                      <div className="absolute right-2 top-2 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-                        <button
-                          onClick={(e) => handleEditBot(bot, e)}
-                          className="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
-                          title={t.dashboard.editBot}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="14"
-                            height="14"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            <path d="M12 20h9"></path>
-                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-                          </svg>
-                        </button>
-                        <button
-                          onClick={(e) => handleDeleteBot(bot.id, e)}
-                          className="rounded p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600"
-                          title={t.dashboard.deleteBot}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="14"
-                            height="14"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            <path d="M3 6h18"></path>
-                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                          </svg>
-                        </button>
-                      </div>
-                      <img src={platform.logo} alt={platform.name} className="mb-2 h-10 w-10 object-contain" />
-                      <span
-                        className="max-w-full truncate text-lg font-semibold text-slate-900"
-                        title={bot.name}
-                      >
-                        {bot.name}
-                      </span>
-                      <span
-                        className="max-w-full truncate font-mono text-xs text-slate-500"
-                        title={bot.id}
-                      >
-                        {bot.id}
-                      </span>
-                    </>
+                    <span className="block w-full truncate text-[15px] font-medium text-slate-700">
+                      {bot.name}
+                    </span>
                   )}
                 </div>
-              ))}
+              </div>
+            ))}
+
+            {/* Add Card */}
+            <div
+              onClick={() => setShowAddModal(true)}
+              className="group flex h-[240px] w-56 cursor-pointer flex-col items-center justify-between rounded-[20px] border-2 border-dashed border-slate-200 bg-white p-5 transition hover:border-slate-300 hover:bg-slate-50"
+            >
+              <div className="w-full text-center">
+                <span className="text-[15px] font-bold text-slate-700">
+                  Add
+                </span>
+              </div>
+              <div className="flex flex-1 items-center justify-center">
+                <div className="flex h-[88px] w-[88px] items-center justify-center rounded-full bg-slate-100 text-slate-500 transition-colors group-hover:bg-slate-200">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </div>
+              </div>
+              <div className="pb-1 mt-auto h-6" />
             </div>
           </div>
-        )
+        </div>
       ) : (
         <div className="mx-auto grid w-full max-w-7xl gap-6 p-6 lg:grid-cols-[260px_1fr]">
           <aside className="h-fit rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -330,33 +326,115 @@ export function PlatformDashboard({ locale }: PlatformDashboardProps) {
                 <p className="font-mono text-sm text-slate-600">bot_id: {selectedBot?.id}</p>
               </div>
 
-              {DASHBOARD_SECTIONS.filter((section) => section.id === activeSection).map(
-                (section) => (
-                  <article key={section.id} className="space-y-3">
-                    <h3 className="text-2xl font-semibold text-slate-900">
-                      {t.dashboard.section[section.id].title}
-                    </h3>
-                    <p className="text-slate-600">
-                      {t.dashboard.section[section.id].description}
-                    </p>
-                    <div className="grid gap-3 md:grid-cols-3">
-                      <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
-                        {t.dashboard.stats.total}: 120
+              {activeSection === "store" && selectedBot ? (
+                <StoreManagement
+                  locale={locale}
+                  platform={platform}
+                  selectedBot={selectedBot}
+                />
+              ) : (
+                DASHBOARD_SECTIONS.filter((section) => section.id === activeSection).map(
+                  (section) => (
+                    <article key={section.id} className="space-y-3">
+                      <h3 className="text-2xl font-semibold text-slate-900">
+                        {t.dashboard.section[section.id].title}
+                      </h3>
+                      <p className="text-slate-600">
+                        {t.dashboard.section[section.id].description}
+                      </p>
+                      <div className="grid gap-3 md:grid-cols-3">
+                        <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
+                          {t.dashboard.stats.total}: 120
+                        </div>
+                        <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
+                          {t.dashboard.stats.active}: 94
+                        </div>
+                        <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
+                          {t.dashboard.stats.pending}: 26
+                        </div>
                       </div>
-                      <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
-                        {t.dashboard.stats.active}: 94
-                      </div>
-                      <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
-                        {t.dashboard.stats.pending}: 26
-                      </div>
-                    </div>
-                  </article>
-                ),
+                    </article>
+                  ),
+                )
               )}
             </div>
           </section>
         </div>
       )}
     </main>
+
+      {/* Add Bot Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setShowAddModal(false)}>
+          <div 
+            className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-xl animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button 
+              onClick={() => setShowAddModal(false)}
+              className="absolute right-4 top-4 rounded-full p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 outline-none"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+            <h3 className="mb-2 text-xl font-semibold text-slate-900">
+              {t.dashboard.createBot}
+            </h3>
+            <p className="mb-6 text-sm text-slate-500">
+              {t.dashboard.noBotDescription}
+            </p>
+            <form onSubmit={handleCreateBot} className="flex flex-col gap-4">
+              <div>
+                <label className="mb-1 block text-sm font-medium text-slate-700">
+                  {t.dashboard.inputBotName}
+                </label>
+                <input
+                  value={newBotName}
+                  onChange={(event) => setNewBotName(event.target.value)}
+                  placeholder={t.dashboard.inputBotName}
+                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-slate-500"
+                  required
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-slate-700">API Key</label>
+                <input
+                  value={apiKey}
+                  onChange={(event) => setApiKey(event.target.value)}
+                  placeholder="Nhập API Key"
+                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-slate-500"
+                  required
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-slate-700">Secret Key</label>
+                <input
+                  value={secretKey}
+                  onChange={(event) => setSecretKey(event.target.value)}
+                  type="password"
+                  placeholder="Nhập Secret Key"
+                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-slate-500"
+                  required
+                />
+              </div>
+              <div className="mt-4 flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowAddModal(false)}
+                  className="rounded-lg px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+                >
+                  {t.dashboard.cancel}
+                </button>
+                <button
+                  type="submit"
+                  className={`rounded-lg px-6 py-2 text-sm font-medium ${platform.accentClassName} ${platform.hoverClassName}`}
+                >
+                  {t.dashboard.createBot}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

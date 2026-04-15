@@ -16,6 +16,7 @@ export function PlatformCard({ locale, platform }: PlatformCardProps) {
   const { setPlatform } = usePlatformStore();
 
   const handleSelect = () => {
+    localStorage.removeItem("bot_id");
     setPlatform(platform.id);
     router.push(`/${locale}/dashboard`);
   };

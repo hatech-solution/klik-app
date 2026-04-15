@@ -1,24 +1,21 @@
 # Nano Message Support
 
 Next.js app mô phỏng hệ thống quản trị bot đa nền tảng (LINE, Zalo, Telegram, Instagram):
-- Hỗ trợ wildcard subdomain cho từng platform.
 - Giao diện TailwindCSS.
-- Hỗ trợ đa ngôn ngữ `vi/en` bằng cookie `lang`.
+- Hỗ trợ đa ngôn ngữ `vi/en` qua URL (Route `[locale]`) và được detect bằng middleware/i18n.
+- Quản lý định dạng Platform thông qua `localStorage` (`platform_id`) và đính kèm vào Header (`X-Platform-ID`) thay vì dùng Subdomain.
 
-## Chạy bằng Yarn
+## Chạy bằng Yarn / NPM
 
 ```bash
-yarn install
-yarn dev
+npm install # hoặc yarn install
+npm run dev # hoặc yarn dev
 ```
 
 Mở:
-- `http://localhost:3000/login`
-- Sau khi chọn platform sẽ chuyển qua:
-  - `http://line.localhost:3000`
-  - `http://zalo.localhost:3000`
-  - `http://telegram.localhost:3000`
-  - `http://instagram.localhost:3000`
+- Giao diện mặc định chạy trên một web domain duy nhất: `http://localhost:3000`
+- Khởi đầu hệ thống sẽ yêu cầu người dùng chọn Nền Tảng tại màn hình `http://localhost:3000/vi/platform-select`.
+- Sau khi chọn Platform, hệ thống tự lưu `platform_id` vào local storage và chuyển hướng sang Dashboard chính ở path `http://localhost:3000/vi/dashboard`. Mọi request gọi API Backend sẽ tự động được gửi kèm header `X-Platform-ID`.
 
 ## Scripts
 

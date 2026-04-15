@@ -10,8 +10,8 @@ export default async function LocaleRootPage({ params }: LocaleRootPageProps) {
   const { locale } = await params;
 
   if (!isLocale(locale)) {
-    redirect("/vi/login");
+    redirect("/vi/platform-select");
   }
 
-  redirect(`/${locale}/login`);
+  redirect(`/${locale}/platform-select`);
 }

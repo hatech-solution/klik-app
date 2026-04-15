@@ -1,21 +1,29 @@
-import Link from "next/link";
+'use client';
 
+import { useRouter } from "next/navigation";
 import { getMessages, Locale } from "@/lib/i18n";
 import { PlatformConfig } from "@/lib/platforms";
+import { usePlatformStore } from "@/store/usePlatformStore";
 
 type PlatformCardProps = {
   locale: Locale;
   platform: PlatformConfig;
-  href: string;
 };
 
-export function PlatformCard({ locale, platform, href }: PlatformCardProps) {
+export function PlatformCard({ locale, platform }: PlatformCardProps) {
   const t = getMessages(locale);
+  const router = useRouter();
+  const { setPlatform } = usePlatformStore();
+
+  const handleSelect = () => {
+    setPlatform(platform.id);
+    router.push(`/${locale}/dashboard`);
+  };
 
   return (
-    <Link
-      href={href}
-      className={`group rounded-2xl border p-6 shadow-sm transition ${platform.surfaceClassName}`}
+    <button
+      onClick={handleSelect}
+      className={`group rounded-2xl border p-6 shadow-sm transition text-left cursor-pointer ${platform.surfaceClassName}`}
     >
       <div className="flex items-center gap-3">
         <span className="text-3xl">{platform.logo}</span>
@@ -24,9 +32,9 @@ export function PlatformCard({ locale, platform, href }: PlatformCardProps) {
       <p className="mt-3 text-sm text-slate-700">
         {t.selectPlatform.platformDescriptions[platform.id]}
       </p>
-      <div className="mt-4 text-sm font-medium text-slate-900">
-        {t.selectPlatform.gotoSubdomain} {platform.id}. →
+      <div className="mt-4 text-sm font-medium text-slate-900 group-hover:underline">
+        {locale === 'vi' ? 'Tiếp tục vào hệ thống' : 'Continue to dashboard'} →
       </div>
-    </Link>
+    </button>
   );
 }

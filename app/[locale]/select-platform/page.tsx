@@ -40,9 +40,6 @@ export default async function LocaleSelectPlatformPage({
     redirect(`/${locale}/login`);
   }
 
-  const headerStore = await headers();
-  const host = headerStore.get("host") ?? "localhost:3000";
-  const protocol = headerStore.get("x-forwarded-proto") ?? "http";
   const t = getMessages(locale);
 
   return (
@@ -53,13 +50,11 @@ export default async function LocaleSelectPlatformPage({
         <div className="mt-8 grid gap-4 md:grid-cols-2">
           {PLATFORM_IDS.map((platformId) => {
             const platform = PLATFORM_CONFIGS[platformId];
-            const href = buildPlatformUrl(platformId, host, protocol, `/${locale}`);
             return (
               <PlatformCard
                 key={platform.id}
                 locale={locale}
                 platform={platform}
-                href={href}
               />
             );
           })}

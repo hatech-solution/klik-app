@@ -21,8 +21,8 @@ export async function generateMetadata({
 
   const t = getMessages(locale);
   return {
-    title: `Dashboard - ${t.meta.appTitle}`,
-    description: "Manage platform integration and bots.",
+    title: `${t.meta.dashboardTitle} - ${t.meta.appTitle}`,
+    description: t.meta.dashboardDescription,
   };
 }
 

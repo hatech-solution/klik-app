@@ -23,6 +23,8 @@ const messages = {
       invalidPlatformDescription: "Không tìm thấy nền tảng yêu cầu.",
       platformDescription: (platform: string) =>
         `Trang quản trị bot cho nền tảng ${platform}.`,
+      dashboardTitle: "Bảng điều khiển",
+      dashboardDescription: "Quản lý tích hợp nền tảng và bot.",
     },
     language: {
       label: "Ngôn ngữ",
@@ -138,6 +140,8 @@ const messages = {
       invalidPlatformDescription: "Requested platform was not found.",
       platformDescription: (platform: string) =>
         `Bot administration dashboard for ${platform}.`,
+      dashboardTitle: "Dashboard",
+      dashboardDescription: "Manage platform integration and bots.",
     },
     language: {
       label: "Language",

@@ -22,7 +22,7 @@ export const PLATFORM_CONFIGS: Record<PlatformId, PlatformConfig> = {
   line: {
     id: "line",
     name: "LINE",
-    logo: "🟢",
+    logo: "/logos/line.svg",
     headerClassName: "bg-emerald-600 text-white",
     accentClassName: "bg-emerald-600 text-white",
     hoverClassName: "hover:bg-emerald-700",
@@ -32,7 +32,7 @@ export const PLATFORM_CONFIGS: Record<PlatformId, PlatformConfig> = {
   zalo: {
     id: "zalo",
     name: "Zalo",
-    logo: "🔵",
+    logo: "/logos/zalo.svg",
     headerClassName: "bg-sky-600 text-white",
     accentClassName: "bg-sky-600 text-white",
     hoverClassName: "hover:bg-sky-700",
@@ -42,7 +42,7 @@ export const PLATFORM_CONFIGS: Record<PlatformId, PlatformConfig> = {
   telegram: {
     id: "telegram",
     name: "Telegram",
-    logo: "✈️",
+    logo: "/logos/telegram.svg",
     headerClassName: "bg-cyan-600 text-white",
     accentClassName: "bg-cyan-600 text-white",
     hoverClassName: "hover:bg-cyan-700",
@@ -52,7 +52,7 @@ export const PLATFORM_CONFIGS: Record<PlatformId, PlatformConfig> = {
   instagram: {
     id: "instagram",
     name: "Instagram",
-    logo: "📸",
+    logo: "/logos/instagram.svg",
     headerClassName: "bg-fuchsia-600 text-white",
     accentClassName: "bg-fuchsia-600 text-white",
     hoverClassName: "hover:bg-fuchsia-700",

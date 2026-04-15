@@ -26,7 +26,7 @@ export function PlatformCard({ locale, platform }: PlatformCardProps) {
       className={`group rounded-2xl border p-6 shadow-sm transition text-left cursor-pointer ${platform.surfaceClassName}`}
     >
       <div className="flex items-center gap-3">
-        <span className="text-3xl">{platform.logo}</span>
+        <img src={platform.logo} alt={platform.name} className="h-8 w-8 object-contain" />
         <h2 className="text-xl font-semibold text-slate-900">{platform.name}</h2>
       </div>
       <p className="mt-3 text-sm text-slate-700">

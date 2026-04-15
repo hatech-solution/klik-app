@@ -93,6 +93,11 @@ const messages = {
       selectBotDescription: "Bot sẽ được lưu vào session storage theo từng platform.",
       quickCreateBot: "Tạo nhanh bot mới",
       selectedBot: "Bot đang chọn",
+      editBot: "Sửa",
+      deleteBot: "Xóa",
+      save: "Lưu",
+      cancel: "Hủy",
+      deleteConfirm: "Bạn có chắc chắn muốn xóa bot này?",
       section: {
         store: {
           title: "Quản lý store",
@@ -211,6 +216,11 @@ const messages = {
         "The selected bot_id will be stored in session storage per platform.",
       quickCreateBot: "Quick create a new bot",
       selectedBot: "Selected bot",
+      editBot: "Edit",
+      deleteBot: "Delete",
+      save: "Save",
+      cancel: "Cancel",
+      deleteConfirm: "Are you sure you want to delete this bot?",
       section: {
         store: {
           title: "Store management",

@@ -1,4 +1,4 @@
-# Nano Message Support
+# Klik
 
 Next.js app mô phỏng hệ thống quản trị bot đa nền tảng (LINE, Zalo, Telegram, Instagram):
 - Giao diện TailwindCSS.

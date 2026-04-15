@@ -28,7 +28,7 @@ export function AuthShell({
           className="mb-6 inline-flex items-center gap-2 text-sm text-slate-500"
         >
           <span className="text-base">💬</span>
-          Nano Message Support
+          Klik
         </Link>
         <h1 className="text-2xl font-semibold text-slate-900">{title}</h1>
         <p className="mt-2 text-sm text-slate-600">{description}</p>

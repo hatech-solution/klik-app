@@ -1,8 +1,8 @@
 ---
-name: nano-message-support-onboarding
-description: Onboards agents to the Nano Message Support codebase and enforces safe edits for wildcard subdomain routing, locale-prefixed routes, i18n vi/en, and platform dashboard flow. Use when implementing features, refactoring UI, or updating routing/i18n in this project.
+name: klik-onboarding
+description: Onboards agents to the Klik codebase and enforces safe edits for wildcard subdomain routing, locale-prefixed routes, i18n vi/en, and platform dashboard flow. Use when implementing features, refactoring UI, or updating routing/i18n in this project.
 ---
-# Nano Message Support Onboarding
+# Klik Onboarding
 
 ## Quick start
 

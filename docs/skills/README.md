@@ -4,7 +4,7 @@ Thư mục này mô tả skill dùng cho AI agent trong repo.
 
 ## Skill hiện có
 
-- `skills/nano-message-support-onboarding/SKILL.md`
+- `skills/klik-onboarding/SKILL.md`
 
 ## Lưu ý
 

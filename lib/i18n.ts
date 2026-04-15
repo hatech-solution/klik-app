@@ -7,7 +7,7 @@ export const LOCALE_COOKIE_NAME = "lang";
 const messages = {
   vi: {
     meta: {
-      appTitle: "Nano Message Support",
+      appTitle: "Klik",
       appDescription:
         "Nền tảng quản lý bot đa kênh cho Line, Zalo, Telegram và Instagram.",
       loginTitle: "Đăng nhập",
@@ -122,7 +122,7 @@ const messages = {
   },
   en: {
     meta: {
-      appTitle: "Nano Message Support",
+      appTitle: "Klik",
       appDescription:
         "Multi-channel bot management platform for Line, Zalo, Telegram and Instagram.",
       loginTitle: "Login",

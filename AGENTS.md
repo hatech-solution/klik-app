@@ -1,4 +1,4 @@
-# AI Agent Guide - Nano Message Support
+# AI Agent Guide - Klik
 
 Tài liệu này giúp AI agent onboard nhanh vào dự án và chỉnh sửa đúng chuẩn hiện tại.
 
@@ -7,7 +7,7 @@ Tài liệu này giúp AI agent onboard nhanh vào dự án và chỉnh sửa đ
 - Tổng quan docs: `docs/README.md`
 - Quickstart AI: `docs/ai/00-quickstart.md`
 - Screen docs: `docs/screens/README.md`
-- Project skill: `skills/nano-message-support-onboarding/SKILL.md`
+- Project skill: `skills/klik-onboarding/SKILL.md`
 
 ## 1) Mục tiêu dự án
 

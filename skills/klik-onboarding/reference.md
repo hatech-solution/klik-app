@@ -1,4 +1,4 @@
-# Reference - Nano Message Support Skill
+# Reference - Klik Skill
 
 ## Directory map (high signal)
 

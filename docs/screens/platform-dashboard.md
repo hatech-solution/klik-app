@@ -12,7 +12,7 @@
   - layout nhất quán
   - chọn bot
   - gọi API bot thật (list/create/update/deactivate)
-  - mock module quản trị store/user/conversation
+  - module store gọi API thật (`lib/api/store/client.ts`); user/conversation vẫn mock UI
 
 ## Thành phần chính
 
@@ -22,11 +22,12 @@
   - `lib/api/bot/client.ts`
   - `lib/api/bot/mapper.ts`
   - `lib/api/bot/types.ts`
+  - `lib/api/store/client.ts`, `lib/api/store/types.ts`, `lib/api/store/form-field-errors.ts`
 - Shared types/constants:
   - `lib/types/bot.ts`
   - `lib/constants/dashboard-sections.ts`
-- Mock data (chỉ cho store module):
-  - `lib/mocks/store-mock-data.ts`
+- Toast toàn app: `lib/toast.ts` + `components/providers/app-toaster.tsx` (Sonner).
+- Modal xác nhận tái sử dụng: `components/common/confirm-modal.tsx` (xóa store).
 
 ## Input/Output flow
 
@@ -37,9 +38,11 @@
   - Sửa bot (PUT `/api/v1/bots/:id`)
   - Tắt bot (PATCH `/api/v1/bots/:id/deactivate`)
   - Chọn menu trái (store/user/conversation)
+  - Store: CRUD qua `GET/POST/PUT/DELETE /api/v1/stores` với header `X-Bot-Id`; lỗi validate map theo `message_key` / `field_errors`
 - Output:
   - Hiển thị nội dung module đang active
   - Persist bot đã chọn trong `localStorage` key `bot_id`
+  - Toast success/error cho thao tác bot và store (theo quy ước trong `docs/ai/06-toast-confirm-feedback.md`)
 
 ## State
 

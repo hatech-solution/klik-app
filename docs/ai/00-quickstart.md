@@ -19,6 +19,8 @@
   - `lib/api/auth/`
   - `lib/api/platform/`
   - `lib/api/bot/`
+  - `lib/api/store/`
+- Toast + modal xác nhận + lỗi store: `docs/ai/06-toast-confirm-feedback.md`
 - Shared domain types:
   - `lib/types/bot.ts`
   - `lib/types/store.ts`

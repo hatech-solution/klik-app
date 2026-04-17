@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { PlatformCard } from "@/components/platform/platform-card";
+import { notifyError } from "@/lib/toast";
 import { isUnauthorizedError } from "@/lib/api/error";
 import { fetchPlatforms, mapApiPlatformsToConfigs } from "@/lib/api/platform";
 import { getMessages, type Locale } from "@/lib/i18n";
@@ -38,6 +39,7 @@ export function SelectPlatformView({ locale }: SelectPlatformViewProps) {
           router.replace(`/${locale}/login`);
           return;
         }
+        notifyError(getMessages(locale).toast.loadPlatformsFailed);
         setPhase("error");
       }
     }

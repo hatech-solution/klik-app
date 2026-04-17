@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
+import { AppToaster } from "@/components/providers/app-toaster";
 import { getMessages } from "@/lib/i18n";
 import { getServerLocale } from "@/lib/i18n-server";
 import "./globals.css";
@@ -39,7 +40,10 @@ export default async function RootLayout({
       lang="vi"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full bg-slate-50 text-slate-900">{children}</body>
+      <body className="min-h-full bg-slate-50 text-slate-900">
+        {children}
+        <AppToaster />
+      </body>
     </html>
   );
 }

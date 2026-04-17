@@ -34,6 +34,13 @@ const messages = {
     header: {
       logout: "Đăng xuất",
     },
+    common: {
+      confirmModal: {
+        cancel: "Hủy",
+        deleteAction: "Xóa",
+        processing: "Đang xử lý…",
+      },
+    },
     auth: {
       common: {
         submitting: "Đang xử lý...",
@@ -161,6 +168,8 @@ const messages = {
       temporarilyClosed: "Tạm đóng cửa",
       stoppedBusiness: "Ngừng kinh doanh",
       deleteConfirm: "Bạn có chắc chắn muốn xoá cửa hàng này?",
+      deleteModalTitle: "Xóa cửa hàng",
+      deleteFailed: "Không xóa được cửa hàng. Vui lòng thử lại.",
       save: "Lưu",
       cancel: "Hủy",
       validation: {
@@ -168,7 +177,42 @@ const messages = {
         phoneInvalid: "Số điện thoại không đúng định dạng.",
         emailTooLong: "Email tối đa 255 ký tự.",
         emailInvalid: "Email không đúng định dạng.",
+        fixHighlightedFields: "Vui lòng chỉnh sửa các trường được đánh dấu bên dưới.",
       },
+      unexpectedError: "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại.",
+      errorByKey: {
+        "store.error.invalid_request": "Dữ liệu gửi lên không hợp lệ.",
+        "store.error.unauthorized": "Phiên đăng nhập không hợp lệ. Vui lòng đăng nhập lại.",
+        "store.error.missing_bot_header": "Thiếu bot ngữ cảnh (X-Bot-Id). Vui lòng chọn lại bot.",
+        "store.error.bot_not_owned": "Bạn không có quyền thao tác với bot này.",
+        "store.error.not_found": "Không tìm thấy cửa hàng.",
+        "store.error.internal": "Lỗi máy chủ. Vui lòng thử lại sau.",
+        "store.error.stopped_business_contact_admin":
+          "Cửa hàng đã ngừng kinh doanh. Liên hệ quản trị để mở lại.",
+        "store.error.validation.name_required": "Vui lòng nhập tên cửa hàng.",
+        "store.error.validation.name_too_long": "Tên cửa hàng tối đa 50 ký tự.",
+        "store.error.validation.description_too_long": "Mô tả tối đa 500 ký tự.",
+        "store.error.validation.address_too_long": "Địa chỉ tối đa 255 ký tự.",
+        "store.error.validation.phone_number_too_long": "Số điện thoại tối đa 50 ký tự.",
+        "store.error.validation.invalid_phone_number": "Số điện thoại không đúng định dạng.",
+        "store.error.validation.email_too_long": "Email tối đa 255 ký tự.",
+        "store.error.validation.invalid_email": "Email không đúng định dạng.",
+        "store.error.validation.slide_image_urls_too_many": "Tối đa 10 ảnh slide.",
+        "store.error.validation.invalid_url": "URL không đúng định dạng.",
+        "store.error.validation.business_status_oneof": "Trạng thái kinh doanh không hợp lệ.",
+        "store.error.validation.verification_status_oneof": "Trạng thái xác minh không hợp lệ.",
+      },
+    },
+    toast: {
+      storeCreated: "Đã thêm cửa hàng.",
+      storeUpdated: "Đã cập nhật cửa hàng.",
+      storeDeleted: "Đã xóa cửa hàng.",
+      loadStoresFailed: "Không tải được danh sách cửa hàng.",
+      loadBotsFailed: "Không tải được danh sách bot.",
+      loadPlatformsFailed: "Không tải được danh sách nền tảng.",
+      botCreated: "Đã tạo bot.",
+      botUpdated: "Đã cập nhật bot.",
+      botDeactivated: "Đã vô hiệu hóa bot.",
     },
     notFound: {
       title: "Không tìm thấy trang",
@@ -204,6 +248,13 @@ const messages = {
     },
     header: {
       logout: "Logout",
+    },
+    common: {
+      confirmModal: {
+        cancel: "Cancel",
+        deleteAction: "Delete",
+        processing: "Processing…",
+      },
     },
     auth: {
       common: {
@@ -333,6 +384,8 @@ const messages = {
       temporarilyClosed: "Temporarily closed",
       stoppedBusiness: "Stopped business",
       deleteConfirm: "Are you sure you want to delete this store?",
+      deleteModalTitle: "Delete store",
+      deleteFailed: "Could not delete the store. Please try again.",
       save: "Save",
       cancel: "Cancel",
       validation: {
@@ -340,7 +393,42 @@ const messages = {
         phoneInvalid: "Phone number format is invalid.",
         emailTooLong: "Email must be at most 255 characters.",
         emailInvalid: "Email format is invalid.",
+        fixHighlightedFields: "Please correct the highlighted fields below.",
       },
+      unexpectedError: "An unexpected error occurred. Please try again.",
+      errorByKey: {
+        "store.error.invalid_request": "The request payload is invalid.",
+        "store.error.unauthorized": "Your session is invalid. Please sign in again.",
+        "store.error.missing_bot_header": "Missing bot context (X-Bot-Id). Please select a bot again.",
+        "store.error.bot_not_owned": "You do not have access to this bot.",
+        "store.error.not_found": "Store not found.",
+        "store.error.internal": "Server error. Please try again later.",
+        "store.error.stopped_business_contact_admin":
+          "This store has stopped business. Contact an administrator to reopen it.",
+        "store.error.validation.name_required": "Store name is required.",
+        "store.error.validation.name_too_long": "Store name must be at most 50 characters.",
+        "store.error.validation.description_too_long": "Description must be at most 500 characters.",
+        "store.error.validation.address_too_long": "Address must be at most 255 characters.",
+        "store.error.validation.phone_number_too_long": "Phone number must be at most 50 characters.",
+        "store.error.validation.invalid_phone_number": "Phone number format is invalid.",
+        "store.error.validation.email_too_long": "Email must be at most 255 characters.",
+        "store.error.validation.invalid_email": "Email format is invalid.",
+        "store.error.validation.slide_image_urls_too_many": "At most 10 slide images are allowed.",
+        "store.error.validation.invalid_url": "URL format is invalid.",
+        "store.error.validation.business_status_oneof": "Business status is invalid.",
+        "store.error.validation.verification_status_oneof": "Verification status is invalid.",
+      },
+    },
+    toast: {
+      storeCreated: "Store added.",
+      storeUpdated: "Store updated.",
+      storeDeleted: "Store deleted.",
+      loadStoresFailed: "Could not load stores.",
+      loadBotsFailed: "Could not load bots.",
+      loadPlatformsFailed: "Could not load platforms.",
+      botCreated: "Bot created.",
+      botUpdated: "Bot updated.",
+      botDeactivated: "Bot deactivated.",
     },
     notFound: {
       title: "Page not found",

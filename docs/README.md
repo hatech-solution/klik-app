@@ -14,4 +14,4 @@ Bộ tài liệu chuẩn để developer và AI agent đọc nhanh dự án.
 1. Đọc `AGENTS.md` để nắm quy tắc tổng quan.
 2. Đọc `docs/ai/00-quickstart.md` để có context trong 1 phút.
 3. Đọc `docs/screens/README.md` nếu task gắn với 1 màn hình cụ thể.
-4. Nếu cần thao tác sâu, đọc theo thứ tự `01` -> `05` trong `docs/ai/`.
+4. Nếu cần thao tác sâu, đọc theo thứ tự `01` -> `06` trong `docs/ai/` (trong đó `06` mô tả toast, modal xác nhận và lỗi API store).

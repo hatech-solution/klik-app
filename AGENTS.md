@@ -78,12 +78,15 @@ Khi thêm text mới, luôn thêm cả `vi` và `en`.
 - Platform dashboard:
   - `components/platform/platform-dashboard.tsx`
   - Lưu bot đã chọn vào session storage theo key từng platform.
+- **Toast (Sonner):** provider `components/providers/app-toaster.tsx` trong `app/layout.tsx`; helper `lib/toast.ts` (`notifySuccess`, `notifyError`, `notifyApiFailure`). Chuỗi trong `lib/i18n.ts` → namespace `toast` (vi + en).
+- **Modal xác nhận dùng chung:** `components/common/confirm-modal.tsx` (ví dụ xóa store trong `store-management.tsx`).
+- **Lỗi validate store từ API:** `lib/api/store/form-field-errors.ts` + `store.errorByKey` trong i18n (chuẩn `message_key` / `field_errors` từ `klik-server`). Chi tiết: `docs/ai/06-toast-confirm-feedback.md`.
 
 ## 7) Dữ liệu mock
 
 - Platform config: `lib/platforms.ts`
-- Bot/platform/auth đã dùng backend API thật (`klik-server`).
-- Mock hiện chỉ còn cho phần Store module: `lib/mocks/store-mock-data.ts`.
+- Bot/platform/auth/store (trên dashboard) đã dùng backend API thật (`klik-server`).
+- File `lib/mocks/store-mock-data.ts` có thể còn trong repo nhưng **màn store trên dashboard gọi API**, không dùng mock đó.
 
 ## 8) Nguyên tắc khi AI chỉnh sửa
 

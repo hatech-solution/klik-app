@@ -15,7 +15,13 @@ import {
   updateStore,
   deleteStore,
 } from "@/lib/api/store/client";
-import { ApiClientError } from "@/lib/api/error";
+import { ApiClientError, getErrorMessageByKey } from "@/lib/api/error";
+import { ConfirmModal } from "@/components/common/confirm-modal";
+import {
+  resolveStoreSubmitErrors,
+  type StoreFormField,
+} from "@/lib/api/store/form-field-errors";
+import { notifyError, notifySuccess } from "@/lib/toast";
 import { isValidEmail, isValidPhoneNumber } from "@/lib/utils/validation";
 
 type StoreManagementProps = {
@@ -34,6 +40,7 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
   const [editingStoreId, setEditingStoreId] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Partial<Record<StoreFormField, string>>>({});
   
   // Form states
   const [name, setName] = useState("");
@@ -45,6 +52,10 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
   const [facebookUrl, setFacebookUrl] = useState("");
   const [googleMapUrl, setGoogleMapUrl] = useState("");
   const [websiteUrl, setWebsiteUrl] = useState("");
+
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+  const [deleteBusy, setDeleteBusy] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -74,7 +85,9 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
         setStores(mappedStores);
       } catch {
         if (!mounted) return;
-        setError("Failed to load stores");
+        const loadErr = getMessages(locale).toast.loadStoresFailed;
+        setError(loadErr);
+        notifyError(loadErr);
       } finally {
         if (mounted) setLoading(false);
       }
@@ -83,7 +96,7 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
     return () => {
       mounted = false;
     };
-  }, [selectedBot.id]);
+  }, [selectedBot.id, locale]);
 
   function openAddModal() {
     setEditingStoreId(null);
@@ -97,6 +110,7 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
     setGoogleMapUrl("");
     setWebsiteUrl("");
     setFormError(null);
+    setFieldErrors({});
     setShowModal(true);
   }
 
@@ -112,16 +126,44 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
     setGoogleMapUrl(store.googleMapUrl || "");
     setWebsiteUrl(store.websiteUrl || "");
     setFormError(null);
+    setFieldErrors({});
     setShowModal(true);
   }
 
-  async function handleDelete(id: string) {
-    if (!confirm(t.store.deleteConfirm)) return;
+  function openDeleteConfirm(id: string) {
+    setDeleteError(null);
+    setDeleteTargetId(id);
+  }
+
+  function closeDeleteModal() {
+    if (deleteBusy) return;
+    setDeleteTargetId(null);
+    setDeleteError(null);
+  }
+
+  async function confirmDeleteStore() {
+    if (deleteTargetId == null) return;
+    setDeleteBusy(true);
+    setDeleteError(null);
     try {
-      await deleteStore(selectedBot.id, id);
-      setStores((prev) => prev.filter((s) => s.id !== id));
-    } catch {
-      alert("Failed to delete store");
+      await deleteStore(selectedBot.id, deleteTargetId);
+      setStores((prev) => prev.filter((s) => s.id !== deleteTargetId));
+      setDeleteTargetId(null);
+      notifySuccess(t.toast.storeDeleted);
+    } catch (err) {
+      if (err instanceof ApiClientError) {
+        setDeleteError(
+          getErrorMessageByKey(
+            err,
+            t.store.deleteFailed,
+            t.store.errorByKey as Record<string, string>,
+          ),
+        );
+      } else {
+        setDeleteError(t.store.deleteFailed);
+      }
+    } finally {
+      setDeleteBusy(false);
     }
   }
 
@@ -133,24 +175,29 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
     const normalizedEmail = email.trim();
 
     if (normalizedPhone.length > 50) {
+      setFieldErrors({});
       setFormError(t.store.validation.phoneTooLong);
       return;
     }
     if (normalizedPhone && !isValidPhoneNumber(normalizedPhone)) {
+      setFieldErrors({});
       setFormError(t.store.validation.phoneInvalid);
       return;
     }
     if (normalizedEmail.length > 255) {
+      setFieldErrors({});
       setFormError(t.store.validation.emailTooLong);
       return;
     }
     if (normalizedEmail && !isValidEmail(normalizedEmail)) {
+      setFieldErrors({});
       setFormError(t.store.validation.emailInvalid);
       return;
     }
 
     setSubmitting(true);
     setFormError(null);
+    setFieldErrors({});
 
     const payload = {
       name: name.trim(),
@@ -191,15 +238,27 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
 
       if (editingStoreId) {
         setStores((prev) => prev.map((s) => (s.id === editingStoreId ? savedStore : s)));
+        notifySuccess(t.toast.storeUpdated);
       } else {
         setStores((prev) => [...prev, savedStore]);
+        notifySuccess(t.toast.storeCreated);
       }
       setShowModal(false);
+      setFieldErrors({});
     } catch (err) {
       if (err instanceof ApiClientError) {
-        setFormError(err.message);
+        const errorByKey = t.store.errorByKey as Record<string, string>;
+        const { banner, fieldErrors: nextFieldErrors } = resolveStoreSubmitErrors(
+          err,
+          errorByKey,
+          t.store.validation.fixHighlightedFields,
+          t.store.unexpectedError,
+        );
+        setFormError(banner);
+        setFieldErrors(nextFieldErrors);
       } else {
-        setFormError("An unexpected error occurred");
+        setFormError(t.store.unexpectedError);
+        setFieldErrors({});
       }
     } finally {
       setSubmitting(false);
@@ -232,8 +291,27 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
     }
   };
 
+  const fieldBorderClass = (field: StoreFormField) =>
+    fieldErrors[field]
+      ? "border-red-500 focus:border-red-500"
+      : "border-slate-300 focus:border-slate-500";
+
   return (
     <div className="space-y-4">
+      <ConfirmModal
+        open={deleteTargetId !== null}
+        title={t.store.deleteModalTitle}
+        description={t.store.deleteConfirm}
+        cancelLabel={t.common.confirmModal.cancel}
+        confirmLabel={t.common.confirmModal.deleteAction}
+        busyConfirmLabel={t.common.confirmModal.processing}
+        confirmVariant="danger"
+        busy={deleteBusy}
+        errorMessage={deleteError}
+        onCancel={closeDeleteModal}
+        onConfirm={confirmDeleteStore}
+      />
+
       <div className="flex items-center justify-between">
         <h3 className="text-xl font-semibold text-slate-900">
           {t.dashboard.section.store.title}
@@ -292,7 +370,7 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
                       </button>
                       <button
-                        onClick={() => handleDelete(store.id)}
+                        onClick={() => openDeleteConfirm(store.id)}
                         className="text-slate-400 hover:text-red-600"
                         title={t.store.deleteStore}
                       >
@@ -310,7 +388,11 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
       {showModal && (
         <div 
           className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm animate-in fade-in duration-200"
-          onClick={() => setShowModal(false)}
+          onClick={() => {
+            setShowModal(false);
+            setFormError(null);
+            setFieldErrors({});
+          }}
         >
           <div 
             className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl relative animate-in zoom-in-95 duration-200"
@@ -334,9 +416,12 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
+                  className={`w-full rounded-lg border px-3 py-2 text-sm outline-none ${fieldBorderClass("name")}`}
                   required
                 />
+                {fieldErrors.name ? (
+                  <p className="mt-1 text-xs text-red-600">{fieldErrors.name}</p>
+                ) : null}
               </div>
 
               <div>
@@ -346,8 +431,11 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
                 <input
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
+                  className={`w-full rounded-lg border px-3 py-2 text-sm outline-none ${fieldBorderClass("address")}`}
                 />
+                {fieldErrors.address ? (
+                  <p className="mt-1 text-xs text-red-600">{fieldErrors.address}</p>
+                ) : null}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -358,8 +446,11 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
                   <input
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
+                    className={`w-full rounded-lg border px-3 py-2 text-sm outline-none ${fieldBorderClass("phone")}`}
                   />
+                  {fieldErrors.phone ? (
+                    <p className="mt-1 text-xs text-red-600">{fieldErrors.phone}</p>
+                  ) : null}
                 </div>
                 <div>
                   <label className="mb-1 block text-sm font-medium text-slate-700">
@@ -369,8 +460,11 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
+                    className={`w-full rounded-lg border px-3 py-2 text-sm outline-none ${fieldBorderClass("email")}`}
                   />
+                  {fieldErrors.email ? (
+                    <p className="mt-1 text-xs text-red-600">{fieldErrors.email}</p>
+                  ) : null}
                 </div>
               </div>
 
@@ -383,8 +477,11 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="..."
                   rows={2}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
+                  className={`w-full rounded-lg border px-3 py-2 text-sm outline-none ${fieldBorderClass("description")}`}
                 />
+                {fieldErrors.description ? (
+                  <p className="mt-1 text-xs text-red-600">{fieldErrors.description}</p>
+                ) : null}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -395,8 +492,11 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
                   <input
                     value={youtubeUrl}
                     onChange={(e) => setYoutubeUrl(e.target.value)}
-                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
+                    className={`w-full rounded-lg border px-3 py-2 text-sm outline-none ${fieldBorderClass("youtubeUrl")}`}
                   />
+                  {fieldErrors.youtubeUrl ? (
+                    <p className="mt-1 text-xs text-red-600">{fieldErrors.youtubeUrl}</p>
+                  ) : null}
                 </div>
                 <div>
                   <label className="mb-1 block text-sm font-medium text-slate-700">
@@ -405,8 +505,11 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
                   <input
                     value={facebookUrl}
                     onChange={(e) => setFacebookUrl(e.target.value)}
-                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
+                    className={`w-full rounded-lg border px-3 py-2 text-sm outline-none ${fieldBorderClass("facebookUrl")}`}
                   />
+                  {fieldErrors.facebookUrl ? (
+                    <p className="mt-1 text-xs text-red-600">{fieldErrors.facebookUrl}</p>
+                  ) : null}
                 </div>
               </div>
 
@@ -418,8 +521,11 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
                   <input
                     value={googleMapUrl}
                     onChange={(e) => setGoogleMapUrl(e.target.value)}
-                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
+                    className={`w-full rounded-lg border px-3 py-2 text-sm outline-none ${fieldBorderClass("googleMapUrl")}`}
                   />
+                  {fieldErrors.googleMapUrl ? (
+                    <p className="mt-1 text-xs text-red-600">{fieldErrors.googleMapUrl}</p>
+                  ) : null}
                 </div>
                 <div>
                   <label className="mb-1 block text-sm font-medium text-slate-700">
@@ -428,15 +534,22 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
                   <input
                     value={websiteUrl}
                     onChange={(e) => setWebsiteUrl(e.target.value)}
-                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
+                    className={`w-full rounded-lg border px-3 py-2 text-sm outline-none ${fieldBorderClass("websiteUrl")}`}
                   />
+                  {fieldErrors.websiteUrl ? (
+                    <p className="mt-1 text-xs text-red-600">{fieldErrors.websiteUrl}</p>
+                  ) : null}
                 </div>
               </div>
 
               <div className="mt-4 flex justify-end gap-3">
                 <button
                   type="button"
-                  onClick={() => setShowModal(false)}
+                  onClick={() => {
+                    setShowModal(false);
+                    setFormError(null);
+                    setFieldErrors({});
+                  }}
                   disabled={submitting}
                   className="rounded-lg px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 disabled:opacity-50"
                 >

@@ -20,3 +20,4 @@ Tài liệu theo màn hình để AI/dev hiểu nhanh mục tiêu UI, flow và s
 2. Đọc mục `Input/Output flow`.
 3. Đọc mục `State` trước khi thay đổi logic.
 4. Đối chiếu i18n key trước khi thêm text.
+5. Toast / modal xác nhận / lỗi API store: `docs/ai/06-toast-confirm-feedback.md`.

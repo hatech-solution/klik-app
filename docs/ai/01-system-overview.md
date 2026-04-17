@@ -22,5 +22,5 @@
 
 ## Dữ liệu hiện tại
 
-- Auth, platform, bot đã dùng backend API thực (`klik-server`).
-- Mock hiện chỉ còn cho module Store trong dashboard (`lib/mocks/store-mock-data.ts`).
+- Auth, platform, bot và **store** (dashboard) dùng backend API thực (`klik-server`).
+- Một số phân hệ UI (user/conversation trên dashboard) vẫn mock; file `lib/mocks/store-mock-data.ts` không còn được màn store dashboard import.

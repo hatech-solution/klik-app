@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { getErrorMessage, isUnauthorizedError } from "@/lib/api/error";
+import { notifyError, notifySuccess } from "@/lib/toast";
 import {
   createBotApi,
   deactivateBotApi,
@@ -106,7 +107,9 @@ export function PlatformDashboard({ locale }: PlatformDashboardProps) {
           router.replace(`/${locale}/login`);
           return;
         }
-        setErrorMessage(getErrorMessage(error, t.auth.common.defaultError));
+        const msg = getErrorMessage(error, t.auth.common.defaultError);
+        setErrorMessage(msg);
+        notifyError(msg);
       } finally {
         if (!cancelled) {
           setIsLoadingBots(false);
@@ -157,12 +160,15 @@ export function PlatformDashboard({ locale }: PlatformDashboardProps) {
       setApiKey("");
       setSecretKey("");
       setShowAddModal(false);
+      notifySuccess(t.toast.botCreated);
     } catch (error) {
       if (isUnauthorizedError(error)) {
         router.replace(`/${locale}/login`);
         return;
       }
-      setErrorMessage(getErrorMessage(error, t.auth.common.defaultError));
+      const msg = getErrorMessage(error, t.auth.common.defaultError);
+      setErrorMessage(msg);
+      notifyError(msg);
     } finally {
       setIsSubmitting(false);
     }
@@ -183,12 +189,15 @@ export function PlatformDashboard({ locale }: PlatformDashboardProps) {
       if (selectedBotId === bot.id) {
         setSelectedBotId("");
       }
+      notifySuccess(t.toast.botDeactivated);
     } catch (error) {
       if (isUnauthorizedError(error)) {
         router.replace(`/${locale}/login`);
         return;
       }
-      setErrorMessage(getErrorMessage(error, t.auth.common.defaultError));
+      const msg = getErrorMessage(error, t.auth.common.defaultError);
+      setErrorMessage(msg);
+      notifyError(msg);
     } finally {
       setIsSubmitting(false);
     }
@@ -222,12 +231,15 @@ export function PlatformDashboard({ locale }: PlatformDashboardProps) {
       setBots((prev) => prev.map((b) => (b.id === botId ? mapped : b)));
       setEditingBotId(null);
       setEditingBotName("");
+      notifySuccess(t.toast.botUpdated);
     } catch (error) {
       if (isUnauthorizedError(error)) {
         router.replace(`/${locale}/login`);
         return;
       }
-      setErrorMessage(getErrorMessage(error, t.auth.common.defaultError));
+      const msg = getErrorMessage(error, t.auth.common.defaultError);
+      setErrorMessage(msg);
+      notifyError(msg);
     } finally {
       setIsSubmitting(false);
     }

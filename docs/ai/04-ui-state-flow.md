@@ -20,6 +20,7 @@
   - chọn bot
   - tạo/sửa/tắt bot qua API (`lib/api/bot/client.ts`)
   - menu trái mock 3 phân hệ
+- Phản hồi sau API (toast Sonner, modal xác nhận xóa store, map lỗi store): xem `docs/ai/06-toast-confirm-feedback.md`.
 
 ## Session state
 

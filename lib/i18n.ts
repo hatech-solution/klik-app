@@ -73,6 +73,9 @@ const messages = {
       title: "Chọn nền tảng",
       description:
         "Sau khi đăng nhập, chọn platform để đi tới dashboard theo wildcard subdomain.",
+      loading: "Đang tải danh sách nền tảng...",
+      loadError: "Không tải được danh sách nền tảng. Vui lòng thử lại sau.",
+      noPlatforms: "Hiện không có nền tảng nào khả dụng.",
       gotoSubdomain: "Đi đến subdomain",
       platformDescriptions: {
         line: "Kết nối và chăm sóc khách hàng trên LINE OA.",
@@ -214,6 +217,9 @@ const messages = {
       title: "Select Platform",
       description:
         "After login, choose a platform to navigate to wildcard-subdomain dashboard.",
+      loading: "Loading platforms...",
+      loadError: "Could not load platforms. Please try again later.",
+      noPlatforms: "No platforms are available right now.",
       gotoSubdomain: "Go to subdomain",
       platformDescriptions: {
         line: "Connect and support customers on LINE OA.",

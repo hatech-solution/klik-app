@@ -1,3 +1,5 @@
+import type { ApiPlatformRow } from "./platforms-api";
+
 export type PlatformId = "line" | "zalo" | "telegram" | "instagram";
 
 export type PlatformConfig = {
@@ -63,4 +65,23 @@ export const PLATFORM_CONFIGS: Record<PlatformId, PlatformConfig> = {
 
 export function isPlatformId(value: string): value is PlatformId {
   return PLATFORM_IDS.includes(value as PlatformId);
+}
+
+/**
+ * Maps GET /api/v1/platforms rows to UI configs: only `active` platforms whose
+ * `platform_id` exists in {@link PLATFORM_CONFIGS}, in stable {@link PLATFORM_IDS} order.
+ */
+export function mapApiPlatformsToConfigs(rows: ApiPlatformRow[]): PlatformConfig[] {
+  const activeIds = new Set<PlatformId>();
+  for (const row of rows) {
+    if (row.status !== "active") {
+      continue;
+    }
+    if (!isPlatformId(row.platform_id)) {
+      continue;
+    }
+    activeIds.add(row.platform_id);
+  }
+
+  return PLATFORM_IDS.filter((id) => activeIds.has(id)).map((id) => PLATFORM_CONFIGS[id]);
 }

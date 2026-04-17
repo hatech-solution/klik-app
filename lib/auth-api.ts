@@ -1,3 +1,5 @@
+import { getApiBaseUrl } from "@/lib/api-base";
+
 type ApiAuthResponse = {
   access_token: string;
   refresh_token: string;
@@ -19,11 +21,8 @@ type RegisterRequest = {
   password: string;
 };
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "https://klik-server.onrender.com";
-
 export async function loginWithApi(payload: LoginRequest): Promise<AuthPayload> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/auth/login`, {
+  const response = await fetch(`${getApiBaseUrl()}/api/v1/auth/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -42,7 +41,7 @@ export async function loginWithApi(payload: LoginRequest): Promise<AuthPayload> 
 export async function registerWithApi(
   payload: RegisterRequest,
 ): Promise<AuthPayload> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/auth/register`, {
+  const response = await fetch(`${getApiBaseUrl()}/api/v1/auth/register`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

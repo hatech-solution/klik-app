@@ -1,0 +1,42 @@
+export type StoreApiItem = {
+  id: string;
+  bot_id: string;
+  created_by: string;
+  updated_by: string;
+  name: string;
+  primary_image_url: string | null;
+  slide_image_urls: string[];
+  address: string | null;
+  phone_number: string | null;
+  email: string | null;
+  youtube_url: string | null;
+  facebook_url: string | null;
+  google_map_url: string | null;
+  website_url: string | null;
+  business_status: string;
+  verification_status: string;
+  description: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type CreateStorePayload = {
+  name: string;
+  primary_image_url?: string | null;
+  slide_image_urls?: string[];
+  address?: string | null;
+  phone_number?: string | null;
+  email?: string | null;
+  youtube_url?: string | null;
+  facebook_url?: string | null;
+  google_map_url?: string | null;
+  website_url?: string | null;
+  business_status?: string;
+  description?: string | null;
+};
+
+export type UpdateStorePayload = CreateStorePayload;
+
+export type PatchStoreStatusPayload = {
+  business_status: string;
+};

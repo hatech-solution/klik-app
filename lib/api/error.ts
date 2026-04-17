@@ -52,6 +52,23 @@ export function getErrorMessage(error: unknown, fallback: string): string {
   return fallback;
 }
 
+export function getErrorMessageByKey(
+  error: unknown,
+  fallback: string,
+  messagesByKey: Record<string, string>,
+): string {
+  if (error instanceof ApiClientError) {
+    const firstFieldMessageKey = error.fieldErrors?.[0]?.messageKey;
+    if (firstFieldMessageKey && messagesByKey[firstFieldMessageKey]) {
+      return messagesByKey[firstFieldMessageKey];
+    }
+    if (error.messageKey && messagesByKey[error.messageKey]) {
+      return messagesByKey[error.messageKey];
+    }
+  }
+  return getErrorMessage(error, fallback);
+}
+
 type ParsedApiError = {
   backendCode?: number;
   messageKey?: string;

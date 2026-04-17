@@ -152,7 +152,7 @@ export function PlatformDashboard({ locale }: PlatformDashboardProps) {
       });
       const mapped = mapBotFromApi(created);
       setBots((prev) => [...prev, mapped]);
-      setSelectedBotId(mapped.id);
+      setSelectedBotId("");
       setNewBotName("");
       setApiKey("");
       setSecretKey("");

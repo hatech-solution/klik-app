@@ -12,6 +12,7 @@ Tài liệu theo màn hình để AI/dev hiểu nhanh mục tiêu UI, flow và s
 - `reset-password.md` - màn hình quên mật khẩu
 - `select-platform.md` - màn hình chọn nền tảng
 - `platform-dashboard.md` - dashboard theo platform + chọn bot
+- `store-management.md` - section quản lý store (API thật, trong dashboard)
 - `not-found.md` - màn hình 404
 
 ## Quy tắc đọc nhanh

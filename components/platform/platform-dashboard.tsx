@@ -66,6 +66,8 @@ export function PlatformDashboard({ locale }: PlatformDashboardProps) {
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [isLoadingBots, setIsLoadingBots] = useState(false);
+  /** Chỉ true sau khi list bot của platform hiện tại đã tải xong (tránh xóa bot_id khi bots vẫn []). */
+  const [botsListReady, setBotsListReady] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -87,11 +89,13 @@ export function PlatformDashboard({ locale }: PlatformDashboardProps) {
   useEffect(() => {
     if (!platform) {
       setBots([]);
+      setBotsListReady(false);
       return;
     }
 
     const currentPlatform = platform;
     let cancelled = false;
+    setBotsListReady(false);
 
     async function loadBots() {
       setIsLoadingBots(true);
@@ -113,6 +117,7 @@ export function PlatformDashboard({ locale }: PlatformDashboardProps) {
       } finally {
         if (!cancelled) {
           setIsLoadingBots(false);
+          setBotsListReady(true);
         }
       }
     }
@@ -124,10 +129,11 @@ export function PlatformDashboard({ locale }: PlatformDashboardProps) {
   }, [platform, locale, router, t.auth.common.defaultError]);
 
   useEffect(() => {
+    if (!botsListReady) return;
     if (!selectedBotId) return;
     if (bots.some((bot) => bot.id === selectedBotId)) return;
     setSelectedBotId("");
-  }, [bots, selectedBotId]);
+  }, [bots, selectedBotId, botsListReady]);
 
   const selectedBot = useMemo(
     () => bots.find((bot) => bot.id === selectedBotId),

@@ -28,6 +28,7 @@
   - `lib/constants/dashboard-sections.ts`
 - Toast toàn app: `lib/toast.ts` + `components/providers/app-toaster.tsx` (Sonner).
 - Modal xác nhận tái sử dụng: `components/common/confirm-modal.tsx` (xóa store).
+- Chi tiết module store: `docs/screens/store-management.md`.
 
 ## Input/Output flow
 
@@ -61,3 +62,4 @@
 - Không đổi layout theo platform (chỉ đổi theme/logo).
 - Không hardcode text mới ngoài i18n.
 - Request bot API phải luôn có `Authorization` token hợp lệ.
+- Đồng bộ `selectedBotId` với danh sách `bots` **chỉ sau khi** `GET` bots xong (`botsListReady`); nếu chạy khi `bots` vẫn `[]` sẽ xóa nhầm `bot_id` trong `localStorage` sau F5.

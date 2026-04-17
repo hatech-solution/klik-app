@@ -6,7 +6,8 @@
 | Register | `/{locale}/register` | `app/[locale]/register/page.tsx` | `components/forms/register-form.tsx` | none | `meta.register*`, `auth.register.*`, `auth.fields.*` | Submit mock -> `/{locale}/login` |
 | Reset Password | `/{locale}/reset-password` | `app/[locale]/reset-password/page.tsx` | `components/forms/reset-password-form.tsx` | `sent` | `meta.reset*`, `auth.reset.*`, `auth.fields.email` | Show success message after submit |
 | Select Platform | `/{locale}/select-platform` | `app/[locale]/select-platform/page.tsx` | `components/platform/platform-card.tsx` | none | `meta.select*`, `selectPlatform.*` | Build subdomain URL with locale path |
-| Platform Dashboard | `/{locale}/platform/[platform]` (rewrite from subdomain) | `app/[locale]/platform/[platform]/page.tsx` | `components/platform/platform-dashboard.tsx` | `bots`, `selectedBotId`, `newBotName`, `activeSection` | `meta.platform*`, `dashboard.*` | `selectedBotId` persisted in session storage per platform |
+| Platform Dashboard | `https://<platform>.<domain>/{locale}/dashboard` → `/{locale}/dashboard` | `app/[locale]/dashboard/page.tsx` | `components/platform/platform-dashboard.tsx` | `bots`, `selectedBotId`, `newBotName`, `activeSection`, `botsListReady` | `meta.platform*`, `dashboard.*`, `toast.*` | `platform_id` zustand + `localStorage` `bot_id`; validate bot chỉ sau `botsListReady` |
+| Store (dashboard section) | (cùng route dashboard) | (trong `platform-dashboard.tsx`) | `components/platform/store-management.tsx` | `stores`, `showModal`, `fieldErrors`, `deleteTargetId`, … | `store.*`, `store.errorByKey`, `toast.store*`, `common.confirmModal.*` | Cần bot đã chọn; `X-Bot-Id`; CRUD `lib/api/store/client.ts` |
 | Not Found | `not-found` fallback | `app/not-found.tsx`, `app/[locale]/not-found.tsx` | inline | none | `notFound.*` | CTA back to `/{locale}/login` |
 
 ## Shared Layout/Infra

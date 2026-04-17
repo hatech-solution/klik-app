@@ -21,6 +21,9 @@
 - Error model dùng chung:
   - `lib/api/error.ts` là nơi định nghĩa `ApiClientError` và helper (`isUnauthorizedError`, `getErrorMessage`, `parseApiErrorMessage`).
   - UI không so sánh string lỗi thủ công; luôn dùng helper để xử lý redirect 401 và fallback message.
+- Request cần auth:
+  - Dùng `lib/api/authenticated-request.ts` để tự gắn `Authorization`, tự refresh token khi gặp `401`, rồi retry 1 lần.
+  - Không truyền `accessToken` thủ công qua nhiều tầng hàm.
 - Domain type dùng chung đặt ở `lib/types/*`, constants dùng chung đặt ở `lib/constants/*`.
 
 ## Sau khi sửa

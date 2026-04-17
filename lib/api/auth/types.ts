@@ -13,3 +13,7 @@ export type RegisterRequest = {
   email: string;
   password: string;
 };
+
+export type RefreshTokenRequest = {
+  refresh_token: string;
+};

@@ -1,5 +1,4 @@
-import { getApiBaseUrl } from "@/lib/api-base";
-import { getAuthorizedHeaders } from "@/lib/api/authenticated-headers";
+import { authorizedRequest } from "@/lib/api/authenticated-request";
 import {
   ApiClientError,
   parseApiErrorMessage,
@@ -10,11 +9,11 @@ import type { BotApiItem, UpsertBotPayload } from "./types";
 export async function listBotsApi(
   platformId: string,
 ): Promise<BotApiItem[]> {
-  const response = await fetch(`${getApiBaseUrl()}/api/v1/bots`, {
+  const response = await authorizedRequest({
     method: "GET",
-    headers: getAuthorizedHeaders({
-      extraHeaders: { "X-Platform-Id": platformId },
-    }),
+    path: "/api/v1/bots",
+    includeJsonContentType: false,
+    extraHeaders: { "X-Platform-Id": platformId },
     cache: "no-store",
   });
 
@@ -40,12 +39,13 @@ export async function createBotApi(
   platformId: string,
   payload: UpsertBotPayload,
 ): Promise<BotApiItem> {
-  const response = await fetch(`${getApiBaseUrl()}/api/v1/bots`, {
+  const response = await authorizedRequest({
     method: "POST",
-    headers: getAuthorizedHeaders({
-      extraHeaders: { "X-Platform-Id": platformId },
-    }),
-    body: JSON.stringify(payload),
+    path: "/api/v1/bots",
+    extraHeaders: {
+      "X-Platform-Id": platformId,
+    },
+    body: payload,
   });
 
   const body = await response.json().catch(() => null);
@@ -70,10 +70,10 @@ export async function updateBotApi(
   botId: string,
   payload: UpsertBotPayload,
 ): Promise<BotApiItem> {
-  const response = await fetch(`${getApiBaseUrl()}/api/v1/bots/${botId}`, {
+  const response = await authorizedRequest({
     method: "PUT",
-    headers: getAuthorizedHeaders(),
-    body: JSON.stringify(payload),
+    path: `/api/v1/bots/${botId}`,
+    body: payload,
   });
 
   const body = await response.json().catch(() => null);
@@ -95,9 +95,9 @@ export async function updateBotApi(
 }
 
 export async function deactivateBotApi(botId: string): Promise<void> {
-  const response = await fetch(`${getApiBaseUrl()}/api/v1/bots/${botId}/deactivate`, {
+  const response = await authorizedRequest({
     method: "PATCH",
-    headers: getAuthorizedHeaders(),
+    path: `/api/v1/bots/${botId}/deactivate`,
   });
 
   const body = await response.json().catch(() => null);

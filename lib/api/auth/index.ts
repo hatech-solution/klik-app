@@ -1,3 +1,8 @@
-export { loginWithApi, registerWithApi } from "./client";
+export { loginWithApi, refreshWithApi, registerWithApi } from "./client";
 export { mapAuthPayload } from "./mapper";
-export type { ApiAuthResponse, LoginRequest, RegisterRequest } from "./types";
+export type {
+  ApiAuthResponse,
+  LoginRequest,
+  RefreshTokenRequest,
+  RegisterRequest,
+} from "./types";

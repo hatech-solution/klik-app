@@ -1,7 +1,7 @@
 import { authorizedRequest } from "@/lib/api/authenticated-request";
 import {
   ApiClientError,
-  parseApiErrorMessage,
+  toApiClientError,
 } from "@/lib/api/error";
 
 import type { BotApiItem, UpsertBotPayload } from "./types";
@@ -22,11 +22,7 @@ export async function listBotsApi(
     throw new ApiClientError("UNAUTHORIZED", "Unauthorized", 401);
   }
   if (!response.ok) {
-    throw new ApiClientError(
-      "HTTP_ERROR",
-      parseApiErrorMessage(body, "Failed to load bots"),
-      response.status,
-    );
+    throw toApiClientError(body, "Failed to load bots", response.status);
   }
   if (!Array.isArray(body)) {
     throw new ApiClientError("INVALID_RESPONSE", "Invalid bots response");
@@ -53,11 +49,7 @@ export async function createBotApi(
     throw new ApiClientError("UNAUTHORIZED", "Unauthorized", 401);
   }
   if (!response.ok) {
-    throw new ApiClientError(
-      "HTTP_ERROR",
-      parseApiErrorMessage(body, "Failed to create bot"),
-      response.status,
-    );
+    throw toApiClientError(body, "Failed to create bot", response.status);
   }
   if (!body || typeof body !== "object") {
     throw new ApiClientError("INVALID_RESPONSE", "Invalid create bot response");
@@ -81,11 +73,7 @@ export async function updateBotApi(
     throw new ApiClientError("UNAUTHORIZED", "Unauthorized", 401);
   }
   if (!response.ok) {
-    throw new ApiClientError(
-      "HTTP_ERROR",
-      parseApiErrorMessage(body, "Failed to update bot"),
-      response.status,
-    );
+    throw toApiClientError(body, "Failed to update bot", response.status);
   }
   if (!body || typeof body !== "object") {
     throw new ApiClientError("INVALID_RESPONSE", "Invalid update bot response");
@@ -105,11 +93,7 @@ export async function deactivateBotApi(botId: string): Promise<void> {
     throw new ApiClientError("UNAUTHORIZED", "Unauthorized", 401);
   }
   if (!response.ok) {
-    throw new ApiClientError(
-      "HTTP_ERROR",
-      parseApiErrorMessage(body, "Failed to deactivate bot"),
-      response.status,
-    );
+    throw toApiClientError(body, "Failed to deactivate bot", response.status);
   }
 
 }

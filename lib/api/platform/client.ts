@@ -1,5 +1,5 @@
 import { authorizedRequest } from "@/lib/api/authenticated-request";
-import { ApiClientError } from "@/lib/api/error";
+import { ApiClientError, toApiClientError } from "@/lib/api/error";
 
 import type { ApiPlatformRow } from "./types";
 
@@ -15,11 +15,12 @@ export async function fetchPlatforms(): Promise<ApiPlatformRow[]> {
     throw new ApiClientError("UNAUTHORIZED", "Unauthorized", 401);
   }
 
+  const body = await response.json().catch(() => null);
   if (!response.ok) {
-    throw new ApiClientError("HTTP_ERROR", "Failed to load platforms", response.status);
+    throw toApiClientError(body, "Failed to load platforms", response.status);
   }
 
-  const raw = await response.json();
+  const raw = body;
   if (!Array.isArray(raw)) {
     throw new ApiClientError("INVALID_RESPONSE", "Invalid platforms response");
   }

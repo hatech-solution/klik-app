@@ -2,7 +2,7 @@ import { getApiBaseUrl } from "@/lib/api-base";
 import type { AuthTokens } from "@/lib/auth-tokens";
 import {
   ApiClientError,
-  parseApiErrorMessage,
+  toApiClientError,
 } from "@/lib/api/error";
 
 import { mapAuthPayload } from "./mapper";
@@ -24,11 +24,7 @@ export async function loginWithApi(payload: LoginRequest): Promise<AuthTokens> {
     throw new ApiClientError("UNAUTHORIZED", "Unauthorized", 401);
   }
   if (!response.ok) {
-    throw new ApiClientError(
-      "HTTP_ERROR",
-      parseApiErrorMessage(body, "Login failed"),
-      response.status,
-    );
+    throw toApiClientError(body, "Login failed", response.status);
   }
 
   return mapAuthPayload(body);
@@ -46,11 +42,7 @@ export async function registerWithApi(payload: RegisterRequest): Promise<AuthTok
     throw new ApiClientError("UNAUTHORIZED", "Unauthorized", 401);
   }
   if (!response.ok) {
-    throw new ApiClientError(
-      "HTTP_ERROR",
-      parseApiErrorMessage(body, "Register failed"),
-      response.status,
-    );
+    throw toApiClientError(body, "Register failed", response.status);
   }
 
   return mapAuthPayload(body);
@@ -68,11 +60,7 @@ export async function refreshWithApi(payload: RefreshTokenRequest): Promise<Auth
     throw new ApiClientError("UNAUTHORIZED", "Unauthorized", 401);
   }
   if (!response.ok) {
-    throw new ApiClientError(
-      "HTTP_ERROR",
-      parseApiErrorMessage(body, "Refresh token failed"),
-      response.status,
-    );
+    throw toApiClientError(body, "Refresh token failed", response.status);
   }
 
   return mapAuthPayload(body);

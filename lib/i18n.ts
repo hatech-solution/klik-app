@@ -35,6 +35,10 @@ const messages = {
       logout: "Đăng xuất",
     },
     auth: {
+      common: {
+        submitting: "Đang xử lý...",
+        defaultError: "Có lỗi xảy ra, vui lòng thử lại.",
+      },
       login: {
         title: "Đăng nhập",
         description: "Sử dụng email và mật khẩu để truy cập hệ thống.",
@@ -172,6 +176,10 @@ const messages = {
       logout: "Logout",
     },
     auth: {
+      common: {
+        submitting: "Processing...",
+        defaultError: "Something went wrong, please try again.",
+      },
       login: {
         title: "Login",
         description: "Use your email and password to access the system.",

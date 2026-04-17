@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FormEvent } from "react";
+import { FormEvent, useState } from "react";
 
 import { AuthShell } from "@/components/auth-shell";
+import { loginWithApi } from "@/lib/auth-api";
 import { persistAuthTokens } from "@/lib/auth-tokens";
 import { getMessages, Locale } from "@/lib/i18n";
 
@@ -15,17 +16,29 @@ type LoginFormProps = {
 export function LoginForm({ locale }: LoginFormProps) {
   const router = useRouter();
   const t = getMessages(locale);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setErrorMessage(null);
 
-    // Mock token generation for local development flow.
-    persistAuthTokens({
-      accessToken: `mock_access_${crypto.randomUUID()}`,
-      refreshToken: `mock_refresh_${crypto.randomUUID()}`,
-    });
+    const formData = new FormData(event.currentTarget);
+    const email = String(formData.get("email") ?? "").trim();
+    const password = String(formData.get("password") ?? "");
 
-    router.push(`/${locale}/select-platform`);
+    setIsSubmitting(true);
+    try {
+      const tokens = await loginWithApi({ email, password });
+      persistAuthTokens(tokens);
+      router.push(`/${locale}/select-platform`);
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : t.auth.common.defaultError;
+      setErrorMessage(message);
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -43,9 +56,15 @@ export function LoginForm({ locale }: LoginFormProps) {
       }
     >
       <form className="space-y-4" onSubmit={handleSubmit}>
+        {errorMessage ? (
+          <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
+            {errorMessage}
+          </p>
+        ) : null}
         <label className="block space-y-1 text-sm">
           <span className="text-slate-700">{t.auth.fields.email}</span>
           <input
+            name="email"
             required
             type="email"
             placeholder="you@company.com"
@@ -55,6 +74,7 @@ export function LoginForm({ locale }: LoginFormProps) {
         <label className="block space-y-1 text-sm">
           <span className="text-slate-700">{t.auth.fields.password}</span>
           <input
+            name="password"
             required
             type="password"
             placeholder="********"
@@ -71,9 +91,10 @@ export function LoginForm({ locale }: LoginFormProps) {
         </div>
         <button
           type="submit"
+          disabled={isSubmitting}
           className="w-full rounded-lg bg-sky-600 px-4 py-2.5 font-medium text-white transition hover:bg-sky-700"
         >
-          {t.auth.login.submit}
+          {isSubmitting ? t.auth.common.submitting : t.auth.login.submit}
         </button>
       </form>
     </AuthShell>

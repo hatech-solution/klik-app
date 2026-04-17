@@ -1,8 +1,9 @@
 import { getApiBaseUrl } from "@/lib/api-base";
+import { ApiClientError } from "@/lib/api/error";
 
-import type { ApiPlatformRow, FetchPlatformsResult } from "./types";
+import type { ApiPlatformRow } from "./types";
 
-export async function fetchPlatforms(accessToken: string): Promise<FetchPlatformsResult> {
+export async function fetchPlatforms(accessToken: string): Promise<ApiPlatformRow[]> {
   const response = await fetch(`${getApiBaseUrl()}/api/v1/platforms`, {
     method: "GET",
     headers: {
@@ -13,17 +14,17 @@ export async function fetchPlatforms(accessToken: string): Promise<FetchPlatform
   });
 
   if (response.status === 401) {
-    return { ok: false, status: 401 };
+    throw new ApiClientError("UNAUTHORIZED", "Unauthorized", 401);
   }
 
   if (!response.ok) {
-    return { ok: false, status: response.status };
+    throw new ApiClientError("HTTP_ERROR", "Failed to load platforms", response.status);
   }
 
   const raw = await response.json();
   if (!Array.isArray(raw)) {
-    return { ok: false, status: 500 };
+    throw new ApiClientError("INVALID_RESPONSE", "Invalid platforms response");
   }
 
-  return { ok: true, data: raw as ApiPlatformRow[] };
+  return raw as ApiPlatformRow[];
 }

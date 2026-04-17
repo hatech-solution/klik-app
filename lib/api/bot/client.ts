@@ -1,4 +1,8 @@
 import { getApiBaseUrl } from "@/lib/api-base";
+import {
+  ApiClientError,
+  parseApiErrorMessage,
+} from "@/lib/api/error";
 
 import type { BotApiItem, UpsertBotPayload } from "./types";
 
@@ -19,13 +23,17 @@ export async function listBotsApi(accessToken: string): Promise<BotApiItem[]> {
 
   const body = await response.json().catch(() => null);
   if (response.status === 401) {
-    throw new Error("UNAUTHORIZED");
+    throw new ApiClientError("UNAUTHORIZED", "Unauthorized", 401);
   }
   if (!response.ok) {
-    throw new Error(extractErrorMessage(body, "Failed to load bots"));
+    throw new ApiClientError(
+      "HTTP_ERROR",
+      parseApiErrorMessage(body, "Failed to load bots"),
+      response.status,
+    );
   }
   if (!Array.isArray(body)) {
-    throw new Error("Invalid bots response");
+    throw new ApiClientError("INVALID_RESPONSE", "Invalid bots response");
   }
 
   return body as BotApiItem[];
@@ -47,13 +55,17 @@ export async function createBotApi(
 
   const body = await response.json().catch(() => null);
   if (response.status === 401) {
-    throw new Error("UNAUTHORIZED");
+    throw new ApiClientError("UNAUTHORIZED", "Unauthorized", 401);
   }
   if (!response.ok) {
-    throw new Error(extractErrorMessage(body, "Failed to create bot"));
+    throw new ApiClientError(
+      "HTTP_ERROR",
+      parseApiErrorMessage(body, "Failed to create bot"),
+      response.status,
+    );
   }
   if (!body || typeof body !== "object") {
-    throw new Error("Invalid create bot response");
+    throw new ApiClientError("INVALID_RESPONSE", "Invalid create bot response");
   }
 
   return body as BotApiItem;
@@ -72,13 +84,17 @@ export async function updateBotApi(
 
   const body = await response.json().catch(() => null);
   if (response.status === 401) {
-    throw new Error("UNAUTHORIZED");
+    throw new ApiClientError("UNAUTHORIZED", "Unauthorized", 401);
   }
   if (!response.ok) {
-    throw new Error(extractErrorMessage(body, "Failed to update bot"));
+    throw new ApiClientError(
+      "HTTP_ERROR",
+      parseApiErrorMessage(body, "Failed to update bot"),
+      response.status,
+    );
   }
   if (!body || typeof body !== "object") {
-    throw new Error("Invalid update bot response");
+    throw new ApiClientError("INVALID_RESPONSE", "Invalid update bot response");
   }
 
   return body as BotApiItem;
@@ -92,22 +108,13 @@ export async function deactivateBotApi(accessToken: string, botId: string): Prom
 
   const body = await response.json().catch(() => null);
   if (response.status === 401) {
-    throw new Error("UNAUTHORIZED");
+    throw new ApiClientError("UNAUTHORIZED", "Unauthorized", 401);
   }
   if (!response.ok) {
-    throw new Error(extractErrorMessage(body, "Failed to deactivate bot"));
+    throw new ApiClientError(
+      "HTTP_ERROR",
+      parseApiErrorMessage(body, "Failed to deactivate bot"),
+      response.status,
+    );
   }
-}
-
-function extractErrorMessage(payload: unknown, fallback: string): string {
-  if (!payload || typeof payload !== "object") {
-    return fallback;
-  }
-
-  const maybeError = (payload as { error?: unknown }).error;
-  if (typeof maybeError === "string" && maybeError.trim().length > 0) {
-    return maybeError;
-  }
-
-  return fallback;
 }

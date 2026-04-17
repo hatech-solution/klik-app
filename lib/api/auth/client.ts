@@ -1,5 +1,9 @@
 import { getApiBaseUrl } from "@/lib/api-base";
 import type { AuthTokens } from "@/lib/auth-tokens";
+import {
+  ApiClientError,
+  parseApiErrorMessage,
+} from "@/lib/api/error";
 
 import { mapAuthPayload } from "./mapper";
 import type { LoginRequest, RegisterRequest } from "./types";
@@ -16,8 +20,15 @@ export async function loginWithApi(payload: LoginRequest): Promise<AuthTokens> {
   });
 
   const body = await response.json().catch(() => null);
+  if (response.status === 401) {
+    throw new ApiClientError("UNAUTHORIZED", "Unauthorized", 401);
+  }
   if (!response.ok) {
-    throw new Error(extractErrorMessage(body, "Login failed"));
+    throw new ApiClientError(
+      "HTTP_ERROR",
+      parseApiErrorMessage(body, "Login failed"),
+      response.status,
+    );
   }
 
   return mapAuthPayload(body);
@@ -31,22 +42,16 @@ export async function registerWithApi(payload: RegisterRequest): Promise<AuthTok
   });
 
   const body = await response.json().catch(() => null);
+  if (response.status === 401) {
+    throw new ApiClientError("UNAUTHORIZED", "Unauthorized", 401);
+  }
   if (!response.ok) {
-    throw new Error(extractErrorMessage(body, "Register failed"));
+    throw new ApiClientError(
+      "HTTP_ERROR",
+      parseApiErrorMessage(body, "Register failed"),
+      response.status,
+    );
   }
 
   return mapAuthPayload(body);
-}
-
-function extractErrorMessage(payload: unknown, fallback: string): string {
-  if (!payload || typeof payload !== "object") {
-    return fallback;
-  }
-
-  const maybeError = (payload as { error?: unknown }).error;
-  if (typeof maybeError === "string" && maybeError.trim().length > 0) {
-    return maybeError;
-  }
-
-  return fallback;
 }

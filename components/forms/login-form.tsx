@@ -6,6 +6,7 @@ import { FormEvent, useState } from "react";
 
 import { AuthShell } from "@/components/auth-shell";
 import { loginWithApi } from "@/lib/api/auth";
+import { getErrorMessage } from "@/lib/api/error";
 import { persistAuthTokens } from "@/lib/auth-tokens";
 import { getMessages, Locale } from "@/lib/i18n";
 
@@ -33,9 +34,7 @@ export function LoginForm({ locale }: LoginFormProps) {
       persistAuthTokens(tokens);
       router.push(`/${locale}/select-platform`);
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : t.auth.common.defaultError;
-      setErrorMessage(message);
+      setErrorMessage(getErrorMessage(error, t.auth.common.defaultError));
     } finally {
       setIsSubmitting(false);
     }

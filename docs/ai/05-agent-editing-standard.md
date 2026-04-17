@@ -18,6 +18,9 @@
   - `lib/api/<module>/types.ts`: API DTO/request payload types
   - `lib/api/<module>/mapper.ts`: map DTO -> domain types dùng cho UI
   - `lib/api/<module>/index.ts`: barrel export
+- Error model dùng chung:
+  - `lib/api/error.ts` là nơi định nghĩa `ApiClientError` và helper (`isUnauthorizedError`, `getErrorMessage`, `parseApiErrorMessage`).
+  - UI không so sánh string lỗi thủ công; luôn dùng helper để xử lý redirect 401 và fallback message.
 - Domain type dùng chung đặt ở `lib/types/*`, constants dùng chung đặt ở `lib/constants/*`.
 
 ## Sau khi sửa

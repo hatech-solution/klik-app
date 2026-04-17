@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { PlatformCard } from "@/components/platform/platform-card";
+import { isUnauthorizedError } from "@/lib/api/error";
 import { fetchPlatforms, mapApiPlatformsToConfigs } from "@/lib/api/platform";
 import { getClientAuthTokens } from "@/lib/auth-tokens";
 import { getMessages, type Locale } from "@/lib/i18n";
@@ -29,23 +30,23 @@ export function SelectPlatformView({ locale }: SelectPlatformViewProps) {
         return;
       }
 
-      const result = await fetchPlatforms(tokens.accessToken);
-      if (cancelled) {
-        return;
-      }
-
-      if (!result.ok && result.status === 401) {
-        router.replace(`/${locale}/login`);
-        return;
-      }
-
-      if (!result.ok) {
+      try {
+        const rows = await fetchPlatforms(tokens.accessToken);
+        if (cancelled) {
+          return;
+        }
+        setPlatforms(mapApiPlatformsToConfigs(rows));
+        setPhase("ready");
+      } catch (error) {
+        if (cancelled) {
+          return;
+        }
+        if (isUnauthorizedError(error)) {
+          router.replace(`/${locale}/login`);
+          return;
+        }
         setPhase("error");
-        return;
       }
-
-      setPlatforms(mapApiPlatformsToConfigs(result.data));
-      setPhase("ready");
     }
 
     void load();

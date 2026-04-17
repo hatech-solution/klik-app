@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { getErrorMessage, isUnauthorizedError } from "@/lib/api/error";
 import { getClientAuthTokens } from "@/lib/auth-tokens";
 import {
   createBotApi,
@@ -16,7 +17,7 @@ import {
   type DashboardSectionId,
 } from "@/lib/constants/dashboard-sections";
 import { getMessages, Locale } from "@/lib/i18n";
-import { PlatformConfig, PlatformId, PLATFORM_CONFIGS } from "@/lib/platforms";
+import { PlatformId, PLATFORM_CONFIGS } from "@/lib/platforms";
 import type { Bot } from "@/lib/types/bot";
 import { usePlatformStore } from "@/store/usePlatformStore";
 import { StoreManagement } from "./store-management";
@@ -110,12 +111,11 @@ export function PlatformDashboard({ locale }: PlatformDashboardProps) {
         setBots(mapped);
       } catch (error) {
         if (cancelled) return;
-        const message = error instanceof Error ? error.message : t.auth.common.defaultError;
-        if (message === "UNAUTHORIZED") {
+        if (isUnauthorizedError(error)) {
           router.replace(`/${locale}/login`);
           return;
         }
-        setErrorMessage(message);
+        setErrorMessage(getErrorMessage(error, t.auth.common.defaultError));
       } finally {
         if (!cancelled) {
           setIsLoadingBots(false);
@@ -173,12 +173,11 @@ export function PlatformDashboard({ locale }: PlatformDashboardProps) {
       setSecretKey("");
       setShowAddModal(false);
     } catch (error) {
-      const message = error instanceof Error ? error.message : t.auth.common.defaultError;
-      if (message === "UNAUTHORIZED") {
+      if (isUnauthorizedError(error)) {
         router.replace(`/${locale}/login`);
         return;
       }
-      setErrorMessage(message);
+      setErrorMessage(getErrorMessage(error, t.auth.common.defaultError));
     } finally {
       setIsSubmitting(false);
     }
@@ -206,12 +205,11 @@ export function PlatformDashboard({ locale }: PlatformDashboardProps) {
         setSelectedBotId("");
       }
     } catch (error) {
-      const message = error instanceof Error ? error.message : t.auth.common.defaultError;
-      if (message === "UNAUTHORIZED") {
+      if (isUnauthorizedError(error)) {
         router.replace(`/${locale}/login`);
         return;
       }
-      setErrorMessage(message);
+      setErrorMessage(getErrorMessage(error, t.auth.common.defaultError));
     } finally {
       setIsSubmitting(false);
     }
@@ -252,12 +250,11 @@ export function PlatformDashboard({ locale }: PlatformDashboardProps) {
       setEditingBotId(null);
       setEditingBotName("");
     } catch (error) {
-      const message = error instanceof Error ? error.message : t.auth.common.defaultError;
-      if (message === "UNAUTHORIZED") {
+      if (isUnauthorizedError(error)) {
         router.replace(`/${locale}/login`);
         return;
       }
-      setErrorMessage(message);
+      setErrorMessage(getErrorMessage(error, t.auth.common.defaultError));
     } finally {
       setIsSubmitting(false);
     }

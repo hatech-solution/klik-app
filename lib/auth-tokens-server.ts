@@ -13,3 +13,8 @@ export async function getServerAuthTokens(): Promise<AuthTokens | null> {
 
   return { accessToken, refreshToken };
 }
+
+export async function isUserLoggedInServer(): Promise<boolean> {
+  const tokens = await getServerAuthTokens();
+  return Boolean(tokens?.accessToken);
+}

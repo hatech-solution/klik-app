@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { PlatformCard } from "@/components/platform/platform-card";
 import { isUnauthorizedError } from "@/lib/api/error";
 import { fetchPlatforms, mapApiPlatformsToConfigs } from "@/lib/api/platform";
-import { getClientAuthTokens } from "@/lib/auth-tokens";
 import { getMessages, type Locale } from "@/lib/i18n";
 import { type PlatformConfig } from "@/lib/platforms";
 
@@ -24,14 +23,8 @@ export function SelectPlatformView({ locale }: SelectPlatformViewProps) {
     let cancelled = false;
 
     async function load() {
-      const tokens = getClientAuthTokens();
-      if (!tokens?.accessToken) {
-        router.replace(`/${locale}/login`);
-        return;
-      }
-
       try {
-        const rows = await fetchPlatforms(tokens.accessToken);
+        const rows = await fetchPlatforms();
         if (cancelled) {
           return;
         }

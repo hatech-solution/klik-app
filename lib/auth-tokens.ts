@@ -53,6 +53,11 @@ export function getClientAuthTokens(): AuthTokens | null {
   return null;
 }
 
+export function isUserLoggedInClient(): boolean {
+  const tokens = getClientAuthTokens();
+  return Boolean(tokens?.accessToken);
+}
+
 function resolveCookieDomains(hostname: string) {
   if (hostname === "localhost" || hostname.endsWith(".localhost")) {
     // In local dev, different browsers handle localhost domains differently,

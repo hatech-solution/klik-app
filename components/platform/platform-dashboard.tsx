@@ -4,7 +4,6 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { getErrorMessage, isUnauthorizedError } from "@/lib/api/error";
-import { getClientAuthTokens } from "@/lib/auth-tokens";
 import {
   createBotApi,
   deactivateBotApi,
@@ -94,20 +93,12 @@ export function PlatformDashboard({ locale }: PlatformDashboardProps) {
     let cancelled = false;
 
     async function loadBots() {
-      const tokens = getClientAuthTokens();
-      if (!tokens?.accessToken) {
-        router.replace(`/${locale}/login`);
-        return;
-      }
-
       setIsLoadingBots(true);
       setErrorMessage(null);
       try {
-        const rows = await listBotsApi(tokens.accessToken);
+        const rows = await listBotsApi(currentPlatform.id);
         if (cancelled) return;
-        const mapped = rows
-          .map(mapBotFromApi)
-          .filter((bot) => bot.platformId === currentPlatform.id && bot.status !== "deactivated");
+        const mapped = rows.map(mapBotFromApi);
         setBots(mapped);
       } catch (error) {
         if (cancelled) return;
@@ -150,15 +141,9 @@ export function PlatformDashboard({ locale }: PlatformDashboardProps) {
       return;
     }
 
-    const tokens = getClientAuthTokens();
-    if (!tokens?.accessToken) {
-      router.replace(`/${locale}/login`);
-      return;
-    }
-
     setIsSubmitting(true);
     try {
-      const created = await createBotApi(tokens.accessToken, platform.id, {
+      const created = await createBotApi(platform.id, {
         name: newBotName.trim(),
         credentials: {
           bot_token: apiKey.trim(),
@@ -190,16 +175,10 @@ export function PlatformDashboard({ locale }: PlatformDashboardProps) {
       return;
     }
 
-    const tokens = getClientAuthTokens();
-    if (!tokens?.accessToken) {
-      router.replace(`/${locale}/login`);
-      return;
-    }
-
     setIsSubmitting(true);
     setErrorMessage(null);
     try {
-      await deactivateBotApi(tokens.accessToken, bot.id);
+      await deactivateBotApi(bot.id);
       setBots((prev) => prev.filter((b) => b.id !== bot.id));
       if (selectedBotId === bot.id) {
         setSelectedBotId("");
@@ -232,16 +211,10 @@ export function PlatformDashboard({ locale }: PlatformDashboardProps) {
       return;
     }
 
-    const tokens = getClientAuthTokens();
-    if (!tokens?.accessToken) {
-      router.replace(`/${locale}/login`);
-      return;
-    }
-
     setIsSubmitting(true);
     setErrorMessage(null);
     try {
-      const updated = await updateBotApi(tokens.accessToken, botId, {
+      const updated = await updateBotApi(botId, {
         name: editingBotName.trim(),
         credentials: currentBot.credentials ?? {},
       });

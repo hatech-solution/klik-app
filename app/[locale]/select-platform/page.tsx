@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
 import { SelectPlatformView } from "@/components/platform/select-platform-view";
-import { getServerAuthTokens } from "@/lib/auth-tokens-server";
+import { isUserLoggedInServer } from "@/lib/auth-tokens-server";
 import { getMessages, isLocale } from "@/lib/i18n";
 
 type LocaleSelectPlatformPageProps = {
@@ -32,8 +32,8 @@ export default async function LocaleSelectPlatformPage({
     notFound();
   }
 
-  const tokens = await getServerAuthTokens();
-  if (!tokens?.accessToken) {
+  const isLoggedIn = await isUserLoggedInServer();
+  if (!isLoggedIn) {
     redirect(`/${locale}/login`);
   }
 

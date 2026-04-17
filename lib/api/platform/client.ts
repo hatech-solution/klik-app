@@ -1,15 +1,13 @@
 import { getApiBaseUrl } from "@/lib/api-base";
+import { getAuthorizedHeaders } from "@/lib/api/authenticated-headers";
 import { ApiClientError } from "@/lib/api/error";
 
 import type { ApiPlatformRow } from "./types";
 
-export async function fetchPlatforms(accessToken: string): Promise<ApiPlatformRow[]> {
+export async function fetchPlatforms(): Promise<ApiPlatformRow[]> {
   const response = await fetch(`${getApiBaseUrl()}/api/v1/platforms`, {
     method: "GET",
-    headers: {
-      Accept: "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
+    headers: getAuthorizedHeaders({ includeJsonContentType: false }),
     cache: "no-store",
   });
 

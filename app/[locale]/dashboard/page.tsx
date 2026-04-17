@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
-import { getServerAuthTokens } from "@/lib/auth-tokens-server";
+import { isUserLoggedInServer } from "@/lib/auth-tokens-server";
 import { getMessages, isLocale } from "@/lib/i18n";
 import { RouteGuard } from "@/components/providers/route-guard";
 import { PlatformDashboard } from "@/components/platform/platform-dashboard";
-import { isPlatformId, PLATFORM_CONFIGS } from "@/lib/platforms";
 
 type LocaleDashboardPageProps = {
   params: Promise<{ locale: string }>;
@@ -35,8 +34,8 @@ export default async function LocaleDashboardPage({
     notFound();
   }
 
-  const tokens = await getServerAuthTokens();
-  if (!tokens?.accessToken) {
+  const isLoggedIn = await isUserLoggedInServer();
+  if (!isLoggedIn) {
     redirect(`/${locale}/login`);
   }
 

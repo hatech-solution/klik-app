@@ -1,4 +1,5 @@
 import { getApiBaseUrl } from "@/lib/api-base";
+import { getAuthorizedHeaders } from "@/lib/api/authenticated-headers";
 import {
   ApiClientError,
   parseApiErrorMessage,
@@ -6,18 +7,14 @@ import {
 
 import type { BotApiItem, UpsertBotPayload } from "./types";
 
-function authHeaders(accessToken: string): HeadersInit {
-  return {
-    Accept: "application/json",
-    Authorization: `Bearer ${accessToken}`,
-    "Content-Type": "application/json",
-  };
-}
-
-export async function listBotsApi(accessToken: string): Promise<BotApiItem[]> {
+export async function listBotsApi(
+  platformId: string,
+): Promise<BotApiItem[]> {
   const response = await fetch(`${getApiBaseUrl()}/api/v1/bots`, {
     method: "GET",
-    headers: authHeaders(accessToken),
+    headers: getAuthorizedHeaders({
+      extraHeaders: { "X-Platform-Id": platformId },
+    }),
     cache: "no-store",
   });
 
@@ -40,16 +37,14 @@ export async function listBotsApi(accessToken: string): Promise<BotApiItem[]> {
 }
 
 export async function createBotApi(
-  accessToken: string,
   platformId: string,
   payload: UpsertBotPayload,
 ): Promise<BotApiItem> {
   const response = await fetch(`${getApiBaseUrl()}/api/v1/bots`, {
     method: "POST",
-    headers: {
-      ...authHeaders(accessToken),
-      "X-Platform-Id": platformId,
-    },
+    headers: getAuthorizedHeaders({
+      extraHeaders: { "X-Platform-Id": platformId },
+    }),
     body: JSON.stringify(payload),
   });
 
@@ -72,13 +67,12 @@ export async function createBotApi(
 }
 
 export async function updateBotApi(
-  accessToken: string,
   botId: string,
   payload: UpsertBotPayload,
 ): Promise<BotApiItem> {
   const response = await fetch(`${getApiBaseUrl()}/api/v1/bots/${botId}`, {
     method: "PUT",
-    headers: authHeaders(accessToken),
+    headers: getAuthorizedHeaders(),
     body: JSON.stringify(payload),
   });
 
@@ -100,10 +94,10 @@ export async function updateBotApi(
   return body as BotApiItem;
 }
 
-export async function deactivateBotApi(accessToken: string, botId: string): Promise<void> {
+export async function deactivateBotApi(botId: string): Promise<void> {
   const response = await fetch(`${getApiBaseUrl()}/api/v1/bots/${botId}/deactivate`, {
     method: "PATCH",
-    headers: authHeaders(accessToken),
+    headers: getAuthorizedHeaders(),
   });
 
   const body = await response.json().catch(() => null);
@@ -117,4 +111,5 @@ export async function deactivateBotApi(accessToken: string, botId: string): Prom
       response.status,
     );
   }
+
 }

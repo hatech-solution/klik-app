@@ -10,18 +10,18 @@
 
 ## Platform selection
 
-- `app/select-platform/page.tsx` hiển thị card platform.
-- Chọn platform tạo link subdomain qua helper domain.
+- `app/[locale]/select-platform/page.tsx` render client view để gọi `GET /api/v1/platforms`.
+- Dữ liệu API được map qua `mapApiPlatformsToConfigs` (`lib/platforms.ts`).
 
 ## Platform dashboard
 
 - `components/platform/platform-dashboard.tsx` là màn hình chính sau khi vào subdomain.
 - Chức năng:
   - chọn bot
-  - tạo bot khi chưa có bot
+  - tạo/sửa/tắt bot qua API (`lib/api/bot/client.ts`)
   - menu trái mock 3 phân hệ
 
 ## Session state
 
-- `bot_id` hiện lưu ở session storage theo key có suffix platform.
+- `bot_id` lưu ở `localStorage` key `bot_id`.
 - Thay đổi state không được làm mất tính tách biệt giữa các platform.

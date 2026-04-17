@@ -22,5 +22,5 @@
 
 ## Dữ liệu hiện tại
 
-- Đang là mock data frontend.
-- Chưa có backend persistence thực tế.
+- Auth, platform, bot đã dùng backend API thực (`klik-server`).
+- Mock hiện chỉ còn cho module Store trong dashboard (`lib/mocks/store-mock-data.ts`).

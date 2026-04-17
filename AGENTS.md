@@ -82,8 +82,8 @@ Khi thêm text mới, luôn thêm cả `vi` và `en`.
 ## 7) Dữ liệu mock
 
 - Platform config: `lib/platforms.ts`
-- Mock bots + module dashboard: `lib/mock-data.ts`
-- Đây là mock UI/flow, chưa có backend thực.
+- Bot/platform/auth đã dùng backend API thật (`klik-server`).
+- Mock hiện chỉ còn cho phần Store module: `lib/mocks/store-mock-data.ts`.
 
 ## 8) Nguyên tắc khi AI chỉnh sửa
 

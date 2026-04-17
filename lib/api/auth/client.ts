@@ -1,32 +1,17 @@
 import { getApiBaseUrl } from "@/lib/api-base";
+import type { AuthTokens } from "@/lib/auth-tokens";
 
-type ApiAuthResponse = {
-  access_token: string;
-  refresh_token: string;
+import { mapAuthPayload } from "./mapper";
+import type { LoginRequest, RegisterRequest } from "./types";
+
+const JSON_HEADERS: HeadersInit = {
+  "Content-Type": "application/json",
 };
 
-export type AuthPayload = {
-  accessToken: string;
-  refreshToken: string;
-};
-
-type LoginRequest = {
-  email: string;
-  password: string;
-};
-
-type RegisterRequest = {
-  name: string;
-  email: string;
-  password: string;
-};
-
-export async function loginWithApi(payload: LoginRequest): Promise<AuthPayload> {
+export async function loginWithApi(payload: LoginRequest): Promise<AuthTokens> {
   const response = await fetch(`${getApiBaseUrl()}/api/v1/auth/login`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: JSON_HEADERS,
     body: JSON.stringify(payload),
   });
 
@@ -38,14 +23,10 @@ export async function loginWithApi(payload: LoginRequest): Promise<AuthPayload> 
   return mapAuthPayload(body);
 }
 
-export async function registerWithApi(
-  payload: RegisterRequest,
-): Promise<AuthPayload> {
+export async function registerWithApi(payload: RegisterRequest): Promise<AuthTokens> {
   const response = await fetch(`${getApiBaseUrl()}/api/v1/auth/register`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: JSON_HEADERS,
     body: JSON.stringify(payload),
   });
 
@@ -55,22 +36,6 @@ export async function registerWithApi(
   }
 
   return mapAuthPayload(body);
-}
-
-function mapAuthPayload(raw: unknown): AuthPayload {
-  if (!raw || typeof raw !== "object") {
-    throw new Error("Invalid response from server");
-  }
-
-  const data = raw as ApiAuthResponse;
-  if (!data.access_token || !data.refresh_token) {
-    throw new Error("Missing auth tokens from server");
-  }
-
-  return {
-    accessToken: data.access_token,
-    refreshToken: data.refresh_token,
-  };
 }
 
 function extractErrorMessage(payload: unknown, fallback: string): string {

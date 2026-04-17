@@ -1,10 +1,23 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 
+import { getClientAuthTokens } from "@/lib/auth-tokens";
+import {
+  createBotApi,
+  deactivateBotApi,
+  listBotsApi,
+  mapBotFromApi,
+  updateBotApi,
+} from "@/lib/api/bot";
+import {
+  DASHBOARD_SECTIONS,
+  type DashboardSectionId,
+} from "@/lib/constants/dashboard-sections";
 import { getMessages, Locale } from "@/lib/i18n";
-import { DASHBOARD_SECTIONS, INITIAL_BOTS, Bot } from "@/lib/mock-data";
 import { PlatformConfig, PlatformId, PLATFORM_CONFIGS } from "@/lib/platforms";
+import type { Bot } from "@/lib/types/bot";
 import { usePlatformStore } from "@/store/usePlatformStore";
 import { StoreManagement } from "./store-management";
 
@@ -26,19 +39,19 @@ function getAvatarColor(id: string) {
   for (let i = 0; i < id.length; i++) hash = id.charCodeAt(i) + ((hash << 5) - hash);
   return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
 }
+
 type PlatformDashboardProps = {
   locale: Locale;
 };
 
-type DashboardSectionId = (typeof DASHBOARD_SECTIONS)[number]["id"];
-
 export function PlatformDashboard({ locale }: PlatformDashboardProps) {
+  const router = useRouter();
   const t = getMessages(locale);
   const { platformId } = usePlatformStore();
   
   const platform = platformId ? PLATFORM_CONFIGS[platformId as PlatformId] : undefined;
 
-  const [bots, setBots] = useState<Bot[]>(platform ? INITIAL_BOTS[platform.id] : []);
+  const [bots, setBots] = useState<Bot[]>([]);
   const [selectedBotId, setSelectedBotId] = useState<string>(() => {
     if (typeof window === "undefined") return "";
     return localStorage.getItem(SESSION_BOT_KEY) ?? "";
@@ -51,6 +64,9 @@ export function PlatformDashboard({ locale }: PlatformDashboardProps) {
   const [editingBotName, setEditingBotName] = useState("");
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [isLoadingBots, setIsLoadingBots] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (!openMenuId) return;
@@ -67,13 +83,66 @@ export function PlatformDashboard({ locale }: PlatformDashboardProps) {
     localStorage.setItem(SESSION_BOT_KEY, selectedBotId);
   }, [selectedBotId]);
 
+  useEffect(() => {
+    if (!platform) {
+      setBots([]);
+      return;
+    }
+
+    const currentPlatform = platform;
+    let cancelled = false;
+
+    async function loadBots() {
+      const tokens = getClientAuthTokens();
+      if (!tokens?.accessToken) {
+        router.replace(`/${locale}/login`);
+        return;
+      }
+
+      setIsLoadingBots(true);
+      setErrorMessage(null);
+      try {
+        const rows = await listBotsApi(tokens.accessToken);
+        if (cancelled) return;
+        const mapped = rows
+          .map(mapBotFromApi)
+          .filter((bot) => bot.platformId === currentPlatform.id && bot.status !== "deactivated");
+        setBots(mapped);
+      } catch (error) {
+        if (cancelled) return;
+        const message = error instanceof Error ? error.message : t.auth.common.defaultError;
+        if (message === "UNAUTHORIZED") {
+          router.replace(`/${locale}/login`);
+          return;
+        }
+        setErrorMessage(message);
+      } finally {
+        if (!cancelled) {
+          setIsLoadingBots(false);
+        }
+      }
+    }
+
+    void loadBots();
+    return () => {
+      cancelled = true;
+    };
+  }, [platform, locale, router, t.auth.common.defaultError]);
+
+  useEffect(() => {
+    if (!selectedBotId) return;
+    if (bots.some((bot) => bot.id === selectedBotId)) return;
+    setSelectedBotId("");
+  }, [bots, selectedBotId]);
+
   const selectedBot = useMemo(
     () => bots.find((bot) => bot.id === selectedBotId),
     [bots, selectedBotId],
   );
 
-  function handleCreateBot(event: FormEvent<HTMLFormElement>) {
+  async function handleCreateBot(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setErrorMessage(null);
 
     if (!platform) return;
 
@@ -81,28 +150,70 @@ export function PlatformDashboard({ locale }: PlatformDashboardProps) {
       return;
     }
 
-    const normalized = newBotName.trim().toLowerCase().replace(/\s+/g, "-");
-    const newBot: Bot = {
-      id: `${platform.id}-bot-${normalized}-${Math.floor(Math.random() * 1000)}`,
-      name: newBotName.trim(),
-    };
+    const tokens = getClientAuthTokens();
+    if (!tokens?.accessToken) {
+      router.replace(`/${locale}/login`);
+      return;
+    }
 
-    setBots((prev) => [...prev, newBot]);
-    setSelectedBotId(newBot.id);
-    setNewBotName("");
-    setApiKey("");
-    setSecretKey("");
-    setShowAddModal(false);
+    setIsSubmitting(true);
+    try {
+      const created = await createBotApi(tokens.accessToken, platform.id, {
+        name: newBotName.trim(),
+        credentials: {
+          bot_token: apiKey.trim(),
+          secret_key: secretKey.trim(),
+        },
+      });
+      const mapped = mapBotFromApi(created);
+      setBots((prev) => [...prev, mapped]);
+      setSelectedBotId(mapped.id);
+      setNewBotName("");
+      setApiKey("");
+      setSecretKey("");
+      setShowAddModal(false);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : t.auth.common.defaultError;
+      if (message === "UNAUTHORIZED") {
+        router.replace(`/${locale}/login`);
+        return;
+      }
+      setErrorMessage(message);
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
-  function handleDeleteBot(botId: string, event: React.MouseEvent) {
+  async function handleDeleteBot(bot: Bot, event: React.MouseEvent) {
     event.stopPropagation();
     setOpenMenuId(null);
-    if (confirm(t.dashboard.deleteConfirm)) {
-      setBots((prev) => prev.filter((b) => b.id !== botId));
-      if (selectedBotId === botId) {
+    if (!confirm(t.dashboard.deleteConfirm)) {
+      return;
+    }
+
+    const tokens = getClientAuthTokens();
+    if (!tokens?.accessToken) {
+      router.replace(`/${locale}/login`);
+      return;
+    }
+
+    setIsSubmitting(true);
+    setErrorMessage(null);
+    try {
+      await deactivateBotApi(tokens.accessToken, bot.id);
+      setBots((prev) => prev.filter((b) => b.id !== bot.id));
+      if (selectedBotId === bot.id) {
         setSelectedBotId("");
       }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : t.auth.common.defaultError;
+      if (message === "UNAUTHORIZED") {
+        router.replace(`/${locale}/login`);
+        return;
+      }
+      setErrorMessage(message);
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -113,15 +224,43 @@ export function PlatformDashboard({ locale }: PlatformDashboardProps) {
     setOpenMenuId(null);
   }
 
-  function handleSaveEditBot(botId: string, event: React.MouseEvent | React.FormEvent) {
+  async function handleSaveEditBot(botId: string, event: React.MouseEvent | React.FormEvent) {
     event.stopPropagation();
     event.preventDefault();
     if (!editingBotName.trim()) return;
-    setBots((prev) =>
-      prev.map((b) => (b.id === botId ? { ...b, name: editingBotName.trim() } : b))
-    );
-    setEditingBotId(null);
-    setEditingBotName("");
+
+    const currentBot = bots.find((bot) => bot.id === botId);
+    if (!currentBot) {
+      return;
+    }
+
+    const tokens = getClientAuthTokens();
+    if (!tokens?.accessToken) {
+      router.replace(`/${locale}/login`);
+      return;
+    }
+
+    setIsSubmitting(true);
+    setErrorMessage(null);
+    try {
+      const updated = await updateBotApi(tokens.accessToken, botId, {
+        name: editingBotName.trim(),
+        credentials: currentBot.credentials ?? {},
+      });
+      const mapped = mapBotFromApi(updated);
+      setBots((prev) => prev.map((b) => (b.id === botId ? mapped : b)));
+      setEditingBotId(null);
+      setEditingBotName("");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : t.auth.common.defaultError;
+      if (message === "UNAUTHORIZED") {
+        router.replace(`/${locale}/login`);
+        return;
+      }
+      setErrorMessage(message);
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   function handleCancelEditBot(event: React.MouseEvent) {
@@ -164,6 +303,14 @@ export function PlatformDashboard({ locale }: PlatformDashboardProps) {
         </div>
       </header>
 
+      {errorMessage ? (
+        <div className="mx-auto mt-4 w-full max-w-7xl px-6">
+          <div className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
+            {errorMessage}
+          </div>
+        </div>
+      ) : null}
+
       {!selectedBotId ? (
         <div className="mx-auto w-full max-w-5xl p-6">
           <div className="mb-8 mt-12 text-center">
@@ -173,6 +320,9 @@ export function PlatformDashboard({ locale }: PlatformDashboardProps) {
             <p className="mt-2 text-slate-600">
               {bots.length === 0 ? t.dashboard.noBotDescription : t.dashboard.selectBotDescription}
             </p>
+            {isLoadingBots ? (
+              <p className="mt-2 text-sm text-slate-500">{t.dashboard.loadingBots}</p>
+            ) : null}
           </div>
           <div className="flex flex-wrap justify-center gap-6">
             {bots.map((bot) => (
@@ -208,7 +358,7 @@ export function PlatformDashboard({ locale }: PlatformDashboardProps) {
                         {t.dashboard.editBot}
                       </button>
                       <button
-                        onClick={(e) => handleDeleteBot(bot.id, e)}
+                        onClick={(e) => void handleDeleteBot(bot, e)}
                         className="flex w-full items-center border-t border-slate-100 px-4 py-2.5 outline-none text-sm text-red-600 hover:bg-red-50"
                       >
                         {t.dashboard.deleteBot}
@@ -252,9 +402,10 @@ export function PlatformDashboard({ locale }: PlatformDashboardProps) {
                       <div className="flex gap-1">
                         <button
                           type="submit"
+                          disabled={isSubmitting}
                           className="flex-1 rounded bg-slate-800 py-1 text-[11px] text-white hover:bg-slate-700"
                         >
-                          {t.dashboard.save}
+                          {isSubmitting ? t.auth.common.submitting : t.dashboard.save}
                         </button>
                         <button
                           type="button"
@@ -266,9 +417,16 @@ export function PlatformDashboard({ locale }: PlatformDashboardProps) {
                       </div>
                     </form>
                   ) : (
-                    <span className="block w-full truncate text-[15px] font-medium text-slate-700">
-                      {bot.name}
-                    </span>
+                    <div className="space-y-1">
+                      <span className="block w-full truncate text-[15px] font-medium text-slate-700">
+                        {bot.name}
+                      </span>
+                      {bot.status ? (
+                        <span className="block text-[11px] uppercase tracking-wide text-slate-400">
+                          {bot.status}
+                        </span>
+                      ) : null}
+                    </div>
                   )}
                 </div>
               </div>
@@ -426,9 +584,10 @@ export function PlatformDashboard({ locale }: PlatformDashboardProps) {
                 </button>
                 <button
                   type="submit"
+                  disabled={isSubmitting}
                   className={`rounded-lg px-6 py-2 text-sm font-medium ${platform.accentClassName} ${platform.hoverClassName}`}
                 >
-                  {t.dashboard.createBot}
+                  {isSubmitting ? t.auth.common.submitting : t.dashboard.createBot}
                 </button>
               </div>
             </form>

@@ -99,6 +99,7 @@ const messages = {
       selectBotTitle: "Chọn bot để tiếp tục",
       selectBotDescription: "Bot sẽ được lưu vào session storage theo từng platform.",
       quickCreateBot: "Tạo nhanh bot mới",
+      loadingBots: "Đang tải danh sách bot...",
       selectedBot: "Bot đang chọn",
       editBot: "Sửa",
       deleteBot: "Xóa",
@@ -244,6 +245,7 @@ const messages = {
       selectBotDescription:
         "The selected bot_id will be stored in session storage per platform.",
       quickCreateBot: "Quick create a new bot",
+      loadingBots: "Loading bots...",
       selectedBot: "Selected bot",
       editBot: "Edit",
       deleteBot: "Delete",

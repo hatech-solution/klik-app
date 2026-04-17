@@ -13,6 +13,12 @@
 - Giữ code nhất quán với style hiện có.
 - Ưu tiên tái sử dụng component.
 - Thêm comment chỉ khi cần giải thích logic khó.
+- Với module có gọi API, ưu tiên tách theo cấu trúc:
+  - `lib/api/<module>/client.ts`: HTTP calls, headers, error handling
+  - `lib/api/<module>/types.ts`: API DTO/request payload types
+  - `lib/api/<module>/mapper.ts`: map DTO -> domain types dùng cho UI
+  - `lib/api/<module>/index.ts`: barrel export
+- Domain type dùng chung đặt ở `lib/types/*`, constants dùng chung đặt ở `lib/constants/*`.
 
 ## Sau khi sửa
 

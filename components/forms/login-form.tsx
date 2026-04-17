@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
 import { AuthShell } from "@/components/auth-shell";
-import { loginWithApi } from "@/lib/auth-api";
+import { loginWithApi } from "@/lib/api/auth";
 import { persistAuthTokens } from "@/lib/auth-tokens";
 import { getMessages, Locale } from "@/lib/i18n";
 

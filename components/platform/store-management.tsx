@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import { Locale, getMessages } from "@/lib/i18n";
-import { Store, INITIAL_STORES, Bot } from "@/lib/mock-data";
+import { INITIAL_STORES } from "@/lib/mocks/store-mock-data";
 import { PlatformConfig } from "@/lib/platforms";
+import type { Bot } from "@/lib/types/bot";
+import type { Store } from "@/lib/types/store";
 
 type StoreManagementProps = {
   locale: Locale;

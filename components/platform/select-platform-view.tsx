@@ -4,10 +4,10 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { PlatformCard } from "@/components/platform/platform-card";
+import { fetchPlatforms, mapApiPlatformsToConfigs } from "@/lib/api/platform";
 import { getClientAuthTokens } from "@/lib/auth-tokens";
 import { getMessages, type Locale } from "@/lib/i18n";
-import { mapApiPlatformsToConfigs, type PlatformConfig } from "@/lib/platforms";
-import { fetchPlatforms } from "@/lib/platforms-api";
+import { type PlatformConfig } from "@/lib/platforms";
 
 type SelectPlatformViewProps = {
   locale: Locale;

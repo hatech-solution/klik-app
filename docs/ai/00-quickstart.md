@@ -15,6 +15,13 @@
   - `components/app-header.tsx`
   - `components/language-switcher.tsx`
 - Dashboard theo platform: `components/platform/platform-dashboard.tsx`
+- API clients chính:
+  - `lib/api/auth/`
+  - `lib/api/platform/`
+  - `lib/api/bot/`
+- Shared domain types:
+  - `lib/types/bot.ts`
+  - `lib/types/store.ts`
 
 ## Nguyên tắc bắt buộc
 

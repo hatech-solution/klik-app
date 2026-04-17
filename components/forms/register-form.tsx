@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
 import { AuthShell } from "@/components/auth-shell";
+import { registerWithApi } from "@/lib/api/auth";
 import { persistAuthTokens } from "@/lib/auth-tokens";
-import { registerWithApi } from "@/lib/auth-api";
 import { getMessages, Locale } from "@/lib/i18n";
 
 type RegisterFormProps = {

@@ -1,13 +1,6 @@
 import { getApiBaseUrl } from "@/lib/api-base";
 
-export type ApiPlatformRow = {
-  platform_id: string;
-  status: string;
-};
-
-export type FetchPlatformsResult =
-  | { ok: true; data: ApiPlatformRow[] }
-  | { ok: false; status: number };
+import type { ApiPlatformRow, FetchPlatformsResult } from "./types";
 
 export async function fetchPlatforms(accessToken: string): Promise<FetchPlatformsResult> {
   const response = await fetch(`${getApiBaseUrl()}/api/v1/platforms`, {

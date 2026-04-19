@@ -192,6 +192,11 @@ const messages = {
       settings: {
         pageTitle: "Cài đặt cửa hàng",
         pageSubtitle: "Đặt chỗ — theo SPEC store booking (§1–§4)",
+        routeNavAriaLabel: "Mục cài đặt theo cửa hàng",
+        navRouteHours: "Giờ store",
+        navRouteStaff: "Nhân viên",
+        navRouteServices: "Dịch vụ",
+        navRoutePublicBooking: "Đặt chỗ công khai",
         specHint:
           "§1 Giờ store · §2 Staff · §3 Course · §4 Public booking — xem store_booking_settings_spec.md trên server.",
         placeholderTitle: "Chưa triển khai",
@@ -524,6 +529,11 @@ const messages = {
       settings: {
         pageTitle: "Store settings",
         pageSubtitle: "Booking — per store booking SPEC (§1–§4)",
+        routeNavAriaLabel: "Store-level settings sections",
+        navRouteHours: "Store hours",
+        navRouteStaff: "Staff",
+        navRouteServices: "Services",
+        navRoutePublicBooking: "Public booking",
         specHint:
           "§1 Store hours · §2 Staff · §3 Course · §4 Public booking — see store_booking_settings_spec.md on the server.",
         placeholderTitle: "Not implemented yet",

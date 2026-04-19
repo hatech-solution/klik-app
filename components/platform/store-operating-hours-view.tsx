@@ -2,20 +2,17 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useId, useState } from "react";
-import { useRouter } from "next/navigation";
 
 import type { Locale } from "@/lib/i18n";
 import { getMessages } from "@/lib/i18n";
-import { PlatformId, PLATFORM_CONFIGS, type PlatformConfig } from "@/lib/platforms";
+import type { PlatformConfig } from "@/lib/platforms";
 import type {
   Store,
   StoreBusinessStatus,
   StoreVerificationStatus,
 } from "@/lib/types/store";
-import { usePlatformStore } from "@/store/usePlatformStore";
 import {
   fetchStoreOperatingHours,
-  fetchStores,
   putStoreOperatingHours,
   resolveStoreOperatingHours,
 } from "@/lib/api/store/client";
@@ -31,11 +28,12 @@ import type {
 } from "@/lib/api/store/types";
 import { ApiClientError, getErrorMessageByKey } from "@/lib/api/error";
 import { notifyApiFailure, notifySuccess } from "@/lib/toast";
+import {
+  useStoreSettingsGate,
+  type StoreSettingsGateValue,
+} from "@/components/platform/store-settings-context";
 
-/** Cùng key với `SESSION_BOT_KEY` trong `platform-dashboard.tsx`. */
-const SESSION_BOT_STORAGE_KEY = "bot_id";
-
-const HOURS_SECTION_IDS = {
+export const HOURS_SECTION_IDS = {
   intro: "store-hours-intro",
   mode: "store-hours-mode",
   schedule: "store-hours-schedule",
@@ -44,324 +42,26 @@ const HOURS_SECTION_IDS = {
   actions: "store-hours-actions",
 } as const;
 
-/** §2–§4 — placeholder anchors (SPEC store_booking_settings). */
-const SETTINGS_SPEC_SECTION_IDS = {
-  section1: "store-settings-section-1",
-  staff: "store-settings-staff",
-  course: "store-settings-course",
-  publicBooking: "store-settings-public-booking",
-} as const;
-
-function allSettingsScrollTargetIds(): string[] {
-  return [
-    ...Object.values(HOURS_SECTION_IDS),
-    ...Object.values(SETTINGS_SPEC_SECTION_IDS),
-  ];
-}
-
-function scrollToSettingsSection(sectionId: string) {
-  requestAnimationFrame(() => {
+/** Cuộn tới mục §1; chờ layout/paint để `scroll-margin` áp dụng ổn định. */
+export function scrollToHoursSection(sectionId: string) {
+  const run = () => {
     document.getElementById(sectionId)?.scrollIntoView({
       behavior: "smooth",
       block: "start",
+      inline: "nearest",
+    });
+  };
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(run);
     });
   });
 }
 
-function StoreBookingSettingsNav({
-  locale,
-  settingsPageTitle,
-  navOutlineLabel,
-  activeSection,
-  openSection1,
-  onToggleSection1,
-  onPick,
-}: {
-  locale: Locale;
-  settingsPageTitle: string;
-  navOutlineLabel: string;
-  activeSection: string;
-  openSection1: boolean;
-  onToggleSection1: () => void;
-  onPick: (sectionId: string) => void;
-}) {
-  const m = getMessages(locale);
-  const oh = m.store.operatingHours;
-  const st = m.store.settings;
+/** Layout sidebar bắt sự kiện này để gắn lại IntersectionObserver (sau load / đổi mode). */
+export const STORE_HOURS_SECTIONS_LAYOUT_EVENT = "klik:store-hours-sections-layout";
 
-  const subBtn = (id: string, label: string) => (
-    <button
-      type="button"
-      onClick={() => onPick(id)}
-      className={`flex w-full items-center border-t border-slate-200 px-3 py-2.5 text-left text-sm font-medium text-slate-800 transition hover:bg-slate-50 ${
-        activeSection === id ? "bg-amber-50 text-slate-900" : ""
-      }`}
-    >
-      {label}
-    </button>
-  );
-
-  const specRow = (id: string, label: string) => (
-    <button
-      type="button"
-      onClick={() => onPick(id)}
-      className={`flex w-full items-center gap-2 border-t border-slate-200 px-3 py-2.5 text-left text-sm font-semibold text-slate-900 transition hover:bg-slate-50 ${
-        activeSection === id ? "bg-amber-50" : ""
-      }`}
-    >
-      <GearIcon className="shrink-0 text-emerald-600" />
-      <span className="min-w-0 flex-1">{label}</span>
-    </button>
-  );
-
-  return (
-    <nav
-      className="w-full shrink-0 rounded-xl border border-slate-200 bg-white shadow-sm lg:sticky lg:top-6 lg:w-72 lg:self-start"
-      aria-label={settingsPageTitle}
-    >
-      <div className="border-b border-slate-200 px-3 py-3">
-        <p className="text-sm font-semibold text-slate-900">{settingsPageTitle}</p>
-        <p className="mt-0.5 text-xs text-slate-500">{navOutlineLabel}</p>
-        <p className="mt-2 text-[11px] leading-snug text-slate-400">{st.specHint}</p>
-      </div>
-
-      <div>
-        <button
-          type="button"
-          onClick={onToggleSection1}
-          className={`flex w-full items-center gap-2 border-b border-slate-200 px-3 py-2.5 text-left text-sm font-semibold text-slate-900 transition ${
-            openSection1 ? "bg-emerald-50" : "bg-white hover:bg-slate-50"
-          }`}
-        >
-          <GearIcon className="shrink-0 text-emerald-600" />
-          <span className="min-w-0 flex-1">{oh.navSection1}</span>
-          {openSection1 ? <ChevronDownIcon /> : <ChevronRightIcon />}
-        </button>
-        {openSection1 ? (
-          <div className="bg-white">
-            {subBtn(HOURS_SECTION_IDS.intro, oh.navItemIntro)}
-            {subBtn(HOURS_SECTION_IDS.mode, oh.navItemMode)}
-            {subBtn(HOURS_SECTION_IDS.schedule, oh.navItemSchedule)}
-            {subBtn(HOURS_SECTION_IDS.overrides, oh.navItemOverrides)}
-            {subBtn(HOURS_SECTION_IDS.preview, oh.navItemPreview)}
-            {subBtn(HOURS_SECTION_IDS.actions, oh.navItemActions)}
-          </div>
-        ) : null}
-      </div>
-
-      {specRow(SETTINGS_SPEC_SECTION_IDS.staff, oh.navSection2)}
-      {specRow(SETTINGS_SPEC_SECTION_IDS.course, oh.navSection3)}
-      {specRow(SETTINGS_SPEC_SECTION_IDS.publicBooking, oh.navSection4)}
-    </nav>
-  );
-}
-
-function GearIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      <circle cx="12" cy="12" r="3" />
-      <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
-    </svg>
-  );
-}
-
-function ChevronDownIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
-      <path d="m6 9 6 6 6-6" />
-    </svg>
-  );
-}
-
-function ChevronRightIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
-      <path d="m9 18 6-6-6-6" />
-    </svg>
-  );
-}
-
-type StoreSettingsPageProps = {
-  locale: Locale;
-  storeId: string;
-};
-
-export function StoreSettingsPage({ locale, storeId }: StoreSettingsPageProps) {
-  const router = useRouter();
-  const t = getMessages(locale);
-  const st = t.store.settings;
-  const oh = t.store.operatingHours;
-  const { platformId, loadFromStorage } = usePlatformStore();
-  const platform = platformId ? PLATFORM_CONFIGS[platformId as PlatformId] : undefined;
-
-  const [botId, setBotId] = useState<string>("");
-  const [store, setStore] = useState<Pick<Store, "id" | "name" | "timezone"> | null>(null);
-  const [gateLoading, setGateLoading] = useState(true);
-  const [gateError, setGateError] = useState<"no_bot" | "not_found" | null>(null);
-
-  const backHref = `/${locale}/dashboard`;
-
-  useEffect(() => {
-    loadFromStorage();
-  }, [loadFromStorage]);
-
-  useEffect(() => {
-    if (typeof window === "undefined" || !platform) return;
-
-    const id = localStorage.getItem(SESSION_BOT_STORAGE_KEY) ?? "";
-    setBotId(id);
-    if (!id) {
-      setGateError("no_bot");
-      setGateLoading(false);
-      return;
-    }
-
-    let cancelled = false;
-    setGateLoading(true);
-    setGateError(null);
-
-    void (async () => {
-      try {
-        const rows = await fetchStores(id);
-        if (cancelled) return;
-        const mapped = rows.map(mapApiStoreToStore);
-        const found = mapped.find((s) => s.id === storeId);
-        if (!found) {
-          setGateError("not_found");
-          setStore(null);
-        } else {
-          setStore({
-            id: found.id,
-            name: found.name,
-            timezone: found.timezone,
-          });
-        }
-      } catch {
-        if (!cancelled) {
-          setGateError("not_found");
-          setStore(null);
-        }
-      } finally {
-        if (!cancelled) setGateLoading(false);
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [storeId, platform]);
-
-  useEffect(() => {
-    if (!platformId) {
-      router.replace(`/${locale}/platform-select`);
-    }
-  }, [platformId, router, locale]);
-
-  if (!platform) {
-    return (
-      <div className="flex min-h-screen items-center justify-center text-sm text-slate-500">
-        …
-      </div>
-    );
-  }
-
-  if (gateLoading) {
-    return (
-      <main className="min-h-screen bg-slate-50">
-        <StoreHoursChrome
-          locale={locale}
-          platform={platform}
-          backHref={backHref}
-          title={st.pageTitle}
-          subtitle={st.pageSubtitle}
-        />
-        <div className="mx-auto max-w-7xl px-6 py-12 text-center text-sm text-slate-500">{oh.loading}</div>
-      </main>
-    );
-  }
-
-  if (gateError === "no_bot") {
-    return (
-      <main className="min-h-screen bg-slate-50">
-        <StoreHoursChrome
-          locale={locale}
-          platform={platform}
-          backHref={backHref}
-          title={st.pageTitle}
-          subtitle={st.pageSubtitle}
-        />
-        <div className="mx-auto max-w-7xl px-6 py-12 text-center">
-          <p className="text-sm text-slate-700">{oh.chooseBotFirst}</p>
-          <Link
-            href={backHref}
-            className={`mt-4 inline-block rounded-lg px-4 py-2 text-sm font-medium text-white ${platform.accentClassName} ${platform.hoverClassName}`}
-          >
-            {oh.backToDashboard}
-          </Link>
-        </div>
-      </main>
-    );
-  }
-
-  if (gateError === "not_found" || !store) {
-    return (
-      <main className="min-h-screen bg-slate-50">
-        <StoreHoursChrome
-          locale={locale}
-          platform={platform}
-          backHref={backHref}
-          title={st.pageTitle}
-          subtitle={st.pageSubtitle}
-        />
-        <div className="mx-auto max-w-7xl px-6 py-12 text-center">
-          <p className="text-sm text-red-700">{oh.storeNotFound}</p>
-          <Link href={backHref} className="mt-4 inline-block text-sm font-medium text-slate-700 underline">
-            {oh.backToDashboard}
-          </Link>
-        </div>
-      </main>
-    );
-  }
-
-  return (
-    <main className="min-h-screen bg-slate-50">
-      <StoreHoursChrome
-        locale={locale}
-        platform={platform}
-        backHref={backHref}
-        title={st.pageTitle}
-        subtitle={`${store.name} · ${st.pageSubtitle}`}
-      />
-      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
-        <StoreOperatingHoursEditor
-          locale={locale}
-          platform={platform}
-          botId={botId}
-          store={store}
-          backHref={backHref}
-          settingsPageTitle={st.pageTitle}
-          navOutlineLabel={oh.navPageTitle}
-        />
-      </div>
-    </main>
-  );
-}
-
-/** @deprecated Dùng `StoreSettingsPage`. */
-export const StoreOperatingHoursPage = StoreSettingsPage;
-
-function StoreHoursChrome({
+export function StoreHoursChrome({
   locale,
   platform,
   backHref,
@@ -404,7 +104,7 @@ function StoreHoursChrome({
   );
 }
 
-function mapApiStoreToStore(d: StoreApiItem): Store {
+export function mapApiStoreToStore(d: StoreApiItem): Store {
   return {
     id: d.id,
     name: d.name,
@@ -549,28 +249,21 @@ function addDaysYmd(ymd: string, days: number): string {
   return `${yy}-${mm}-${dd}`;
 }
 
-type StoreOperatingHoursEditorProps = {
-  locale: Locale;
-  platform: PlatformConfig;
-  botId: string;
-  store: Pick<Store, "id" | "name" | "timezone">;
-  backHref: string;
-  settingsPageTitle: string;
-  navOutlineLabel: string;
-};
+export function StoreOperatingHoursEditor() {
+  const ctx = useStoreSettingsGate();
+  if (!ctx) return null;
+  return <StoreOperatingHoursEditorInner {...ctx} />;
+}
 
-function StoreOperatingHoursEditor({
+function StoreOperatingHoursEditorInner({
   locale,
   platform,
   botId,
   store,
   backHref,
-  settingsPageTitle,
-  navOutlineLabel,
-}: StoreOperatingHoursEditorProps) {
+}: StoreSettingsGateValue) {
   const t = getMessages(locale);
   const oh = t.store.operatingHours;
-  const st = t.store.settings;
   const errorByKey = t.store.errorByKey as Record<string, string>;
 
   const [loading, setLoading] = useState(false);
@@ -599,43 +292,9 @@ function StoreOperatingHoursEditor({
 
   const baseId = useId();
 
-  const [activeSection, setActiveSection] = useState<string>(HOURS_SECTION_IDS.intro);
-  const [openSection1, setOpenSection1] = useState(true);
-
-  function handleNavPick(sectionId: string) {
-    const isSpecOuter =
-      sectionId === SETTINGS_SPEC_SECTION_IDS.staff ||
-      sectionId === SETTINGS_SPEC_SECTION_IDS.course ||
-      sectionId === SETTINGS_SPEC_SECTION_IDS.publicBooking;
-    if (isSpecOuter) {
-      setOpenSection1(false);
-    } else {
-      setOpenSection1(true);
-    }
-    setActiveSection(sectionId);
-    scrollToSettingsSection(sectionId);
-  }
-
   useEffect(() => {
     if (loading || loadFailed) return;
-    const ids = allSettingsScrollTargetIds();
-    const elements = ids
-      .map((id) => document.getElementById(id))
-      .filter((el): el is HTMLElement => Boolean(el));
-    if (elements.length === 0) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const sorted = [...entries]
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => (b.intersectionRatio ?? 0) - (a.intersectionRatio ?? 0));
-        const id = sorted[0]?.target?.id;
-        if (id) setActiveSection(id);
-      },
-      { root: null, rootMargin: "-12% 0px -50% 0px", threshold: [0, 0.1, 0.25, 0.5, 0.75, 1] },
-    );
-    elements.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
+    window.dispatchEvent(new CustomEvent(STORE_HOURS_SECTIONS_LAYOUT_EVENT));
   }, [loading, loadFailed, hoursMode]);
 
   const load = useCallback(async () => {
@@ -858,24 +517,9 @@ function StoreOperatingHoursEditor({
     );
   }
 
-  const showSideNav = !loading && !loadFailed;
-
   return (
-    <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
-      {showSideNav ? (
-        <StoreBookingSettingsNav
-          locale={locale}
-          settingsPageTitle={settingsPageTitle}
-          navOutlineLabel={navOutlineLabel}
-          activeSection={activeSection}
-          openSection1={openSection1}
-          onToggleSection1={() => setOpenSection1((v) => !v)}
-          onPick={handleNavPick}
-        />
-      ) : null}
-      <div className="min-w-0 flex-1 space-y-12">
-        <div id={SETTINGS_SPEC_SECTION_IDS.section1} className="scroll-mt-24">
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div className="min-w-0 space-y-12">
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <div
             id={HOURS_SECTION_IDS.intro}
             className="scroll-mt-24 mb-6 border-b border-slate-100 pb-4"
@@ -1180,42 +824,6 @@ function StoreOperatingHoursEditor({
         </div>
       )}
         </div>
-        </div>
-        {!loading && !loadFailed ? (
-          <>
-            <section
-              id={SETTINGS_SPEC_SECTION_IDS.staff}
-              className="scroll-mt-24 rounded-2xl border border-slate-200 bg-white p-8 shadow-sm"
-            >
-              <h3 className="text-base font-semibold text-slate-900">{oh.navSection2}</h3>
-              <p className="mt-2 text-sm text-slate-600">{st.placeholderStaff}</p>
-              <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-slate-400">
-                {st.placeholderTitle}
-              </p>
-            </section>
-            <section
-              id={SETTINGS_SPEC_SECTION_IDS.course}
-              className="scroll-mt-24 rounded-2xl border border-slate-200 bg-white p-8 shadow-sm"
-            >
-              <h3 className="text-base font-semibold text-slate-900">{oh.navSection3}</h3>
-              <p className="mt-2 text-sm text-slate-600">{st.placeholderCourse}</p>
-              <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-slate-400">
-                {st.placeholderTitle}
-              </p>
-            </section>
-            <section
-              id={SETTINGS_SPEC_SECTION_IDS.publicBooking}
-              className="scroll-mt-24 rounded-2xl border border-slate-200 bg-white p-8 shadow-sm"
-            >
-              <h3 className="text-base font-semibold text-slate-900">{oh.navSection4}</h3>
-              <p className="mt-2 text-sm text-slate-600">{st.placeholderPublic}</p>
-              <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-slate-400">
-                {st.placeholderTitle}
-              </p>
-            </section>
-          </>
-        ) : null}
-      </div>
     </div>
   );
 }

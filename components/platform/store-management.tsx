@@ -423,7 +423,7 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
                     </td>
                     <td className="px-4 py-3 text-right">
                       <Link
-                        href={`/${locale}/dashboard/stores/${store.id}/settings`}
+                        href={`/${locale}/dashboard/stores/${store.id}/settings/hours`}
                         className="mr-3 inline-flex text-slate-400 hover:text-slate-700"
                         title={t.store.openingHours}
                       >

@@ -12,13 +12,17 @@ import type {
   StoreVerificationStatus,
 } from "@/lib/types/store";
 import {
+  fetchStaffOperatingHours,
   fetchStoreOperatingHours,
+  putStaffOperatingHours,
   putStoreOperatingHours,
+  resolveStaffOperatingHours,
   resolveStoreOperatingHours,
 } from "@/lib/api/store/client";
 import type { StoreApiItem } from "@/lib/api/store/types";
 import type {
   PutStoreOperatingHoursPayload,
+  StaffHoursScope,
   StoreCalendarOverride,
   StoreDayKind,
   StoreHolidayFallbackDayKind,
@@ -250,10 +254,11 @@ function addDaysYmd(ymd: string, days: number): string {
   return `${yy}-${mm}-${dd}`;
 }
 
-export function StoreOperatingHoursEditor() {
+export function StoreOperatingHoursEditor(props?: { staffId?: string }) {
+  const staffId = props?.staffId;
   const ctx = useStoreSettingsGate();
   if (!ctx) return null;
-  return <StoreOperatingHoursEditorInner {...ctx} />;
+  return <StoreOperatingHoursEditorInner {...ctx} staffId={staffId} />;
 }
 
 function StoreOperatingHoursEditorInner({
@@ -262,7 +267,8 @@ function StoreOperatingHoursEditorInner({
   botId,
   store,
   backHref,
-}: StoreSettingsGateValue) {
+  staffId,
+}: StoreSettingsGateValue & { staffId?: string }) {
   const t = getMessages(locale);
   const oh = t.store.operatingHours;
   const errorByKey = t.store.errorByKey as Record<string, string>;
@@ -290,25 +296,29 @@ function StoreOperatingHoursEditorInner({
   const [resolveRows, setResolveRows] = useState<
     Awaited<ReturnType<typeof resolveStoreOperatingHours>>["days"] | null
   >(null);
+  const [staffHoursScope, setStaffHoursScope] = useState<StaffHoursScope>("inherit_store");
 
   const baseId = useId();
+  const scheduleLocked = Boolean(staffId && staffHoursScope === "inherit_store");
+  const staffListHref = `/${locale}/dashboard/stores/${store.id}/settings/staff`;
 
   useEffect(() => {
     if (loading || loadFailed) return;
     window.dispatchEvent(new CustomEvent(STORE_HOURS_SECTIONS_LAYOUT_EVENT));
   }, [loading, loadFailed, hoursMode]);
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    setBanner(null);
-    setLoadFailed(false);
-    setResolveRows(null);
-    try {
-      const res = await fetchStoreOperatingHours(botId, store.id);
-      setConfigured(res.configured);
-      setHoursMode(res.hours_mode);
-      setHolidayFallback(res.holiday_fallback_day_kind);
-      const local = apiRulesToLocal(res.weekday_rules);
+  const applyHoursTemplate = useCallback(
+    (template: {
+      configured: boolean;
+      hours_mode: StoreHoursMode;
+      holiday_fallback_day_kind: StoreHolidayFallbackDayKind;
+      weekday_rules: StoreWeekdayRule[];
+      calendar_overrides?: StoreCalendarOverride[] | null;
+    }) => {
+      setConfigured(template.configured);
+      setHoursMode(template.hours_mode);
+      setHolidayFallback(template.holiday_fallback_day_kind);
+      const local = apiRulesToLocal(template.weekday_rules);
       setByWeekday(local);
       const mon = local.find((r) => r.weekday === 1) ?? local[0];
       setCommon({
@@ -319,7 +329,44 @@ function StoreOperatingHoursEditorInner({
             ? mon.segments.map((s) => ({ ...s, _key: newKey() }))
             : [defaultSegment()],
       });
-      setOverrides(localOverridesFromApi(res.calendar_overrides ?? []));
+      setOverrides(localOverridesFromApi(template.calendar_overrides ?? []));
+    },
+    [],
+  );
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setBanner(null);
+    setLoadFailed(false);
+    setResolveRows(null);
+    try {
+      if (staffId) {
+        const res = await fetchStaffOperatingHours(botId, store.id, staffId);
+        setStaffHoursScope(res.hours_scope);
+        if (res.hours_scope === "custom" && res.configured) {
+          applyHoursTemplate({
+            configured: res.configured,
+            hours_mode: res.hours_mode ?? "by_weekday",
+            holiday_fallback_day_kind: res.holiday_fallback_day_kind ?? "closed",
+            weekday_rules: res.weekday_rules,
+            calendar_overrides: res.calendar_overrides ?? [],
+          });
+        } else {
+          setConfigured(false);
+          setHoursMode("by_weekday");
+          setHolidayFallback("closed");
+          setByWeekday(emptyWeekdayRules());
+          setCommon({
+            weekday: 1,
+            day_kind: "closed",
+            segments: [],
+          });
+          setOverrides([]);
+        }
+      } else {
+        const res = await fetchStoreOperatingHours(botId, store.id);
+        applyHoursTemplate(res);
+      }
     } catch (err) {
       setLoadFailed(true);
       notifyApiFailure(err, oh.loadFailed, errorByKey);
@@ -328,7 +375,7 @@ function StoreOperatingHoursEditorInner({
     } finally {
       setLoading(false);
     }
-  }, [botId, store.id, oh.loadFailed, errorByKey]);
+  }, [applyHoursTemplate, botId, errorByKey, oh.loadFailed, staffId, store.id]);
 
   useEffect(() => {
     void load();
@@ -339,9 +386,20 @@ function StoreOperatingHoursEditorInner({
     setSaving(true);
     setBanner(null);
     try {
-      const payload = buildPutPayload(hoursMode, holidayFallback, byWeekday, common, overrides);
-      await putStoreOperatingHours(botId, store.id, payload);
-      setConfigured(true);
+      if (staffId) {
+        if (staffHoursScope === "inherit_store") {
+          await putStaffOperatingHours(botId, store.id, staffId, { hours_scope: "inherit_store" });
+        } else {
+          const inner = buildPutPayload(hoursMode, holidayFallback, byWeekday, common, overrides);
+          await putStaffOperatingHours(botId, store.id, staffId, {
+            hours_scope: "custom",
+            ...inner,
+          });
+        }
+      } else {
+        const payload = buildPutPayload(hoursMode, holidayFallback, byWeekday, common, overrides);
+        await putStoreOperatingHours(botId, store.id, payload);
+      }
       notifySuccess(oh.saved);
       await load();
     } catch (err) {
@@ -359,7 +417,9 @@ function StoreOperatingHoursEditorInner({
     setResolveLoading(true);
     setBanner(null);
     try {
-      const res = await resolveStoreOperatingHours(botId, store.id, resolveFrom, resolveTo);
+      const res = staffId
+        ? await resolveStaffOperatingHours(botId, store.id, staffId, resolveFrom, resolveTo)
+        : await resolveStoreOperatingHours(botId, store.id, resolveFrom, resolveTo);
       setResolveRows(res.days);
     } catch (err) {
       if (err instanceof ApiClientError) {
@@ -525,13 +585,57 @@ function StoreOperatingHoursEditorInner({
             id={HOURS_SECTION_IDS.intro}
             className="scroll-mt-24 mb-6 border-b border-slate-100 pb-4"
           >
-            <h2 className="text-xl font-semibold text-slate-900">{oh.title}</h2>
+            <h2 className="text-xl font-semibold text-slate-900">
+              {staffId ? oh.staffHoursTitle : oh.title}
+            </h2>
             <p className="mt-1 text-sm text-slate-600">
               {store.name}
               <span className="ml-2 font-mono text-xs text-slate-500">({store.timezone})</span>
             </p>
-            {!configured ? (
+            {!staffId && !configured ? (
               <p className="mt-2 text-xs text-amber-700">{oh.notConfiguredHint}</p>
+            ) : null}
+            {staffId ? (
+              <div className="mt-4 space-y-3 rounded-lg border border-slate-200 bg-slate-50/80 p-4">
+                <p className="text-xs font-medium text-slate-800">{oh.staffHoursScopeLabel}</p>
+                <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:gap-4">
+                  <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-800">
+                    <input
+                      type="radio"
+                      name="staff-hours-scope"
+                      checked={staffHoursScope === "inherit_store"}
+                      onChange={() => setStaffHoursScope("inherit_store")}
+                      className="text-emerald-600"
+                    />
+                    {oh.staffInheritStore}
+                  </label>
+                  <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-800">
+                    <input
+                      type="radio"
+                      name="staff-hours-scope"
+                      checked={staffHoursScope === "custom"}
+                      onChange={() => {
+                        setStaffHoursScope("custom");
+                        void (async () => {
+                          try {
+                            const s = await fetchStoreOperatingHours(botId, store.id);
+                            applyHoursTemplate(s);
+                          } catch (err) {
+                            notifyApiFailure(err, oh.loadFailed, errorByKey);
+                          }
+                        })();
+                      }}
+                      className="text-emerald-600"
+                    />
+                    {oh.staffCustomSchedule}
+                  </label>
+                </div>
+                {staffHoursScope === "inherit_store" ? (
+                  <p className="text-xs leading-relaxed text-slate-600">{oh.staffInheritDescription}</p>
+                ) : (
+                  <p className="text-xs leading-relaxed text-slate-600">{oh.staffCustomDescription}</p>
+                )}
+              </div>
             ) : null}
           </div>
 
@@ -558,6 +662,14 @@ function StoreOperatingHoursEditorInner({
             </LoadingRegion>
           ) : (
         <div className="space-y-8">
+          <div
+            className={
+              scheduleLocked
+                ? "pointer-events-none space-y-8 select-none opacity-[0.48]"
+                : "space-y-8"
+            }
+            aria-disabled={scheduleLocked}
+          >
           <section
             id={HOURS_SECTION_IDS.mode}
             className="scroll-mt-24 rounded-xl border border-slate-200 bg-slate-50/60 p-4"
@@ -743,6 +855,7 @@ function StoreOperatingHoursEditorInner({
               </div>
             )}
           </section>
+          </div>
 
           <section
             id={HOURS_SECTION_IDS.preview}
@@ -810,10 +923,10 @@ function StoreOperatingHoursEditorInner({
             className="scroll-mt-24 flex flex-wrap justify-end gap-3 border-t border-slate-100 pt-4"
           >
             <Link
-              href={backHref}
+              href={staffId ? staffListHref : backHref}
               className="rounded-lg px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
             >
-              {oh.backToDashboard}
+              {staffId ? oh.backToStaffList : oh.backToDashboard}
             </Link>
             <button
               type="button"
@@ -833,10 +946,12 @@ function StoreOperatingHoursEditorInner({
 
 function formatSource(
   src: string,
-  oh: { sourceOverride: string; sourceWeekday: string },
+  oh: { sourceOverride: string; sourceWeekday: string; sourceEffective?: string },
 ) {
   if (src === "calendar_override") return oh.sourceOverride;
   if (src === "weekday_template") return oh.sourceWeekday;
+  if (src === "effective_intersection") return oh.sourceEffective ?? src;
+  if (src.startsWith("staff_")) return src;
   return src;
 }
 

@@ -108,3 +108,80 @@ export type StoreOperatingHoursResolveResponse = {
   date_to: string;
   days: StoreOperatingHoursResolvedDay[];
 };
+
+export type StaffHoursScope = "inherit_store" | "custom";
+
+export type StaffApiItem = {
+  id: string;
+  store_id: string;
+  name: string;
+  address: string | null;
+  phone: string | null;
+  email: string | null;
+  price: number | null;
+  max_bookings_per_slot: number | null;
+  primary_image: string | null;
+  gallery_images: string[];
+  description: string;
+  sort_order: number;
+  is_visible: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type CreateStaffPayload = {
+  name: string;
+  description: string;
+  address?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  price?: number | null;
+  max_bookings_per_slot?: number | null;
+  primary_image?: string | null;
+  gallery_images?: string[];
+  sort_order?: number | null;
+  is_visible?: boolean | null;
+};
+
+export type UpdateStaffPayload = CreateStaffPayload;
+
+export type StaffSettingsApiItem = {
+  store_id: string;
+  require_staff_on_booking: boolean;
+  hide_staff_price_on_public: boolean;
+  max_concurrent_staff_bookings_per_slot: number | null;
+};
+
+export type PutStaffSettingsPayload = {
+  require_staff_on_booking: boolean;
+  hide_staff_price_on_public: boolean;
+  max_concurrent_staff_bookings_per_slot?: number | null;
+};
+
+export type StaffOperatingHoursResponse = {
+  staff_id: string;
+  store_id: string;
+  hours_scope: StaffHoursScope;
+  configured: boolean;
+  timezone: string;
+  hours_mode?: StoreHoursMode;
+  holiday_fallback_day_kind?: StoreHolidayFallbackDayKind;
+  weekday_rules: StoreWeekdayRule[];
+  calendar_overrides: StoreCalendarOverride[] | null;
+};
+
+export type PutStaffOperatingHoursPayload =
+  | { hours_scope: "inherit_store" }
+  | ({
+      hours_scope: "custom";
+    } & PutStoreOperatingHoursPayload);
+
+export type StaffOperatingHoursResolveResponse = {
+  staff_id: string;
+  store_id: string;
+  timezone: string;
+  hours_scope: StaffHoursScope;
+  date_from: string;
+  date_to: string;
+  days: StoreOperatingHoursResolvedDay[];
+};

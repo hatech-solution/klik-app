@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
 import { StoreSettingsLayoutClient } from "@/components/platform/store-settings-layout-client";
-import { RouteGuard } from "@/components/providers/route-guard";
-import { isUserLoggedInServer } from "@/lib/auth-tokens-server";
 import { getMessages, isLocale, type Locale } from "@/lib/i18n";
 
 type LayoutProps = {
@@ -30,16 +28,9 @@ export default async function StoreSettingsLayout({ children, params }: LayoutPr
     notFound();
   }
 
-  const isLoggedIn = await isUserLoggedInServer();
-  if (!isLoggedIn) {
-    redirect(`/${locale}/login`);
-  }
-
   return (
-    <RouteGuard locale={locale}>
-      <StoreSettingsLayoutClient locale={locale as Locale} storeId={storeId}>
-        {children}
-      </StoreSettingsLayoutClient>
-    </RouteGuard>
+    <StoreSettingsLayoutClient locale={locale as Locale} storeId={storeId}>
+      {children}
+    </StoreSettingsLayoutClient>
   );
 }

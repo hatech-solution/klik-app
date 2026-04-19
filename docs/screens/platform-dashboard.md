@@ -39,7 +39,7 @@
   - Sửa bot (PUT `/api/v1/bots/:id`)
   - Tắt bot (PATCH `/api/v1/bots/:id/deactivate`)
   - Chọn menu trái (store/user/conversation)
-  - Store: CRUD qua `GET/POST/PUT/DELETE /api/v1/stores` với header `X-Bot-Id`; lỗi validate map theo `message_key` / `field_errors`
+  - Store: tải vùng `GET /api/v1/regions` (không `X-Bot-Id`); CRUD `GET/POST/PUT/DELETE /api/v1/stores` với `X-Bot-Id`; payload/response có `region_code`, `timezone`, `currency_code`; lỗi validate map theo `message_key` / `field_errors`
 - Output:
   - Hiển thị nội dung module đang active
   - Persist bot đã chọn trong `localStorage` key `bot_id`

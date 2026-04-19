@@ -4,6 +4,9 @@ export type StoreVerificationStatus = "verified" | "blocked" | "pending_review";
 export type Store = {
   id: string;
   name: string;
+  regionCode: string;
+  timezone: string;
+  currencyCode: string;
   address: string | null;
   phoneNumber: string | null;
   email: string | null;

@@ -15,7 +15,7 @@ Tài liệu mô tả cách app phản hồi sau các thao tác gọi API: toast 
 ### Quy ước đang dùng
 
 - **Thành công thao tác API** (tạo/sửa/xóa store, tạo/sửa/vô hiệu hóa bot): toast success.
-- **Lỗi tải danh sách** (stores, bots, platforms): toast error + (nếu có) UI lỗi inline trên màn hình.
+- **Lỗi tải danh sách** (stores, **regions** trên màn store, bots, platforms): toast error + (nếu có) UI lỗi inline trên màn hình (`toast.loadRegionsFailed` cho regions).
 - **Lỗi form store** (create/update): vẫn ưu tiên lỗi theo field + banner trên modal; **không** bắn toast trùng cho cùng một lỗi validate.
 - **Xóa store thất bại:** chỉ hiển thị trong modal xác nhận (tránh trùng toast + modal).
 - **Auth (login/register):** giữ phản hồi trên form; chưa gắn toast để tránh trùng lặp.

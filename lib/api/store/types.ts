@@ -16,8 +16,17 @@ export type StoreApiItem = {
   business_status: string;
   verification_status: string;
   description: string | null;
+  region_code: string;
+  timezone: string;
+  currency_code: string;
   created_at: string;
   updated_at: string;
+};
+
+export type RegionApiItem = {
+  region_code: string;
+  default_timezone: string;
+  default_currency: string;
 };
 
 export type CreateStorePayload = {
@@ -33,6 +42,9 @@ export type CreateStorePayload = {
   website_url?: string | null;
   business_status?: string;
   description?: string | null;
+  region_code?: string | null;
+  timezone?: string | null;
+  currency_code?: string | null;
 };
 
 export type UpdateStorePayload = CreateStorePayload;

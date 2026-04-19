@@ -2,6 +2,9 @@ import { getErrorMessageByKey, type ApiClientError } from "@/lib/api/error";
 
 export type StoreFormField =
   | "name"
+  | "regionCode"
+  | "timezone"
+  | "currencyCode"
   | "address"
   | "phone"
   | "email"
@@ -13,6 +16,9 @@ export type StoreFormField =
 
 const API_FIELD_TO_FORM: Record<string, StoreFormField | undefined> = {
   name: "name",
+  region_code: "regionCode",
+  timezone: "timezone",
+  currency_code: "currencyCode",
   address: "address",
   phone_number: "phone",
   email: "email",

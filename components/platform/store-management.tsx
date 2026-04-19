@@ -11,10 +11,12 @@ import type {
 } from "@/lib/types/store";
 import {
   fetchStores,
+  fetchRegions,
   createStore,
   updateStore,
   deleteStore,
 } from "@/lib/api/store/client";
+import type { RegionApiItem } from "@/lib/api/store/types";
 import { ApiClientError, getErrorMessageByKey } from "@/lib/api/error";
 import { ConfirmModal } from "@/components/common/confirm-modal";
 import {
@@ -52,10 +54,33 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
   const [facebookUrl, setFacebookUrl] = useState("");
   const [googleMapUrl, setGoogleMapUrl] = useState("");
   const [websiteUrl, setWebsiteUrl] = useState("");
+  const [regions, setRegions] = useState<RegionApiItem[]>([]);
+  const [regionsLoading, setRegionsLoading] = useState(true);
+  const [regionCode, setRegionCode] = useState("VN");
+  const [timezone, setTimezone] = useState("Asia/Ho_Chi_Minh");
+  const [currencyCode, setCurrencyCode] = useState("VND");
 
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const [deleteBusy, setDeleteBusy] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    setRegionsLoading(true);
+    void (async () => {
+      try {
+        const list = await fetchRegions();
+        if (mounted) setRegions(list);
+      } catch {
+        if (mounted) notifyError(getMessages(locale).toast.loadRegionsFailed);
+      } finally {
+        if (mounted) setRegionsLoading(false);
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, [locale]);
 
   useEffect(() => {
     let mounted = true;
@@ -69,6 +94,9 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
         const mappedStores: Store[] = data.map((d) => ({
           id: d.id,
           name: d.name,
+          regionCode: d.region_code,
+          timezone: d.timezone,
+          currencyCode: d.currency_code,
           address: d.address,
           phoneNumber: d.phone_number,
           email: d.email,
@@ -98,9 +126,19 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
     };
   }, [selectedBot.id, locale]);
 
+  function applyRegionDefaults(code: string, list: RegionApiItem[]) {
+    const row = list.find((x) => x.region_code === code);
+    if (row) {
+      setTimezone(row.default_timezone);
+      setCurrencyCode(row.default_currency);
+    }
+  }
+
   function openAddModal() {
     setEditingStoreId(null);
     setName("");
+    setRegionCode("VN");
+    applyRegionDefaults("VN", regions.length > 0 ? regions : [{ region_code: "VN", default_timezone: "Asia/Ho_Chi_Minh", default_currency: "VND" }]);
     setAddress("");
     setPhone("");
     setEmail("");
@@ -117,6 +155,9 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
   function openEditModal(store: Store) {
     setEditingStoreId(store.id);
     setName(store.name);
+    setRegionCode(store.regionCode);
+    setTimezone(store.timezone);
+    setCurrencyCode(store.currencyCode);
     setAddress(store.address || "");
     setPhone(store.phoneNumber || "");
     setEmail(store.email || "");
@@ -201,6 +242,9 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
 
     const payload = {
       name: name.trim(),
+      region_code: regionCode.trim(),
+      timezone: timezone.trim(),
+      currency_code: currencyCode.trim().toUpperCase(),
       address: address.trim() || null,
       phone_number: normalizedPhone || null,
       email: normalizedEmail || null,
@@ -222,6 +266,9 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
       const savedStore: Store = {
         id: savedApiStore.id,
         name: savedApiStore.name,
+        regionCode: savedApiStore.region_code,
+        timezone: savedApiStore.timezone,
+        currencyCode: savedApiStore.currency_code,
         address: savedApiStore.address,
         phoneNumber: savedApiStore.phone_number,
         email: savedApiStore.email,
@@ -327,14 +374,17 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
 
       <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
         {loading ? (
-          <div className="p-8 text-center text-sm text-slate-500">Loading...</div>
+          <div className="p-8 text-center text-sm text-slate-500">{t.store.loadingStoreList}</div>
         ) : error ? (
           <div className="p-8 text-center text-sm text-red-500">{error}</div>
         ) : (
-          <table className="w-full text-left text-sm text-slate-600">
+          <div className="overflow-x-auto">
+          <table className="w-full min-w-[720px] text-left text-sm text-slate-600">
             <thead className="bg-slate-50 text-slate-700">
               <tr>
                 <th className="px-4 py-3 font-medium">{t.store.name}</th>
+                <th className="px-4 py-3 font-medium">{t.store.region}</th>
+                <th className="px-4 py-3 font-medium">{t.store.timezone}</th>
                 <th className="px-4 py-3 font-medium">{t.store.address}</th>
                 <th className="px-4 py-3 font-medium">{t.store.phone}</th>
                 <th className="px-4 py-3 font-medium">{t.store.status}</th>
@@ -344,14 +394,23 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
             <tbody className="divide-y divide-slate-200">
               {stores.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-4 py-8 text-center text-slate-500">
-                    Chưa có dữ liệu
+                  <td colSpan={7} className="px-4 py-8 text-center text-slate-500">
+                    {t.store.emptyStoreList}
                   </td>
                 </tr>
               ) : (
                 stores.map((store) => (
                   <tr key={store.id} className="hover:bg-slate-50">
                     <td className="px-4 py-3 font-medium text-slate-900">{store.name}</td>
+                    <td className="px-4 py-3 font-mono text-xs text-slate-600">
+                      {store.regionCode} · {store.currencyCode}
+                    </td>
+                    <td
+                      className="max-w-40 truncate px-4 py-3 font-mono text-xs text-slate-500"
+                      title={store.timezone}
+                    >
+                      {store.timezone}
+                    </td>
                     <td className="px-4 py-3">{store.address || "-"}</td>
                     <td className="px-4 py-3 font-mono text-slate-500">{store.phoneNumber || "-"}</td>
                     <td className="px-4 py-3">
@@ -382,6 +441,7 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
               )}
             </tbody>
           </table>
+          </div>
         )}
       </div>
 
@@ -395,7 +455,7 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
           }}
         >
           <div 
-            className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl relative animate-in zoom-in-95 duration-200"
+            className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-6 shadow-xl animate-in zoom-in-95 duration-200"
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="mb-6 text-xl font-semibold text-slate-900">
@@ -422,6 +482,70 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
                 {fieldErrors.name ? (
                   <p className="mt-1 text-xs text-red-600">{fieldErrors.name}</p>
                 ) : null}
+              </div>
+
+              <div className="rounded-lg border border-slate-200 bg-slate-50/80 p-4">
+                <p className="mb-3 text-sm font-semibold text-slate-800">{t.store.bookingLocaleTitle}</p>
+                <label className="mb-1 block text-sm font-medium text-slate-700">
+                  {t.store.region}
+                </label>
+                <select
+                  value={regionCode}
+                  disabled={regionsLoading}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    setRegionCode(v);
+                    applyRegionDefaults(v, regions.length > 0 ? regions : []);
+                  }}
+                  className={`w-full rounded-lg border px-3 py-2 text-sm outline-none disabled:cursor-not-allowed disabled:bg-slate-100 ${fieldBorderClass("regionCode")}`}
+                >
+                  {(regions.length > 0
+                    ? regions
+                    : [{ region_code: "VN", default_timezone: "Asia/Ho_Chi_Minh", default_currency: "VND" }]
+                  ).map((r) => (
+                    <option key={r.region_code} value={r.region_code}>
+                      {r.region_code}
+                    </option>
+                  ))}
+                </select>
+                {fieldErrors.regionCode ? (
+                  <p className="mt-1 text-xs text-red-600">{fieldErrors.regionCode}</p>
+                ) : null}
+                <p className="mt-1 text-xs text-slate-500">{t.store.regionHint}</p>
+                {regionsLoading ? (
+                  <p className="mt-2 text-xs text-slate-500">{t.store.loadingRegions}</p>
+                ) : null}
+
+                <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="mb-1 block text-sm font-medium text-slate-700">
+                      {t.store.timezone}
+                    </label>
+                    <input
+                      value={timezone}
+                      onChange={(e) => setTimezone(e.target.value)}
+                      maxLength={64}
+                      className={`w-full rounded-lg border px-3 py-2 font-mono text-sm outline-none ${fieldBorderClass("timezone")}`}
+                    />
+                    {fieldErrors.timezone ? (
+                      <p className="mt-1 text-xs text-red-600">{fieldErrors.timezone}</p>
+                    ) : null}
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-sm font-medium text-slate-700">
+                      {t.store.currency}
+                    </label>
+                    <input
+                      value={currencyCode}
+                      onChange={(e) => setCurrencyCode(e.target.value.toUpperCase().slice(0, 3))}
+                      maxLength={3}
+                      className={`w-full rounded-lg border px-3 py-2 font-mono text-sm outline-none ${fieldBorderClass("currencyCode")}`}
+                    />
+                    {fieldErrors.currencyCode ? (
+                      <p className="mt-1 text-xs text-red-600">{fieldErrors.currencyCode}</p>
+                    ) : null}
+                  </div>
+                </div>
               </div>
 
               <div>

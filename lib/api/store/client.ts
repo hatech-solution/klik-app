@@ -1,11 +1,28 @@
 import { authorizedRequest } from "@/lib/api/authenticated-request";
-import { ApiClientError, toApiClientError } from "@/lib/api/error";
+import { toApiClientError } from "@/lib/api/error";
 import type {
   CreateStorePayload,
   PatchStoreStatusPayload,
+  RegionApiItem,
   StoreApiItem,
   UpdateStorePayload,
 } from "./types";
+
+export async function fetchRegions(): Promise<RegionApiItem[]> {
+  const response = await authorizedRequest({
+    method: "GET",
+    path: "/api/v1/regions",
+    cache: "no-store",
+    includeJsonContentType: false,
+  });
+
+  const body = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw toApiClientError(body, "Failed to load regions", response.status);
+  }
+
+  return body as RegionApiItem[];
+}
 
 export async function fetchStores(botId: string): Promise<StoreApiItem[]> {
   const response = await authorizedRequest({

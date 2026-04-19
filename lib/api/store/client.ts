@@ -3,8 +3,11 @@ import { toApiClientError } from "@/lib/api/error";
 import type {
   CreateStorePayload,
   PatchStoreStatusPayload,
+  PutStoreOperatingHoursPayload,
   RegionApiItem,
   StoreApiItem,
+  StoreOperatingHoursResolveResponse,
+  StoreOperatingHoursResponse,
   UpdateStorePayload,
 } from "./types";
 
@@ -121,4 +124,73 @@ export async function deleteStore(botId: string, storeId: string): Promise<void>
     const body = await response.json().catch(() => null);
     throw toApiClientError(body, "Failed to delete store", response.status);
   }
+}
+
+export async function fetchStoreOperatingHours(
+  botId: string,
+  storeId: string,
+): Promise<StoreOperatingHoursResponse> {
+  const response = await authorizedRequest({
+    method: "GET",
+    path: `/api/v1/stores/${storeId}/operating-hours`,
+    extraHeaders: {
+      "X-Bot-Id": botId,
+    },
+    cache: "no-store",
+    includeJsonContentType: false,
+  });
+
+  const body = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw toApiClientError(body, "Failed to load operating hours", response.status);
+  }
+
+  return body as StoreOperatingHoursResponse;
+}
+
+export async function putStoreOperatingHours(
+  botId: string,
+  storeId: string,
+  payload: PutStoreOperatingHoursPayload,
+): Promise<StoreOperatingHoursResponse> {
+  const response = await authorizedRequest({
+    method: "PUT",
+    path: `/api/v1/stores/${storeId}/operating-hours`,
+    extraHeaders: {
+      "X-Bot-Id": botId,
+    },
+    body: payload,
+  });
+
+  const body = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw toApiClientError(body, "Failed to save operating hours", response.status);
+  }
+
+  return body as StoreOperatingHoursResponse;
+}
+
+export async function resolveStoreOperatingHours(
+  botId: string,
+  storeId: string,
+  dateFrom: string,
+  dateTo: string,
+): Promise<StoreOperatingHoursResolveResponse> {
+  const q = new URLSearchParams({ date_from: dateFrom, date_to: dateTo });
+  const response = await authorizedRequest({
+    method: "GET",
+    path: `/api/v1/stores/${storeId}/operating-hours/resolve?${q.toString()}`,
+    extraHeaders: {
+      "X-Bot-Id": botId,
+    },
+    cache: "no-store",
+    includeJsonContentType: false,
+  });
+
+  const body = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw toApiClientError(body, "Failed to resolve operating hours", response.status);
+  }
+
+  return body as StoreOperatingHoursResolveResponse;
 }

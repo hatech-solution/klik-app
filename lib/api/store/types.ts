@@ -52,3 +52,59 @@ export type UpdateStorePayload = CreateStorePayload;
 export type PatchStoreStatusPayload = {
   business_status: string;
 };
+
+export type StoreHoursMode = "weekly_common" | "by_weekday";
+
+export type StoreHolidayFallbackDayKind = "closed" | "inherit_weekday" | "open_24h";
+
+export type StoreDayKind = "closed" | "open_24h" | "segments";
+
+export type StoreOperatingHoursSegment = {
+  start: string;
+  end: string;
+  is_overnight: boolean;
+};
+
+export type StoreWeekdayRule = {
+  weekday: number;
+  day_kind: StoreDayKind;
+  segments: StoreOperatingHoursSegment[];
+};
+
+export type StoreCalendarOverride = {
+  calendar_date: string;
+  day_kind: StoreDayKind;
+  segments: StoreOperatingHoursSegment[];
+};
+
+export type StoreOperatingHoursResponse = {
+  store_id: string;
+  configured: boolean;
+  hours_mode: StoreHoursMode;
+  holiday_fallback_day_kind: StoreHolidayFallbackDayKind;
+  timezone: string;
+  weekday_rules: StoreWeekdayRule[];
+  calendar_overrides: StoreCalendarOverride[];
+};
+
+export type PutStoreOperatingHoursPayload = {
+  hours_mode: StoreHoursMode;
+  holiday_fallback_day_kind: StoreHolidayFallbackDayKind;
+  weekday_rules: StoreWeekdayRule[];
+  calendar_overrides?: StoreCalendarOverride[];
+};
+
+export type StoreOperatingHoursResolvedDay = {
+  calendar_date: string;
+  resolution_source: string;
+  day_kind: StoreDayKind;
+  segments?: StoreOperatingHoursSegment[];
+};
+
+export type StoreOperatingHoursResolveResponse = {
+  store_id: string;
+  timezone: string;
+  date_from: string;
+  date_to: string;
+  days: StoreOperatingHoursResolvedDay[];
+};

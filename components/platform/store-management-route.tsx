@@ -1,6 +1,7 @@
 "use client";
 
 import { StoreManagement } from "@/components/platform/store-management";
+import { DashboardShellBotsSkeleton, LoadingRegion } from "@/components/ui/screen-loading-skeletons";
 import { useDashboardWorkspace } from "@/components/platform/dashboard-workspace-context";
 import { getMessages } from "@/lib/i18n";
 
@@ -9,7 +10,11 @@ export function StoreManagementRoute() {
   const t = getMessages(locale);
 
   if (!selectedBot) {
-    return <p className="text-sm text-slate-500">{t.dashboard.loadingBots}</p>;
+    return (
+      <LoadingRegion aria-label={t.dashboard.loadingBots}>
+        <DashboardShellBotsSkeleton />
+      </LoadingRegion>
+    );
   }
 
   return <StoreManagement locale={locale} platform={platform} selectedBot={selectedBot} />;

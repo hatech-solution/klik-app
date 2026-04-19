@@ -1,5 +1,6 @@
 "use client";
 
+import { BotSelectCardSkeleton } from "@/components/ui/screen-loading-skeletons";
 import { usePlatformBotWorkspace } from "@/components/platform/use-platform-bot-workspace";
 import { getMessages, type Locale } from "@/lib/i18n";
 import { PlatformId, PLATFORM_CONFIGS, type PlatformConfig } from "@/lib/platforms";
@@ -113,30 +114,37 @@ export function PlatformDashboard({ locale, flow = "selectBot" }: PlatformDashbo
               <p className="mt-2 text-slate-600">
                 {bots.length === 0 ? t.dashboard.noBotDescription : t.dashboard.selectBotDescription}
               </p>
-              {isLoadingBots ? (
-                <p className="mt-2 text-sm text-slate-500">{t.dashboard.loadingBots}</p>
-              ) : null}
             </div>
-            <div className="flex flex-wrap justify-center gap-6">
-              {bots.map((bot) => (
-                <BotSelectCard
-                  key={bot.id}
-                  bot={bot}
-                  platform={platform}
-                  editingBotId={editingBotId}
-                  editingBotName={editingBotName}
-                  setEditingBotName={setEditingBotName}
-                  openMenuId={openMenuId}
-                  setOpenMenuId={setOpenMenuId}
-                  isSubmitting={isSubmitting}
-                  setSelectedBotId={setSelectedBotId}
-                  onEdit={handleEditBot}
-                  onDelete={handleDeleteBot}
-                  onSaveEdit={handleSaveEditBot}
-                  onCancelEdit={handleCancelEditBot}
-                  t={t}
-                />
-              ))}
+            <div
+              className="flex flex-wrap justify-center gap-6"
+              aria-busy={isLoadingBots && bots.length === 0}
+              aria-label={isLoadingBots && bots.length === 0 ? t.dashboard.loadingBots : undefined}
+              role={isLoadingBots && bots.length === 0 ? "status" : undefined}
+            >
+              {isLoadingBots && bots.length === 0
+                ? [0, 1, 2].map((i) => <BotSelectCardSkeleton key={`bot-sk-${i}`} />)
+                : null}
+              {!isLoadingBots || bots.length > 0
+                ? bots.map((bot) => (
+                    <BotSelectCard
+                      key={bot.id}
+                      bot={bot}
+                      platform={platform}
+                      editingBotId={editingBotId}
+                      editingBotName={editingBotName}
+                      setEditingBotName={setEditingBotName}
+                      openMenuId={openMenuId}
+                      setOpenMenuId={setOpenMenuId}
+                      isSubmitting={isSubmitting}
+                      setSelectedBotId={setSelectedBotId}
+                      onEdit={handleEditBot}
+                      onDelete={handleDeleteBot}
+                      onSaveEdit={handleSaveEditBot}
+                      onCancelEdit={handleCancelEditBot}
+                      t={t}
+                    />
+                  ))
+                : null}
 
               <div
                 onClick={() => setShowAddModal(true)}

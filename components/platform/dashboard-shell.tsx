@@ -5,6 +5,11 @@ import { usePathname } from "next/navigation";
 
 import { DashboardWorkspaceProvider } from "@/components/platform/dashboard-workspace-context";
 import { usePlatformBotWorkspace } from "@/components/platform/use-platform-bot-workspace";
+import {
+  DashboardShellBotsSkeleton,
+  DashboardShellRedirectSkeleton,
+  LoadingRegion,
+} from "@/components/ui/screen-loading-skeletons";
 import { DASHBOARD_MAIN_NAV, dashboardNavHref } from "@/lib/constants/dashboard-nav";
 import type { Locale } from "@/lib/i18n";
 
@@ -79,7 +84,9 @@ export function DashboardShell({ locale, children }: DashboardShellProps) {
 
         {showRedirectToSelectBot ? (
           <div className="mx-auto w-full max-w-5xl p-6">
-            <div className="mb-8 mt-24 text-center text-sm text-slate-500">{t.dashboard.loadingBots}</div>
+            <LoadingRegion aria-label={t.dashboard.loadingBots} className="mb-8 mt-24">
+              <DashboardShellRedirectSkeleton />
+            </LoadingRegion>
           </div>
         ) : (
           <div className="mx-auto grid w-full max-w-7xl gap-6 p-6 lg:grid-cols-[260px_1fr]">
@@ -126,7 +133,9 @@ export function DashboardShell({ locale, children }: DashboardShellProps) {
               </div>
               <DashboardWorkspaceProvider value={{ locale, platform, selectedBot }}>
                 {isLoadingBots && bots.length === 0 ? (
-                  <p className="text-sm text-slate-500">{t.dashboard.loadingBots}</p>
+                  <LoadingRegion aria-label={t.dashboard.loadingBots}>
+                    <DashboardShellBotsSkeleton />
+                  </LoadingRegion>
                 ) : (
                   children
                 )}

@@ -47,13 +47,13 @@ export const api = {
     get: <T>(url: string, config?: AxiosRequestConfig) =>
         apiClient.get<T, T>(url, config),
 
-    post: <T>(url: string, data?: any, config?: AxiosRequestConfig) =>
+    post: <T>(url: string, data?: unknown, config?: AxiosRequestConfig) =>
         apiClient.post<T, T>(url, data, config),
 
-    put: <T>(url: string, data?: any, config?: AxiosRequestConfig) =>
+    put: <T>(url: string, data?: unknown, config?: AxiosRequestConfig) =>
         apiClient.put<T, T>(url, data, config),
 
-    patch: <T>(url: string, data?: any, config?: AxiosRequestConfig) =>
+    patch: <T>(url: string, data?: unknown, config?: AxiosRequestConfig) =>
         apiClient.patch<T, T>(url, data, config),
 
     delete: <T>(url: string, config?: AxiosRequestConfig) =>

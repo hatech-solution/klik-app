@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { StoreForm } from "@/components/platform/store-form";
+import { DashboardShellBotsSkeleton, LoadingRegion, StoreFormPageSkeleton } from "@/components/ui/screen-loading-skeletons";
 import { useDashboardWorkspace } from "@/components/platform/dashboard-workspace-context";
 import { fetchStores } from "@/lib/api/store/client";
 import { mapStoreApiItemToStore } from "@/lib/api/store/map-store";
@@ -26,8 +27,8 @@ export function StoreEditFormClient({ locale, storeId }: Props) {
   useEffect(() => {
     if (!selectedBot) return;
     let cancelled = false;
-    setPhase("loading");
     void (async () => {
+      setPhase("loading");
       try {
         const rows = await fetchStores(selectedBot.id);
         if (cancelled) return;
@@ -45,11 +46,19 @@ export function StoreEditFormClient({ locale, storeId }: Props) {
   }, [selectedBot, storeId]);
 
   if (!selectedBot) {
-    return <p className="text-sm text-slate-500">{t.dashboard.loadingBots}</p>;
+    return (
+      <LoadingRegion aria-label={t.dashboard.loadingBots}>
+        <DashboardShellBotsSkeleton />
+      </LoadingRegion>
+    );
   }
 
   if (phase === "loading") {
-    return <p className="text-sm text-slate-500">{t.store.loadingStoreList}</p>;
+    return (
+      <LoadingRegion aria-label={t.store.loadingStoreList}>
+        <StoreFormPageSkeleton />
+      </LoadingRegion>
+    );
   }
 
   if (phase === "missing" || !store) {

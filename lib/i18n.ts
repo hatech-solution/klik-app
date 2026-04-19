@@ -37,6 +37,7 @@ const messages = {
       logout: "Đăng xuất",
     },
     common: {
+      loadingScreen: "Đang tải…",
       confirmModal: {
         cancel: "Hủy",
         deleteAction: "Xóa",
@@ -398,6 +399,7 @@ const messages = {
       logout: "Logout",
     },
     common: {
+      loadingScreen: "Loading…",
       confirmModal: {
         cancel: "Cancel",
         deleteAction: "Delete",

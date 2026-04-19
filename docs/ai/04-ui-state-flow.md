@@ -21,6 +21,7 @@
   - tạo/sửa/tắt bot qua API (`lib/api/bot/client.ts`)
   - menu trái mock 3 phân hệ
 - Phản hồi sau API (toast Sonner, modal xác nhận xóa store, map lỗi store): xem `docs/ai/06-toast-confirm-feedback.md`.
+- Skeleton khi client chờ API (layout, a11y, thứ tự triển khai): xem `docs/ai/07-client-loading-skeletons.md`.
 
 ## Session state
 

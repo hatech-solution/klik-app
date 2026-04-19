@@ -81,6 +81,7 @@ Khi thêm text mới, luôn thêm cả `vi` và `en`.
 - **Toast (Sonner):** provider `components/providers/app-toaster.tsx` trong `app/layout.tsx`; helper `lib/toast.ts` (`notifySuccess`, `notifyError`, `notifyApiFailure`). Chuỗi trong `lib/i18n.ts` → namespace `toast` (vi + en).
 - **Modal xác nhận dùng chung:** `components/common/confirm-modal.tsx` (ví dụ xóa store trong `store-management.tsx`).
 - **Lỗi validate store từ API:** `lib/api/store/form-field-errors.ts` + `store.errorByKey` trong i18n (chuẩn `message_key` / `field_errors` từ `klik-server`). Chi tiết: `docs/ai/06-toast-confirm-feedback.md`.
+- **Chờ API trên client:** skeleton + `components/ui/skeleton.tsx` / `screen-loading-skeletons.tsx`, `aria-label` từ i18n — quy tắc màn mới: `docs/ai/07-client-loading-skeletons.md`.
 
 ## 7) Dữ liệu mock
 

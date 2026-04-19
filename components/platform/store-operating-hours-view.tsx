@@ -26,6 +26,7 @@ import type {
   StoreOperatingHoursSegment,
   StoreWeekdayRule,
 } from "@/lib/api/store/types";
+import { LoadingRegion, StoreOperatingHoursBodySkeleton } from "@/components/ui/screen-loading-skeletons";
 import { ApiClientError, getErrorMessageByKey } from "@/lib/api/error";
 import { notifyApiFailure, notifySuccess } from "@/lib/toast";
 import {
@@ -552,7 +553,9 @@ function StoreOperatingHoursEditorInner({
           ) : null}
 
           {loading ? (
-            <p className="py-12 text-center text-sm text-slate-500">{oh.loading}</p>
+            <LoadingRegion aria-label={oh.loading} className="py-4">
+              <StoreOperatingHoursBodySkeleton />
+            </LoadingRegion>
           ) : (
         <div className="space-y-8">
           <section

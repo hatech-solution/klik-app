@@ -19,6 +19,7 @@ import { getMessages, type Locale } from "@/lib/i18n";
 import type { PlatformConfig } from "@/lib/platforms";
 import type { Bot } from "@/lib/types/bot";
 import type { Store } from "@/lib/types/store";
+import { Skeleton } from "@/components/ui/skeleton";
 import { notifyError, notifySuccess } from "@/lib/toast";
 import { isValidEmail, isValidPhoneNumber } from "@/lib/utils/validation";
 
@@ -258,7 +259,12 @@ export function StoreForm({ locale, platform, selectedBot, mode, initialStore }:
             <p className="mt-1 text-xs text-red-600">{fieldErrors.regionCode}</p>
           ) : null}
           <p className="mt-1 text-xs text-slate-500">{t.store.regionHint}</p>
-          {regionsLoading ? <p className="mt-2 text-xs text-slate-500">{t.store.loadingRegions}</p> : null}
+          {regionsLoading ? (
+            <div className="mt-2 space-y-2" aria-busy="true" aria-label={t.store.loadingRegions} role="status">
+              <Skeleton className="h-3 w-44" />
+              <Skeleton className="h-3 w-32" />
+            </div>
+          ) : null}
 
           <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>

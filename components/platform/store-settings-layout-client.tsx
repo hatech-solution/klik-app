@@ -12,6 +12,7 @@ import {
   scrollToHoursSection,
   StoreHoursChrome,
 } from "@/components/platform/store-operating-hours-view";
+import { LoadingRegion, StoreSettingsGateBodySkeleton } from "@/components/ui/screen-loading-skeletons";
 import { StoreSettingsGateProvider } from "@/components/platform/store-settings-context";
 import { fetchStores } from "@/lib/api/store/client";
 import { getMessages, type Locale } from "@/lib/i18n";
@@ -201,7 +202,9 @@ export function StoreSettingsLayoutClient({ locale, storeId, children }: Props) 
           title={st.pageTitle}
           subtitle={st.pageSubtitle}
         />
-        <div className="mx-auto max-w-7xl px-6 py-12 text-center text-sm text-slate-500">{oh.loading}</div>
+        <LoadingRegion aria-label={oh.loading} className="py-6">
+          <StoreSettingsGateBodySkeleton />
+        </LoadingRegion>
       </main>
     );
   }

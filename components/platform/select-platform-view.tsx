@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { PlatformCard } from "@/components/platform/platform-card";
+import { LoadingRegion, SelectPlatformGridSkeleton } from "@/components/ui/screen-loading-skeletons";
 import { notifyError } from "@/lib/toast";
 import { isUnauthorizedError } from "@/lib/api/error";
 import { fetchPlatforms, mapApiPlatformsToConfigs } from "@/lib/api/platform";
@@ -57,7 +58,9 @@ export function SelectPlatformView({ locale }: SelectPlatformViewProps) {
         <p className="mt-2 text-slate-600">{t.selectPlatform.description}</p>
 
         {phase === "loading" ? (
-          <p className="mt-8 text-slate-600">{t.selectPlatform.loading}</p>
+          <LoadingRegion aria-label={t.selectPlatform.loading} className="mt-8">
+            <SelectPlatformGridSkeleton />
+          </LoadingRegion>
         ) : null}
 
         {phase === "error" ? (

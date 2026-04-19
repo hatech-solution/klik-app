@@ -7,6 +7,7 @@ import { ApiClientError, getErrorMessageByKey } from "@/lib/api/error";
 import { fetchStores, deleteStore } from "@/lib/api/store/client";
 import { mapStoreApiItemToStore } from "@/lib/api/store/map-store";
 import { ConfirmModal } from "@/components/common/confirm-modal";
+import { LoadingRegion, StoreTableSkeleton } from "@/components/ui/screen-loading-skeletons";
 import { getMessages, type Locale } from "@/lib/i18n";
 import type { PlatformConfig } from "@/lib/platforms";
 import type { Bot } from "@/lib/types/bot";
@@ -148,7 +149,9 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
 
       <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
         {loading ? (
-          <div className="p-8 text-center text-sm text-slate-500">{t.store.loadingStoreList}</div>
+          <LoadingRegion aria-label={t.store.loadingStoreList} className="p-4 sm:p-6">
+            <StoreTableSkeleton />
+          </LoadingRegion>
         ) : error ? (
           <div className="p-8 text-center text-sm text-red-500">{error}</div>
         ) : (

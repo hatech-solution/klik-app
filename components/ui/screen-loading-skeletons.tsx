@@ -1,0 +1,209 @@
+import { Skeleton } from "@/components/ui/skeleton";
+
+type LoadingRegionProps = {
+  "aria-label": string;
+  busy?: boolean;
+  children: React.ReactNode;
+  className?: string;
+};
+
+export function LoadingRegion({ "aria-label": ariaLabel, busy = true, children, className = "" }: LoadingRegionProps) {
+  return (
+    <div aria-busy={busy} aria-label={ariaLabel} className={className} role="status">
+      {children}
+    </div>
+  );
+}
+
+export function SelectPlatformGridSkeleton() {
+  return (
+    <div className="mt-8 grid gap-4 md:grid-cols-2" aria-hidden>
+      {[0, 1, 2, 3].map((i) => (
+        <div
+          key={i}
+          className="rounded-2xl border border-slate-200 bg-slate-50/80 p-6 shadow-sm"
+        >
+          <div className="flex items-center gap-3">
+            <Skeleton className="h-8 w-8 shrink-0 rounded-lg" />
+            <Skeleton className="h-6 w-40" />
+          </div>
+          <Skeleton className="mt-4 h-3 w-full" />
+          <Skeleton className="mt-2 h-3 w-full max-w-md" />
+          <Skeleton className="mt-2 h-3 w-full max-w-sm" />
+          <Skeleton className="mt-5 h-4 w-48" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+type StoreTableSkeletonProps = {
+  rows?: number;
+};
+
+export function StoreTableSkeleton({ rows = 7 }: StoreTableSkeletonProps) {
+  return (
+    <div className="overflow-x-auto" aria-hidden>
+      <table className="w-full min-w-[720px] text-left">
+        <thead className="bg-slate-50">
+          <tr>
+            {Array.from({ length: 7 }).map((_, i) => (
+              <th key={i} className="px-4 py-3">
+                <Skeleton className="h-4 w-20" />
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-slate-200">
+          {Array.from({ length: rows }).map((_, r) => (
+            <tr key={r}>
+              <td className="px-4 py-3">
+                <Skeleton className="h-4 w-36" />
+              </td>
+              <td className="px-4 py-3">
+                <Skeleton className="h-4 w-24" />
+              </td>
+              <td className="px-4 py-3">
+                <Skeleton className="h-4 w-28" />
+              </td>
+              <td className="px-4 py-3">
+                <Skeleton className="h-4 w-44" />
+              </td>
+              <td className="px-4 py-3">
+                <Skeleton className="h-4 w-24" />
+              </td>
+              <td className="px-4 py-3">
+                <Skeleton className="h-6 w-20 rounded-full" />
+              </td>
+              <td className="px-4 py-3 text-right">
+                <div className="flex justify-end gap-2">
+                  <Skeleton className="h-4 w-4 rounded" />
+                  <Skeleton className="h-4 w-4 rounded" />
+                  <Skeleton className="h-4 w-4 rounded" />
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+export function DashboardShellBotsSkeleton() {
+  return (
+    <div className="space-y-3 py-2" aria-hidden>
+      <Skeleton className="h-4 w-48" />
+      <Skeleton className="h-4 w-full max-w-md" />
+      <Skeleton className="h-4 w-full max-w-xs" />
+    </div>
+  );
+}
+
+export function DashboardShellRedirectSkeleton() {
+  return (
+    <div className="mx-auto flex max-w-md flex-col items-center gap-4 py-8" aria-hidden>
+      <Skeleton className="h-10 w-10 rounded-full" />
+      <Skeleton className="h-4 w-56" />
+      <Skeleton className="h-3 w-40" />
+    </div>
+  );
+}
+
+export function BotSelectCardSkeleton() {
+  return (
+    <div
+      className="flex h-[240px] w-56 flex-col justify-between rounded-[20px] border border-slate-200 bg-slate-50 p-5 shadow-sm"
+      aria-hidden
+    >
+      <div className="flex w-full justify-between">
+        <Skeleton className="h-3 w-20" />
+        <Skeleton className="h-6 w-6 rounded-full" />
+      </div>
+      <div className="flex flex-1 items-center justify-center">
+        <Skeleton className="h-[88px] w-[88px] rounded-full" />
+      </div>
+      <div className="space-y-2 pb-1">
+        <Skeleton className="mx-auto h-4 w-28" />
+        <Skeleton className="mx-auto h-3 w-16" />
+      </div>
+    </div>
+  );
+}
+
+export function StoreFormPageSkeleton() {
+  return (
+    <div className="space-y-6" aria-hidden>
+      <div>
+        <Skeleton className="h-4 w-40" />
+        <Skeleton className="mt-4 h-8 w-56" />
+      </div>
+      <div className="space-y-4">
+        <div>
+          <Skeleton className="mb-2 h-3 w-24" />
+          <Skeleton className="h-10 w-full max-w-2xl rounded-lg" />
+        </div>
+        <div className="rounded-lg border border-slate-200 bg-slate-50/80 p-4">
+          <Skeleton className="mb-3 h-4 w-44" />
+          <Skeleton className="mb-2 h-3 w-20" />
+          <Skeleton className="h-10 w-full max-w-2xl rounded-lg" />
+          <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <Skeleton className="h-20 w-full rounded-lg" />
+            <Skeleton className="h-20 w-full rounded-lg" />
+          </div>
+        </div>
+        <Skeleton className="h-10 w-32 rounded-lg" />
+      </div>
+    </div>
+  );
+}
+
+export function StoreSettingsGateBodySkeleton() {
+  return (
+    <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:flex-row lg:items-start" aria-hidden>
+      <aside className="w-full shrink-0 lg:w-64">
+        <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+          <Skeleton className="h-3 w-28" />
+          <Skeleton className="mt-2 h-3 w-full" />
+          <Skeleton className="mt-4 h-9 w-full rounded-lg" />
+          <Skeleton className="mt-2 h-9 w-full rounded-lg" />
+          <Skeleton className="mt-2 h-9 w-full rounded-lg" />
+          <Skeleton className="mt-2 h-9 w-full rounded-lg" />
+        </div>
+      </aside>
+      <div className="min-w-0 flex-1 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <Skeleton className="h-6 w-48" />
+        <Skeleton className="mt-3 h-4 w-full max-w-lg" />
+        <Skeleton className="mt-8 h-32 w-full rounded-xl" />
+        <Skeleton className="mt-4 h-24 w-full rounded-xl" />
+      </div>
+    </div>
+  );
+}
+
+export function StoreOperatingHoursBodySkeleton() {
+  return (
+    <div className="space-y-6 py-2" aria-hidden>
+      <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-4">
+        <Skeleton className="h-4 w-36" />
+        <Skeleton className="mt-3 h-10 w-full max-w-md rounded-lg" />
+        <Skeleton className="mt-3 h-10 w-full max-w-md rounded-lg" />
+      </div>
+      <Skeleton className="h-40 w-full rounded-xl border border-slate-200" />
+      <Skeleton className="h-32 w-full rounded-xl border border-slate-200" />
+    </div>
+  );
+}
+
+export function RouteGuardSkeleton() {
+  return (
+    <div className="flex flex-col items-center justify-center gap-6 px-6" aria-hidden>
+      <Skeleton className="h-14 w-14 rounded-2xl" />
+      <div className="flex w-full max-w-xs flex-col gap-3">
+        <Skeleton className="h-3 w-full" />
+        <Skeleton className="h-3 w-[85%]" />
+        <Skeleton className="h-3 w-[60%]" />
+      </div>
+    </div>
+  );
+}

@@ -12,6 +12,7 @@
 
 - Giữ code nhất quán với style hiện có.
 - Ưu tiên tái sử dụng component.
+- Màn client có **chờ API** rồi mới render nội dung: dùng skeleton + `LoadingRegion` / `Skeleton` theo `docs/ai/07-client-loading-skeletons.md` (không để một dòng “Đang tải…” thay cả vùng nội dung).
 - Thêm comment chỉ khi cần giải thích logic khó.
 - Với module có gọi API, ưu tiên tách theo cấu trúc:
   - `lib/api/<module>/client.ts`: HTTP calls, headers, error handling

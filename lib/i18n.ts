@@ -25,6 +25,8 @@ const messages = {
         `Trang quản trị bot cho nền tảng ${platform}.`,
       dashboardTitle: "Bảng điều khiển",
       dashboardDescription: "Quản lý tích hợp nền tảng và bot.",
+      selectBotTitle: "Chọn bot",
+      selectBotDescription: "Chọn bot để vào bảng điều khiển.",
     },
     language: {
       label: "Ngôn ngữ",
@@ -97,6 +99,7 @@ const messages = {
       loadError: "Không tải được danh sách nền tảng. Vui lòng thử lại sau.",
       noPlatforms: "Hiện không có nền tảng nào khả dụng.",
       gotoSubdomain: "Đi đến subdomain",
+      continueToSelectBot: "Tiếp tục chọn bot",
       platformDescriptions: {
         line: "Kết nối và chăm sóc khách hàng trên LINE OA.",
         zalo: "Quản lý tương tác người dùng trên Zalo OA.",
@@ -361,6 +364,8 @@ const messages = {
         `Bot administration dashboard for ${platform}.`,
       dashboardTitle: "Dashboard",
       dashboardDescription: "Manage platform integration and bots.",
+      selectBotTitle: "Choose a bot",
+      selectBotDescription: "Pick a bot to open the dashboard.",
     },
     language: {
       label: "Language",
@@ -433,6 +438,7 @@ const messages = {
       loadError: "Could not load platforms. Please try again later.",
       noPlatforms: "No platforms are available right now.",
       gotoSubdomain: "Go to subdomain",
+      continueToSelectBot: "Continue to choose a bot",
       platformDescriptions: {
         line: "Connect and support customers on LINE OA.",
         zalo: "Manage customer interactions on Zalo OA.",

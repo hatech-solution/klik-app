@@ -41,11 +41,18 @@ function getAvatarColor(id: string) {
   return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
 }
 
+export type PlatformDashboardFlow = "dashboard" | "selectBot";
+
 type PlatformDashboardProps = {
   locale: Locale;
+  /** `selectBot`: chỉ màn chọn bot + URL `/select-bot`. `dashboard`: đẩy sang `/select-bot` khi chưa có bot. */
+  flow?: PlatformDashboardFlow;
 };
 
-export function PlatformDashboard({ locale }: PlatformDashboardProps) {
+export function PlatformDashboard({
+  locale,
+  flow = "dashboard",
+}: PlatformDashboardProps) {
   const router = useRouter();
   const t = getMessages(locale);
   const { platformId } = usePlatformStore();
@@ -134,6 +141,23 @@ export function PlatformDashboard({ locale }: PlatformDashboardProps) {
     if (bots.some((bot) => bot.id === selectedBotId)) return;
     setSelectedBotId("");
   }, [bots, selectedBotId, botsListReady]);
+
+  /** Trên `/select-bot`: đã có bot hợp lệ trong session thì vào dashboard. */
+  useEffect(() => {
+    if (flow !== "selectBot") return;
+    if (!botsListReady) return;
+    if (!selectedBotId) return;
+    if (!bots.some((b) => b.id === selectedBotId)) return;
+    router.replace(`/${locale}/dashboard`);
+  }, [flow, botsListReady, selectedBotId, bots, locale, router]);
+
+  /** Trên `/dashboard`: hết bot (hoặc chưa chọn) sau khi list bot ổn định thì về màn chọn bot. */
+  useEffect(() => {
+    if (flow !== "dashboard") return;
+    if (!botsListReady) return;
+    if (selectedBotId) return;
+    router.replace(`/${locale}/select-bot`);
+  }, [flow, botsListReady, selectedBotId, locale, router]);
 
   const selectedBot = useMemo(
     () => bots.find((bot) => bot.id === selectedBotId),
@@ -259,6 +283,10 @@ export function PlatformDashboard({ locale }: PlatformDashboardProps) {
 
   if (!platform) return null;
 
+  const showMainWorkspace = flow === "dashboard" && Boolean(selectedBotId);
+  const showRedirectToSelectBot =
+    flow === "dashboard" && !selectedBotId && botsListReady;
+
   return (
     <>
       <main className="min-h-screen">
@@ -299,7 +327,11 @@ export function PlatformDashboard({ locale }: PlatformDashboardProps) {
         </div>
       ) : null}
 
-      {!selectedBotId ? (
+      {showRedirectToSelectBot ? (
+        <div className="mx-auto w-full max-w-5xl p-6">
+          <div className="mb-8 mt-24 text-center text-sm text-slate-500">{t.dashboard.loadingBots}</div>
+        </div>
+      ) : !showMainWorkspace ? (
         <div className="mx-auto w-full max-w-5xl p-6">
           <div className="mb-8 mt-12 text-center">
             <h2 className="text-3xl font-bold text-slate-900">

@@ -20,7 +20,7 @@ export const RouteGuard = ({ children, locale }: RouteGuardProps) => {
 
         // Nếu chưa có platformId thì dội lại trang chọn Platform
         if (!pId) {
-            router.replace(`/${locale}/platform-select`);
+            router.replace(`/${locale}/select-platform`);
         } else {
             setIsReady(true);
         }

@@ -165,7 +165,7 @@ export function StoreSettingsLayoutClient({ locale, storeId, children }: Props) 
 
   useEffect(() => {
     if (!platformId) {
-      router.replace(`/${locale}/platform-select`);
+      router.replace(`/${locale}/select-platform`);
     }
   }, [platformId, router, locale]);
 

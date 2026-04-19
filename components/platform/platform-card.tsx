@@ -18,7 +18,7 @@ export function PlatformCard({ locale, platform }: PlatformCardProps) {
   const handleSelect = () => {
     localStorage.removeItem("bot_id");
     setPlatform(platform.id);
-    router.push(`/${locale}/dashboard`);
+    router.push(`/${locale}/select-bot`);
   };
 
   return (
@@ -34,7 +34,7 @@ export function PlatformCard({ locale, platform }: PlatformCardProps) {
         {t.selectPlatform.platformDescriptions[platform.id]}
       </p>
       <div className="mt-4 text-sm font-medium text-slate-900 group-hover:underline">
-        {locale === 'vi' ? 'Tiếp tục vào hệ thống' : 'Continue to dashboard'} →
+        {t.selectPlatform.continueToSelectBot} →
       </div>
     </button>
   );

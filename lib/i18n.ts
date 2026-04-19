@@ -202,6 +202,8 @@ const messages = {
       deleteConfirm: "Bạn có chắc chắn muốn xoá cửa hàng này?",
       deleteModalTitle: "Xóa cửa hàng",
       deleteFailed: "Không xóa được cửa hàng. Vui lòng thử lại.",
+      backToStoreList: "Danh sách cửa hàng",
+      storeFormEditNotFound: "Không tìm thấy cửa hàng này trong bot đang chọn.",
       save: "Lưu",
       cancel: "Hủy",
       validation: {
@@ -562,6 +564,8 @@ const messages = {
       deleteConfirm: "Are you sure you want to delete this store?",
       deleteModalTitle: "Delete store",
       deleteFailed: "Could not delete the store. Please try again.",
+      backToStoreList: "Store list",
+      storeFormEditNotFound: "This store was not found for the selected bot.",
       save: "Save",
       cancel: "Cancel",
       validation: {

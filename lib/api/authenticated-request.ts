@@ -12,6 +12,16 @@ type AuthorizedRequestOptions = {
   cache?: RequestCache;
 };
 
+const GET_DEDUPE_WINDOW_MS = 800;
+
+type RecentGetEntry = {
+  response: Response;
+  expiresAt: number;
+};
+
+const inflightGetRequests = new Map<string, Promise<Response>>();
+const recentGetResponses = new Map<string, RecentGetEntry>();
+
 export async function authorizedRequest(options: AuthorizedRequestOptions): Promise<Response> {
   const firstResponse = await doAuthorizedFetch(options);
   if (firstResponse.status !== 401) {
@@ -55,7 +65,38 @@ async function doAuthorizedFetch(options: AuthorizedRequestOptions): Promise<Res
     requestInit.body = JSON.stringify(options.body);
   }
 
-  return fetch(`${getApiBaseUrl()}${options.path}`, requestInit);
+  if (options.method !== "GET") {
+    return fetch(`${getApiBaseUrl()}${options.path}`, requestInit);
+  }
+
+  const dedupeKey = buildGetDedupeKey(options, headers);
+  const now = Date.now();
+  const recent = recentGetResponses.get(dedupeKey);
+  if (recent && recent.expiresAt > now) {
+    return recent.response.clone();
+  }
+
+  const existingPromise = inflightGetRequests.get(dedupeKey);
+  if (existingPromise) {
+    const response = await existingPromise;
+    return response.clone();
+  }
+
+  const requestPromise = fetch(`${getApiBaseUrl()}${options.path}`, requestInit);
+  inflightGetRequests.set(dedupeKey, requestPromise);
+
+  try {
+    const response = await requestPromise;
+    if (response.ok) {
+      recentGetResponses.set(dedupeKey, {
+        response: response.clone(),
+        expiresAt: now + GET_DEDUPE_WINDOW_MS,
+      });
+    }
+    return response.clone();
+  } finally {
+    inflightGetRequests.delete(dedupeKey);
+  }
 }
 
 let refreshingPromise: Promise<void> | null = null;
@@ -87,4 +128,15 @@ async function refreshSessionOrThrow(): Promise<void> {
   })();
 
   return refreshingPromise;
+}
+
+function buildGetDedupeKey(
+  options: AuthorizedRequestOptions,
+  headers: Record<string, string>,
+): string {
+  const normalizedHeaders = Object.entries(headers)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([k, v]) => `${k}:${v}`)
+    .join("|");
+  return `${options.method}|${options.path}|${options.cache ?? ""}|${normalizedHeaders}`;
 }

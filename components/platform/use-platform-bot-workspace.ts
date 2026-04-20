@@ -32,9 +32,10 @@ export type PlatformBotWorkspaceMode = "selectBot" | "dashboardShell";
 export function usePlatformBotWorkspace(locale: Locale, mode: PlatformBotWorkspaceMode) {
   const router = useRouter();
   const t = getMessages(locale);
-  const { platformId } = usePlatformStore();
+  const { platformId, loadFromStorage } = usePlatformStore();
 
   const platform = platformId ? PLATFORM_CONFIGS[platformId as PlatformId] : undefined;
+  const [platformHydrated, setPlatformHydrated] = useState(false);
 
   const [bots, setBots] = useState<Bot[]>([]);
   const [selectedBotId, setSelectedBotId] = useState<string>(() => {
@@ -76,6 +77,17 @@ export function usePlatformBotWorkspace(locale: Locale, mode: PlatformBotWorkspa
     window.addEventListener("click", handleClick);
     return () => window.removeEventListener("click", handleClick);
   }, [openMenuId]);
+
+  useEffect(() => {
+    loadFromStorage();
+    setPlatformHydrated(true);
+  }, [loadFromStorage]);
+
+  useEffect(() => {
+    if (!platformHydrated) return;
+    if (platform) return;
+    router.replace(`/${locale}/select-platform`);
+  }, [platformHydrated, platform, locale, router]);
 
   useEffect(() => {
     if (!selectedBotId) {
@@ -291,6 +303,7 @@ export function usePlatformBotWorkspace(locale: Locale, mode: PlatformBotWorkspa
   }
 
   return {
+    platformHydrated,
     platform,
     bots,
     selectedBotId,

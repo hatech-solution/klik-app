@@ -23,6 +23,7 @@ export function DashboardShell({ locale, children }: DashboardShellProps) {
   const ws = usePlatformBotWorkspace(locale, "dashboardShell");
 
   const {
+    platformHydrated,
     platform,
     bots,
     selectedBotId,
@@ -34,7 +35,17 @@ export function DashboardShell({ locale, children }: DashboardShellProps) {
     t,
   } = ws;
 
-  if (!platform) return null;
+  if (!platformHydrated || !platform) {
+    return (
+      <main className="dashboard-main">
+        <div className="mx-auto w-full max-w-5xl p-6">
+          <LoadingRegion aria-label={t.common.loadingScreen} className="mb-8 mt-24">
+            <DashboardShellRedirectSkeleton />
+          </LoadingRegion>
+        </div>
+      </main>
+    );
+  }
 
   const showRedirectToSelectBot = !selectedBotId && botsListReady;
 

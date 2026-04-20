@@ -246,7 +246,9 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
             setSelectedStaffId(draft.selected_staff_id);
             setSelectedStartAt(draft.selected_start_at);
             setSelectedDate(draft.selected_date);
-            setActiveViewMode(draft.active_view_mode);
+            setActiveViewMode(
+              response.settings.calendar_view_mode === "week" ? "week" : draft.active_view_mode,
+            );
             setWeekAnchor(draft.week_anchor);
             setMonthAnchor(draft.month_anchor);
             setCustomerName(draft.customer_name);
@@ -274,6 +276,13 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
       mounted = false;
     };
   }, [storageKey, storeId, t.submitInvalid]);
+
+  useEffect(() => {
+    if (initData?.settings.calendar_view_mode !== "week") return;
+    if (activeViewMode !== "week") {
+      setActiveViewMode("week");
+    }
+  }, [activeViewMode, initData?.settings.calendar_view_mode]);
 
   useEffect(() => {
     if (initLoading || !initData) return;
@@ -390,6 +399,13 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
   function goBack() {
     setBanner(null);
     setStep((prev) => (prev > 1 && prev < 5 ? ((prev - 1) as BookingStep) : prev));
+  }
+
+  function jumpToCurrentCalendar() {
+    const current = formatDateOnly(new Date());
+    setSelectedDate(current);
+    setWeekAnchor(current);
+    setMonthAnchor(current);
   }
 
   async function submitBooking() {
@@ -627,7 +643,13 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
       {step === 3 ? (
         <section className="dm-overview-panel rounded-2xl p-4">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold"></h2>
+            <button
+              type="button"
+              onClick={jumpToCurrentCalendar}
+              className="rounded-md border border-(--dm-border) bg-(--dm-surface-muted) px-2 py-1 text-xs text-(--dm-text-secondary)"
+            >
+              {activeViewMode === "month" ? t.goCurrentMonth : t.goCurrentWeek}
+            </button>
             {initData.settings.calendar_view_mode === "month" ? (
               <button
                 type="button"

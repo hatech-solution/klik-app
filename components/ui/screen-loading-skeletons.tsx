@@ -381,3 +381,93 @@ export function RouteGuardSkeleton() {
     </div>
   );
 }
+
+export function PublicBookingRuntimePageSkeleton() {
+  return (
+    <div className="dm-page-muted min-h-screen pb-24 pt-3" aria-hidden>
+      <main className="mx-auto max-w-[430px] space-y-3 px-3">
+        <section className="dm-overview-panel rounded-2xl p-4">
+          <Skeleton className="h-5 w-44" />
+          <Skeleton className="mt-2 h-3 w-60" />
+          <Skeleton className="mt-4 h-7 w-36 rounded-full" />
+        </section>
+
+        <section className="dm-overview-panel rounded-2xl p-3">
+          <div className="grid grid-cols-5 gap-1">
+            {Array.from({ length: 5 }).map((_, idx) => (
+              <Skeleton key={idx} className="h-12 rounded-lg" />
+            ))}
+          </div>
+        </section>
+
+        <section className="dm-overview-panel rounded-2xl p-4">
+          <Skeleton className="h-4 w-28" />
+          <div className="mt-3 space-y-2">
+            {Array.from({ length: 4 }).map((_, idx) => (
+              <div key={idx} className="rounded-lg border border-(--dm-border) p-3">
+                <Skeleton className="h-4 w-36" />
+                <Skeleton className="mt-2 h-3 w-24" />
+              </div>
+            ))}
+          </div>
+        </section>
+      </main>
+
+      <div className="fixed inset-x-0 bottom-0 z-20 mx-auto w-full max-w-[430px] border-t border-(--dm-border) bg-(--dm-surface) px-3 py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
+        <Skeleton className="h-12 w-full rounded-xl" />
+      </div>
+    </div>
+  );
+}
+
+type PublicBookingRuntimeSlotsSkeletonProps = {
+  viewMode: "week" | "month";
+};
+
+export function PublicBookingRuntimeSlotsSkeleton({ viewMode }: PublicBookingRuntimeSlotsSkeletonProps) {
+  if (viewMode === "month") {
+    return (
+      <div className="space-y-2" aria-hidden>
+        <div className="mb-2 flex items-center justify-between">
+          <Skeleton className="h-6 w-6 rounded" />
+          <Skeleton className="h-5 w-36" />
+          <Skeleton className="h-6 w-6 rounded" />
+        </div>
+        <div className="grid grid-cols-7 gap-1">
+          {Array.from({ length: 7 }).map((_, idx) => (
+            <Skeleton key={`weekday-${idx}`} className="h-4 rounded" />
+          ))}
+        </div>
+        <div className="grid grid-cols-7 gap-1">
+          {Array.from({ length: 35 }).map((_, idx) => (
+            <Skeleton key={`day-${idx}`} className="h-12 rounded-lg" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-2" aria-hidden>
+      <div className="mb-2 flex items-center justify-between">
+        <Skeleton className="h-6 w-6 rounded" />
+        <Skeleton className="h-5 w-20" />
+        <Skeleton className="h-6 w-6 rounded" />
+      </div>
+      <div className="grid grid-cols-8 gap-1">
+        {Array.from({ length: 8 }).map((_, idx) => (
+          <Skeleton key={`week-header-${idx}`} className="h-10 rounded-md" />
+        ))}
+      </div>
+      <div className="space-y-1">
+        {Array.from({ length: 6 }).map((_, rowIdx) => (
+          <div key={`week-row-${rowIdx}`} className="grid grid-cols-8 gap-1">
+            {Array.from({ length: 8 }).map((_, colIdx) => (
+              <Skeleton key={`week-cell-${rowIdx}-${colIdx}`} className="h-8 rounded-md" />
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}

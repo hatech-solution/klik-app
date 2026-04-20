@@ -2,6 +2,11 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+import {
+  LoadingRegion,
+  PublicBookingRuntimePageSkeleton,
+  PublicBookingRuntimeSlotsSkeleton,
+} from "@/components/ui/screen-loading-skeletons";
 import type { PublicBookingCalendarViewMode } from "@/lib/api/store/types";
 import {
   getPublicBookingRuntimeInit,
@@ -109,7 +114,6 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
 
   const requireCourse = initData?.settings.require_course_on_booking ?? true;
   const requireStaff = initData?.settings.require_staff_on_booking ?? true;
-  const slotStepMinutes = initData?.settings.slot_step_minutes ?? 30;
   const timezone = initData?.store.timezone ?? "Asia/Tokyo";
 
   const weekRange = useMemo(() => {
@@ -165,8 +169,6 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
     [effectiveSelectedStaffId, staffs],
   );
 
-  const effectiveDurationMinutes =
-    selectedCourse?.duration_minutes ?? initData?.settings.default_duration_when_no_course ?? 60;
   const canLoadSlots =
     (!requireCourse || Boolean(effectiveSelectedCourseId)) &&
     (!requireStaff || Boolean(effectiveSelectedStaffId));
@@ -175,40 +177,48 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
     let mounted = true;
     async function loadInit() {
       setInitLoading(true);
-      const response = await getPublicBookingRuntimeInit(storeId);
-      if (!mounted) return;
-
-      setInitData(response);
       try {
-        const raw = window.localStorage.getItem(storageKey);
-        if (raw) {
-          const draft = JSON.parse(raw) as Draft;
-          setStep(draft.step);
-          setSelectedCourseId(draft.selected_course_id);
-          setSelectedStaffId(draft.selected_staff_id);
-          setSelectedStartAt(draft.selected_start_at);
-          setSelectedDate(draft.selected_date);
-          setActiveViewMode(draft.active_view_mode);
-          setWeekAnchor(draft.week_anchor);
-          setMonthAnchor(draft.month_anchor);
-          setCustomerName(draft.customer_name);
-          setCustomerPhone(draft.customer_phone);
-          setCustomerNote(draft.customer_note);
-          setIdempotencyKey(draft.idempotency_key || createIdempotencyKey());
-        } else {
+        const response = await getPublicBookingRuntimeInit(storeId);
+        if (!mounted) return;
+
+        setInitData(response);
+        try {
+          const raw = window.localStorage.getItem(storageKey);
+          if (raw) {
+            const draft = JSON.parse(raw) as Draft;
+            setStep(draft.step);
+            setSelectedCourseId(draft.selected_course_id);
+            setSelectedStaffId(draft.selected_staff_id);
+            setSelectedStartAt(draft.selected_start_at);
+            setSelectedDate(draft.selected_date);
+            setActiveViewMode(draft.active_view_mode);
+            setWeekAnchor(draft.week_anchor);
+            setMonthAnchor(draft.month_anchor);
+            setCustomerName(draft.customer_name);
+            setCustomerPhone(draft.customer_phone);
+            setCustomerNote(draft.customer_note);
+            setIdempotencyKey(draft.idempotency_key || createIdempotencyKey());
+          } else {
+            setActiveViewMode(response.settings.calendar_view_mode);
+          }
+        } catch {
           setActiveViewMode(response.settings.calendar_view_mode);
         }
       } catch {
-        setActiveViewMode(response.settings.calendar_view_mode);
+        if (mounted) {
+          setBanner(t.submitInvalid);
+        }
+      } finally {
+        if (mounted) {
+          setInitLoading(false);
+        }
       }
-
-      setInitLoading(false);
     }
     void loadInit();
     return () => {
       mounted = false;
     };
-  }, [storageKey, storeId]);
+  }, [storageKey, storeId, t.submitInvalid]);
 
   useEffect(() => {
     if (initLoading || !initData) return;
@@ -252,20 +262,27 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
     let mounted = true;
     async function loadSlots() {
       setSlotsLoading(true);
-      const range = activeViewMode === "week" ? weekRange : monthRange;
-      const response = await getPublicBookingRuntimeSlots({
-        store_id: storeId,
-        timezone,
-        from_date: range.from,
-        to_date: range.to,
-        course_id: effectiveSelectedCourseId,
-        staff_id: effectiveSelectedStaffId,
-        slot_step_minutes: slotStepMinutes,
-        duration_minutes: effectiveDurationMinutes,
-      });
-      if (!mounted) return;
-      setSlots(response.slots);
-      setSlotsLoading(false);
+      try {
+        const range = activeViewMode === "week" ? weekRange : monthRange;
+        const response = await getPublicBookingRuntimeSlots({
+          store_id: storeId,
+          from_date: range.from,
+          to_date: range.to,
+          course_id: effectiveSelectedCourseId,
+          staff_id: effectiveSelectedStaffId,
+        });
+        if (!mounted) return;
+        setSlots(response.slots);
+      } catch {
+        if (mounted) {
+          setSlots([]);
+          setBanner(t.submitInvalid);
+        }
+      } finally {
+        if (mounted) {
+          setSlotsLoading(false);
+        }
+      }
     }
     void loadSlots();
     return () => {
@@ -274,15 +291,13 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
   }, [
     activeViewMode,
     canLoadSlots,
-    effectiveDurationMinutes,
     effectiveSelectedCourseId,
     effectiveSelectedStaffId,
     initData,
     monthRange,
     slotRefreshToken,
-    slotStepMinutes,
     storeId,
-    timezone,
+    t.submitInvalid,
     weekRange,
   ]);
 
@@ -370,12 +385,20 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
     setActiveViewMode(initData?.settings.calendar_view_mode ?? "week");
   }
 
-  if (initLoading || !initData) {
+  if (initLoading) {
+    return (
+      <LoadingRegion aria-label={t.loading}>
+        <PublicBookingRuntimePageSkeleton />
+      </LoadingRegion>
+    );
+  }
+
+  if (!initData) {
     return (
       <div className="dm-page-muted min-h-screen py-3">
         <div className="mx-auto max-w-[430px] px-3">
           <div className="dm-overview-panel rounded-2xl p-4 text-sm text-(--dm-text-muted)">
-            {t.loading}
+            {banner ?? t.submitInvalid}
           </div>
         </div>
       </div>
@@ -564,9 +587,11 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
             ) : null}
           </div>
 
-          {slotsLoading ? <p className="text-xs text-(--dm-text-muted)">{t.loadingSlots}</p> : null}
-
-          {activeViewMode === "month" ? (
+          {slotsLoading ? (
+            <LoadingRegion aria-label={t.loadingSlots}>
+              <PublicBookingRuntimeSlotsSkeleton viewMode={activeViewMode} />
+            </LoadingRegion>
+          ) : activeViewMode === "month" ? (
             <div>
               <div className="mb-2 flex items-center justify-between">
                 <button

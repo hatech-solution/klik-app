@@ -199,6 +199,27 @@ export type PutCourseSettingsPayload = {
   default_duration_when_no_course?: number | null;
 };
 
+export type PublicBookingCalendarViewMode = "month" | "week";
+
+export type PublicBookingSettingsApiItem = {
+  store_id: string;
+  calendar_view_mode: PublicBookingCalendarViewMode;
+  slot_step_hours: number;
+  slot_step_minutes: number;
+  url_booking_complete: string | null;
+  url_booking_updated: string | null;
+  url_booking_cancelled: string | null;
+};
+
+export type PutPublicBookingSettingsPayload = {
+  calendar_view_mode: PublicBookingCalendarViewMode;
+  slot_step_hours: number;
+  slot_step_minutes: number;
+  url_booking_complete?: string | null;
+  url_booking_updated?: string | null;
+  url_booking_cancelled?: string | null;
+};
+
 export type StaffCourseLinksApiItem = {
   staff_id: string;
   staff_covers_all_courses: boolean;

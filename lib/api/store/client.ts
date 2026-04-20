@@ -7,7 +7,9 @@ import type {
   CreateStaffPayload,
   CreateStorePayload,
   PatchStoreStatusPayload,
+  PublicBookingSettingsApiItem,
   PutCourseSettingsPayload,
+  PutPublicBookingSettingsPayload,
   PutStaffCourseLinksPayload,
   PutStaffOperatingHoursPayload,
   PutStaffSettingsPayload,
@@ -327,6 +329,42 @@ export async function putCourseSettings(
     throw toApiClientError(body, "Failed to save course settings", response.status);
   }
   return body as CourseSettingsApiItem;
+}
+
+export async function fetchPublicBookingSettings(
+  botId: string,
+  storeId: string,
+): Promise<PublicBookingSettingsApiItem> {
+  const response = await authorizedRequest({
+    method: "GET",
+    path: `/api/v1/stores/${storeId}/public-booking-settings`,
+    extraHeaders: { "X-Bot-Id": botId },
+    cache: "no-store",
+    includeJsonContentType: false,
+  });
+  const body = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw toApiClientError(body, "Failed to load public booking settings", response.status);
+  }
+  return body as PublicBookingSettingsApiItem;
+}
+
+export async function putPublicBookingSettings(
+  botId: string,
+  storeId: string,
+  payload: PutPublicBookingSettingsPayload,
+): Promise<PublicBookingSettingsApiItem> {
+  const response = await authorizedRequest({
+    method: "PUT",
+    path: `/api/v1/stores/${storeId}/public-booking-settings`,
+    extraHeaders: { "X-Bot-Id": botId },
+    body: payload,
+  });
+  const body = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw toApiClientError(body, "Failed to save public booking settings", response.status);
+  }
+  return body as PublicBookingSettingsApiItem;
 }
 
 export async function fetchStaffCourseLinks(

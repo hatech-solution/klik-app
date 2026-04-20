@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { StoreSettingsRoutePlaceholder } from "@/components/platform/store-settings-route-placeholder";
-import { getMessages, isLocale } from "@/lib/i18n";
+import { StorePublicBookingSettingsClient } from "@/components/platform/store-public-booking-settings-client";
+import { getMessages, isLocale, type Locale } from "@/lib/i18n";
 
 type PageProps = {
   params: Promise<{ locale: string; storeId: string }>;
@@ -25,5 +25,5 @@ export default async function StoreSettingsPublicBookingPage({ params }: PagePro
   if (!isLocale(locale)) {
     notFound();
   }
-  return <StoreSettingsRoutePlaceholder kind="public" />;
+  return <StorePublicBookingSettingsClient locale={locale as Locale} />;
 }

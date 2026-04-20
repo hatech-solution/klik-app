@@ -125,6 +125,14 @@ function displayTimeLabel(iso: string, locale: Locale): string {
   }).format(new Date(iso));
 }
 
+function displayDateLabel(date: Date, locale: Locale): string {
+  return new Intl.DateTimeFormat(locale, {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(date);
+}
+
 function createIdempotencyKey(): string {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
     return crypto.randomUUID();
@@ -189,6 +197,12 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
     },
     [monthAnchor],
   );
+  const weekRangeLabel = useMemo(() => {
+    if (weekRange.days.length === 0) return t.weekLabel;
+    const first = weekRange.days[0];
+    const last = weekRange.days[weekRange.days.length - 1];
+    return `${displayDateLabel(first, locale)} ~ ${displayDateLabel(last, locale)}`;
+  }, [locale, t.weekLabel, weekRange.days]);
 
   const courses = useMemo(
     () => (initData?.courses ?? []).filter((course) => course.is_active),
@@ -749,7 +763,7 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
                 >
                   {"<"}
                 </button>
-                <p className="text-sm font-medium">{t.weekLabel}</p>
+                <p className="text-sm font-medium">{weekRangeLabel}</p>
                 <button
                   type="button"
                   className={`inline-flex min-w-12 items-center justify-center rounded-md px-4 py-1.5 text-sm font-semibold text-white ${platformConfig.accentClassName} ${platformConfig.hoverClassName}`}

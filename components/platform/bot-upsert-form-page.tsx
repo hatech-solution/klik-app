@@ -56,6 +56,7 @@ export function BotUpsertFormPage({ locale, mode, botId }: BotUpsertFormPageProp
       setIsLoadingBot(true);
       setErrorMessage(null);
       try {
+        if (!platform) return;
         const rows = await listBotsApi(platform.id);
         if (cancelled) return;
         const bot = rows.map(mapBotFromApi).find((item) => item.id === botId);

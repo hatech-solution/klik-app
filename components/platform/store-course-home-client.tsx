@@ -367,7 +367,7 @@ export function StoreCourseHomeClient({ locale }: Props) {
 
   if (!gate) return null;
 
-  const base = `/${locale}/stores/${gate.storeId}/settings/services`;
+  const base = `/${locale}/stores/${gate.storeId}/settings/courses`;
 
   return (
     <div className="space-y-8">

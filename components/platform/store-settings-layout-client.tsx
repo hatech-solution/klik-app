@@ -221,7 +221,7 @@ export function StoreSettingsLayoutClient({ locale, storeId, children }: Props) 
           subtitle={st.pageSubtitle}
         />
         <div className="mx-auto max-w-7xl px-6 py-12 text-center">
-          <p className="text-sm text-[var(--dm-text-secondary)]">{oh.chooseBotFirst}</p>
+          <p className="text-sm text-(--dm-text-secondary)">{oh.chooseBotFirst}</p>
           <Link
             href={backHref}
             className={`mt-4 inline-block rounded-lg px-4 py-2 text-sm font-medium text-white ${platform.accentClassName} ${platform.hoverClassName}`}
@@ -303,7 +303,7 @@ export function StoreSettingsLayoutClient({ locale, storeId, children }: Props) 
                   >
                     <span className="min-w-0 flex-1">{st.navRouteHours}</span>
                     <span
-                      className={`shrink-0 ${isHoursRoute ? "text-[var(--dm-text-muted)]" : "text-[var(--dm-text-muted)]"}`}
+                      className={`shrink-0 ${isHoursRoute ? "text-(--dm-text-muted)" : "text-(--dm-text-muted)"}`}
                       aria-hidden
                     >
                       {isHoursRoute ? <ChevronDownNavIcon /> : <ChevronRightNavIcon />}

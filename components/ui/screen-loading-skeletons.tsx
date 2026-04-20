@@ -195,6 +195,180 @@ export function StoreOperatingHoursBodySkeleton() {
   );
 }
 
+export function StorePublicBookingSettingsBodySkeleton() {
+  return (
+    <div className="space-y-5" aria-hidden>
+      <div>
+        <Skeleton className="mb-2 h-3 w-28" />
+        <Skeleton className="h-10 w-full max-w-sm rounded-lg" />
+      </div>
+
+      <div>
+        <Skeleton className="mb-2 h-3 w-40" />
+        <div className="grid max-w-lg gap-3 sm:grid-cols-2">
+          <Skeleton className="h-10 w-full rounded-lg" />
+          <Skeleton className="h-10 w-full rounded-lg" />
+        </div>
+        <Skeleton className="mt-2 h-3 w-full max-w-md" />
+      </div>
+
+      <div className="grid gap-4">
+        <div>
+          <Skeleton className="mb-2 h-3 w-36" />
+          <Skeleton className="h-10 w-full rounded-lg" />
+        </div>
+        <div>
+          <Skeleton className="mb-2 h-3 w-36" />
+          <Skeleton className="h-10 w-full rounded-lg" />
+        </div>
+        <div>
+          <Skeleton className="mb-2 h-3 w-36" />
+          <Skeleton className="h-10 w-full rounded-lg" />
+        </div>
+        <Skeleton className="h-3 w-full max-w-lg" />
+      </div>
+
+      <div>
+        <Skeleton className="h-10 w-24 rounded-lg" />
+      </div>
+    </div>
+  );
+}
+
+export function StoreCourseFormSkeleton() {
+  return (
+    <div className="mx-auto max-w-2xl space-y-6 py-6" aria-hidden>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <Skeleton className="h-6 w-56" />
+        <Skeleton className="h-4 w-20" />
+      </div>
+      <section className="dm-overview-panel space-y-4">
+        <div>
+          <Skeleton className="mb-2 h-3 w-28" />
+          <Skeleton className="h-10 w-full rounded-lg" />
+        </div>
+        <div>
+          <Skeleton className="mb-2 h-3 w-36" />
+          <Skeleton className="h-20 min-h-20 w-full rounded-lg" />
+        </div>
+        <div>
+          <Skeleton className="mb-2 h-3 w-24" />
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Skeleton className="h-10 w-full rounded-lg" />
+            <Skeleton className="h-10 w-full rounded-lg" />
+          </div>
+          <Skeleton className="mt-2 h-3 w-full max-w-sm" />
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div>
+            <Skeleton className="mb-2 h-3 w-20" />
+            <Skeleton className="h-10 w-full rounded-lg" />
+          </div>
+          <div>
+            <Skeleton className="mb-2 h-3 w-24" />
+            <Skeleton className="h-10 w-full rounded-lg" />
+          </div>
+        </div>
+        <div>
+          <Skeleton className="mb-2 h-3 w-28" />
+          <Skeleton className="h-10 w-full rounded-lg" />
+        </div>
+        <div>
+          <Skeleton className="mb-2 h-3 w-24" />
+          <Skeleton className="h-24 w-full rounded-lg" />
+        </div>
+        <div className="flex flex-wrap gap-3 pt-2">
+          <Skeleton className="h-10 w-28 rounded-lg" />
+          <Skeleton className="h-10 w-20 rounded-lg" />
+        </div>
+      </section>
+    </div>
+  );
+}
+
+export function StoreStaffFormSkeleton() {
+  return (
+    <div className="mx-auto max-w-2xl space-y-6 py-6" aria-hidden>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <Skeleton className="h-6 w-56" />
+        <Skeleton className="h-4 w-20" />
+      </div>
+      <section className="dm-overview-panel space-y-4">
+        <div>
+          <Skeleton className="mb-2 h-3 w-28" />
+          <Skeleton className="h-10 w-full rounded-lg" />
+        </div>
+        <div>
+          <Skeleton className="mb-2 h-3 w-36" />
+          <Skeleton className="h-20 min-h-20 w-full rounded-lg" />
+        </div>
+        <div>
+          <Skeleton className="mb-2 h-3 w-24" />
+          <Skeleton className="h-10 w-full rounded-lg" />
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div>
+            <Skeleton className="mb-2 h-3 w-20" />
+            <Skeleton className="h-10 w-full rounded-lg" />
+          </div>
+          <div>
+            <Skeleton className="mb-2 h-3 w-20" />
+            <Skeleton className="h-10 w-full rounded-lg" />
+          </div>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div>
+            <Skeleton className="mb-2 h-3 w-16" />
+            <Skeleton className="h-10 w-full rounded-lg" />
+          </div>
+          <div>
+            <Skeleton className="mb-2 h-3 w-24" />
+            <Skeleton className="h-10 w-full rounded-lg" />
+          </div>
+        </div>
+        <div>
+          <Skeleton className="mb-2 h-3 w-28" />
+          <Skeleton className="h-10 w-full rounded-lg" />
+        </div>
+        <div>
+          <Skeleton className="mb-2 h-3 w-24" />
+          <Skeleton className="h-24 w-full rounded-lg" />
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div>
+            <Skeleton className="mb-2 h-3 w-24" />
+            <Skeleton className="h-10 w-full rounded-lg" />
+          </div>
+          <div className="flex items-end gap-2">
+            <Skeleton className="h-4 w-4 rounded-sm" />
+            <Skeleton className="h-4 w-32" />
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-3 pt-2">
+          <Skeleton className="h-10 w-28 rounded-lg" />
+          <Skeleton className="h-10 w-20 rounded-lg" />
+        </div>
+      </section>
+    </div>
+  );
+}
+
+export function StoreManagementPageSkeleton() {
+  return (
+    <div className="space-y-4" aria-hidden>
+      <div className="flex items-center justify-between">
+        <Skeleton className="h-7 w-40" />
+        <Skeleton className="h-9 w-28 rounded-lg" />
+      </div>
+      <div className="dm-table-wrap overflow-hidden rounded-xl">
+        <div className="p-4 sm:p-6">
+          <StoreTableSkeleton />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function RouteGuardSkeleton() {
   return (
     <div className="flex flex-col items-center justify-center gap-6 px-6" aria-hidden>

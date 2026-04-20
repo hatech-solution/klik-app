@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { useStoreSettingsGate } from "@/components/platform/store-settings-context";
-import { LoadingRegion, StoreSettingsGateBodySkeleton } from "@/components/ui/screen-loading-skeletons";
+import { LoadingRegion, StoreStaffFormSkeleton } from "@/components/ui/screen-loading-skeletons";
 import { createStaff, fetchStaff, updateStaff } from "@/lib/api/store/client";
 import type { CreateStaffPayload, StaffApiItem } from "@/lib/api/store/types";
 import { ApiClientError, getErrorMessageByKey } from "@/lib/api/error";
@@ -157,8 +157,8 @@ export function StoreStaffFormClient({ locale, mode, staffId }: Props) {
 
   if (loading) {
     return (
-      <LoadingRegion aria-label={st.loading} className="py-6">
-        <StoreSettingsGateBodySkeleton />
+      <LoadingRegion aria-label={st.loading}>
+        <StoreStaffFormSkeleton />
       </LoadingRegion>
     );
   }

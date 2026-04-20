@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import { useStoreSettingsGate } from "@/components/platform/store-settings-context";
-import { LoadingRegion, StoreSettingsGateBodySkeleton } from "@/components/ui/screen-loading-skeletons";
+import { LoadingRegion, StoreCourseFormSkeleton } from "@/components/ui/screen-loading-skeletons";
 import { createCourse, fetchCourse, updateCourse } from "@/lib/api/store/client";
 import type { CourseApiItem, CreateCoursePayload } from "@/lib/api/store/types";
 import { ApiClientError, getErrorMessageByKey } from "@/lib/api/error";
@@ -186,8 +186,8 @@ export function StoreCourseFormClient({ locale, mode, courseId }: Props) {
 
   if (loading) {
     return (
-      <LoadingRegion aria-label={c.loading} className="py-6">
-        <StoreSettingsGateBodySkeleton />
+      <LoadingRegion aria-label={c.loading}>
+        <StoreCourseFormSkeleton />
       </LoadingRegion>
     );
   }

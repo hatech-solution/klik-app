@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { useStoreSettingsGate } from "@/components/platform/store-settings-context";
-import { LoadingRegion, StoreTableSkeleton } from "@/components/ui/screen-loading-skeletons";
+import { LoadingRegion, StorePublicBookingSettingsBodySkeleton } from "@/components/ui/screen-loading-skeletons";
 import {
   fetchPublicBookingSettings,
   putPublicBookingSettings,
@@ -140,7 +140,7 @@ export function StorePublicBookingSettingsClient({ locale }: Props) {
       {loading ? (
         <section className="dm-overview-panel">
           <LoadingRegion aria-label={pb.loading} className="p-4 sm:p-6">
-            <StoreTableSkeleton rows={4} />
+            <StorePublicBookingSettingsBodySkeleton />
           </LoadingRegion>
         </section>
       ) : (

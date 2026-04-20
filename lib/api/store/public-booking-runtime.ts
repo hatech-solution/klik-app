@@ -23,6 +23,7 @@ export type BookingRuntimeInitResponse = {
     name: string;
     timezone: string;
     currency_code: string;
+    platform_id: string;
   };
   settings: {
     calendar_view_mode: PublicBookingCalendarViewMode;

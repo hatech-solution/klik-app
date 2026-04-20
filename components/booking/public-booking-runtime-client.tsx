@@ -18,6 +18,7 @@ import {
   type BookingRuntimeStaff,
 } from "@/lib/api/store/public-booking-runtime";
 import { getMessages, type Locale } from "@/lib/i18n";
+import { isPlatformId, PLATFORM_CONFIGS, type PlatformId } from "@/lib/platforms";
 
 type BookingStep = 1 | 2 | 3 | 4 | 5;
 
@@ -39,6 +40,45 @@ type Draft = {
 type Props = {
   locale: Locale;
   storeId: string;
+};
+
+type BookingPlatformTheme = {
+  stepActiveClassName: string;
+  selectionActiveClassName: string;
+  monthDateSelectedClassName: string;
+  slotSelectedClassName: string;
+  slotAvailableClassName: string;
+};
+
+const BOOKING_PLATFORM_THEMES: Record<PlatformId, BookingPlatformTheme> = {
+  line: {
+    stepActiveClassName: "bg-emerald-600 text-white",
+    selectionActiveClassName: "border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20",
+    monthDateSelectedClassName: "border-emerald-500 bg-emerald-100 text-emerald-700",
+    slotSelectedClassName: "border-emerald-600 bg-emerald-600 text-white",
+    slotAvailableClassName: "border-emerald-500 text-emerald-600",
+  },
+  zalo: {
+    stepActiveClassName: "bg-sky-600 text-white",
+    selectionActiveClassName: "border-sky-500 bg-sky-50 dark:bg-sky-900/20",
+    monthDateSelectedClassName: "border-sky-500 bg-sky-100 text-sky-700",
+    slotSelectedClassName: "border-sky-600 bg-sky-600 text-white",
+    slotAvailableClassName: "border-sky-500 text-sky-600",
+  },
+  telegram: {
+    stepActiveClassName: "bg-cyan-600 text-white",
+    selectionActiveClassName: "border-cyan-500 bg-cyan-50 dark:bg-cyan-900/20",
+    monthDateSelectedClassName: "border-cyan-500 bg-cyan-100 text-cyan-700",
+    slotSelectedClassName: "border-cyan-600 bg-cyan-600 text-white",
+    slotAvailableClassName: "border-cyan-500 text-cyan-600",
+  },
+  instagram: {
+    stepActiveClassName: "bg-fuchsia-600 text-white",
+    selectionActiveClassName: "border-fuchsia-500 bg-fuchsia-50 dark:bg-fuchsia-900/20",
+    monthDateSelectedClassName: "border-fuchsia-500 bg-fuchsia-100 text-fuchsia-700",
+    slotSelectedClassName: "border-fuchsia-600 bg-fuchsia-600 text-white",
+    slotAvailableClassName: "border-fuchsia-500 text-fuchsia-600",
+  },
 };
 
 function formatDateOnly(date: Date): string {
@@ -115,6 +155,10 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
   const requireCourse = initData?.settings.require_course_on_booking ?? true;
   const requireStaff = initData?.settings.require_staff_on_booking ?? true;
   const timezone = initData?.store.timezone ?? "Asia/Tokyo";
+  const rawPlatformId = initData?.store.platform_id ?? "";
+  const platformId: PlatformId = isPlatformId(rawPlatformId) ? rawPlatformId : "zalo";
+  const platformConfig = PLATFORM_CONFIGS[platformId];
+  const platformTheme = BOOKING_PLATFORM_THEMES[platformId];
 
   const weekRange = useMemo(() => {
     const start = startOfWeek(parseDateOnly(weekAnchor));
@@ -434,7 +478,7 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
                 }}
                 className={`rounded-lg px-2 py-2 text-center ${
                   active
-                    ? "bg-sky-600 text-white"
+                    ? platformTheme.stepActiveClassName
                     : done
                       ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-200"
                       : "bg-(--dm-nav-inactive-bg) text-(--dm-text-secondary)"
@@ -495,7 +539,7 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
               onClick={() => setSelectedCourseId(null)}
               className={`mt-2 w-full rounded-lg border px-3 py-2 text-left text-sm ${
                 selectedCourseId === null
-                  ? "border-sky-500 bg-sky-50 dark:bg-sky-900/20"
+                  ? platformTheme.selectionActiveClassName
                   : "border-(--dm-border) bg-(--dm-surface)"
               }`}
             >
@@ -517,7 +561,7 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
                 }}
                 className={`w-full rounded-lg border px-3 py-2 text-left ${
                   selectedCourseId === course.id
-                    ? "border-sky-500 bg-sky-50 dark:bg-sky-900/20"
+                    ? platformTheme.selectionActiveClassName
                     : "border-(--dm-border) bg-(--dm-surface)"
                 }`}
               >
@@ -540,7 +584,7 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
               onClick={() => setSelectedStaffId(null)}
               className={`mt-2 w-full rounded-lg border px-3 py-2 text-left text-sm ${
                 selectedStaffId === null
-                  ? "border-sky-500 bg-sky-50 dark:bg-sky-900/20"
+                  ? platformTheme.selectionActiveClassName
                   : "border-(--dm-border) bg-(--dm-surface)"
               }`}
             >
@@ -561,7 +605,7 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
                 }}
                 className={`w-full rounded-lg border px-3 py-2 text-left ${
                   selectedStaffId === staff.id
-                    ? "border-sky-500 bg-sky-50 dark:bg-sky-900/20"
+                    ? platformTheme.selectionActiveClassName
                     : "border-(--dm-border) bg-(--dm-surface)"
                 }`}
               >
@@ -646,7 +690,9 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
                         setActiveViewMode("week");
                       }}
                       className={`min-h-12 rounded-lg border px-1 py-1 text-xs ${
-                        selected ? "border-sky-500 bg-sky-100 text-sky-700" : "border-(--dm-border) bg-(--dm-surface-muted)"
+                        selected
+                          ? platformTheme.monthDateSelectedClassName
+                          : "border-(--dm-border) bg-(--dm-surface-muted)"
                       } ${inMonth ? "" : "opacity-40"} ${available ? "" : "cursor-not-allowed"}`}
                     >
                       <div>{day.getDate()}</div>
@@ -730,11 +776,11 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
                                 }}
                                 className={`h-7 w-7 rounded-full border ${
                                   selected
-                                    ? "border-sky-600 bg-sky-600 text-white"
+                                    ? platformTheme.slotSelectedClassName
                                     : suggested
                                       ? "border-emerald-500 bg-emerald-50 text-emerald-700"
                                       : available
-                                        ? "border-sky-500 text-sky-600"
+                                        ? platformTheme.slotAvailableClassName
                                         : "border-(--dm-border) text-(--dm-text-muted)"
                                 }`}
                               >
@@ -813,7 +859,7 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
             type="button"
             onClick={goNext}
             disabled={!canProceed()}
-            className="w-full rounded-xl bg-sky-600 px-4 py-3 text-sm font-semibold text-white disabled:opacity-40"
+            className={`w-full rounded-xl px-4 py-3 text-sm font-semibold text-white disabled:opacity-40 ${platformConfig.accentClassName} ${platformConfig.hoverClassName}`}
           >
             {t.continueCta}
           </button>
@@ -822,7 +868,7 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
             type="button"
             onClick={() => void submitBooking()}
             disabled={!canProceed()}
-            className="w-full rounded-xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white disabled:opacity-40"
+            className={`w-full rounded-xl px-4 py-3 text-sm font-semibold text-white disabled:opacity-40 ${platformConfig.accentClassName} ${platformConfig.hoverClassName}`}
           >
             {t.submitCta}
           </button>

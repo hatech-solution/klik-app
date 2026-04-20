@@ -5,6 +5,12 @@
   --foreground: #0f172a;
 }
 
+/* Đồng bộ với class `dark` trên <html> (theme switcher) — dễ đọc, không nền đen tuyệt đối */
+html.dark {
+  --background: #27272a;
+  --foreground: #fafafa;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

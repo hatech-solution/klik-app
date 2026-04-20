@@ -81,7 +81,7 @@ export function StoreHoursChrome({
 }) {
   const oh = getMessages(locale).store.operatingHours;
   return (
-    <header className={`${platform.headerClassName} border-b px-4 py-4 shadow-sm sm:px-6`}>
+    <header className={`${platform.headerClassName} dashboard-header border-b px-4 py-4 shadow-sm sm:px-6`}>
       <div className="mx-auto flex max-w-7xl flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex min-w-0 flex-1 flex-col gap-1 sm:flex-row sm:items-center sm:gap-3">
           <div className="flex items-center gap-3">
@@ -501,7 +501,7 @@ function StoreOperatingHoursEditorInner({
         id={id}
         value={value}
         onChange={(e) => onChange(e.target.value as StoreDayKind)}
-        className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none focus:border-slate-500"
+        className="dm-input-compact min-w-[9rem]"
       >
         <option value="closed">{oh.dayKindClosed}</option>
         <option value="open_24h">{oh.dayKind24h}</option>
@@ -516,7 +516,7 @@ function StoreOperatingHoursEditorInner({
     onChange: (next: LocalSegment[]) => void,
   ) {
     if (disabled) {
-      return <p className="text-xs text-slate-400">{oh.segmentsDisabledHint}</p>;
+      return <p className="text-xs text-[var(--dm-text-muted)]">{oh.segmentsDisabledHint}</p>;
     }
     return (
       <div className="flex flex-col gap-2">
@@ -531,9 +531,9 @@ function StoreOperatingHoursEditorInner({
                 next[idx] = { ...seg, start: v };
                 onChange(next);
               }}
-              className="rounded border border-slate-300 px-2 py-1 font-mono text-sm"
+              className="dm-input-compact font-mono text-sm"
             />
-            <span className="text-slate-400">—</span>
+            <span className="text-[var(--dm-text-muted)]">—</span>
             <input
               type="time"
               value={clockInputValueForEnd(seg.end)}
@@ -543,9 +543,9 @@ function StoreOperatingHoursEditorInner({
                 next[idx] = { ...seg, end: v };
                 onChange(next);
               }}
-              className="rounded border border-slate-300 px-2 py-1 font-mono text-sm"
+              className="dm-input-compact font-mono text-sm"
             />
-            <label className="flex items-center gap-1 text-xs text-slate-600">
+            <label className="flex items-center gap-1 text-xs text-[var(--dm-text-muted)]">
               <input
                 type="checkbox"
                 checked={seg.is_overnight}
@@ -569,37 +569,37 @@ function StoreOperatingHoursEditorInner({
         <button
           type="button"
           onClick={() => onChange([...segments, defaultSegment()])}
-          className="w-fit rounded border border-dashed border-slate-300 px-2 py-1 text-xs text-slate-600 hover:bg-slate-50"
+          className="dm-ghost-chip"
         >
           + {oh.addSegment}
         </button>
-        <p className="text-xs text-slate-500">{oh.overnightHint}</p>
+        <p className="text-xs text-[var(--dm-text-muted)]">{oh.overnightHint}</p>
       </div>
     );
   }
 
   return (
     <div className="min-w-0 space-y-12">
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="dm-oh-panel">
           <div
             id={HOURS_SECTION_IDS.intro}
-            className="scroll-mt-24 mb-6 border-b border-slate-100 pb-4"
+            className="scroll-mt-24 mb-6 border-b border-[var(--dm-border)] pb-4"
           >
-            <h2 className="text-xl font-semibold text-slate-900">
+            <h2 className="text-xl font-semibold text-[var(--dm-text)]">
               {staffId ? oh.staffHoursTitle : oh.title}
             </h2>
-            <p className="mt-1 text-sm text-slate-600">
+            <p className="mt-1 text-sm text-[var(--dm-text-muted)]">
               {store.name}
-              <span className="ml-2 font-mono text-xs text-slate-500">({store.timezone})</span>
+              <span className="ml-2 font-mono text-xs opacity-80">({store.timezone})</span>
             </p>
             {!staffId && !configured ? (
-              <p className="mt-2 text-xs text-amber-700">{oh.notConfiguredHint}</p>
+              <p className="mt-2 text-xs text-amber-800 dark:text-amber-200">{oh.notConfiguredHint}</p>
             ) : null}
             {staffId ? (
-              <div className="mt-4 space-y-3 rounded-lg border border-slate-200 bg-slate-50/80 p-4">
-                <p className="text-xs font-medium text-slate-800">{oh.staffHoursScopeLabel}</p>
+              <div className="dm-oh-well mt-4 space-y-3">
+                <p className="text-xs font-medium text-[var(--dm-text)]">{oh.staffHoursScopeLabel}</p>
                 <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:gap-4">
-                  <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-800">
+                  <label className="flex cursor-pointer items-center gap-2 text-sm text-[var(--dm-text-secondary)]">
                     <input
                       type="radio"
                       name="staff-hours-scope"
@@ -609,7 +609,7 @@ function StoreOperatingHoursEditorInner({
                     />
                     {oh.staffInheritStore}
                   </label>
-                  <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-800">
+                  <label className="flex cursor-pointer items-center gap-2 text-sm text-[var(--dm-text-secondary)]">
                     <input
                       type="radio"
                       name="staff-hours-scope"
@@ -631,25 +631,25 @@ function StoreOperatingHoursEditorInner({
                   </label>
                 </div>
                 {staffHoursScope === "inherit_store" ? (
-                  <p className="text-xs leading-relaxed text-slate-600">{oh.staffInheritDescription}</p>
+                  <p className="text-xs leading-relaxed text-[var(--dm-text-muted)]">{oh.staffInheritDescription}</p>
                 ) : (
-                  <p className="text-xs leading-relaxed text-slate-600">{oh.staffCustomDescription}</p>
+                  <p className="text-xs leading-relaxed text-[var(--dm-text-muted)]">{oh.staffCustomDescription}</p>
                 )}
               </div>
             ) : null}
           </div>
 
           {banner ? (
-            <div className="mb-4 rounded-md bg-red-50 p-3 text-sm text-red-700">{banner}</div>
+            <div className="dm-form-error-banner mb-4">{banner}</div>
           ) : null}
 
           {loadFailed && !loading ? (
-            <div className="mb-4 flex flex-wrap items-center gap-3 rounded-md bg-amber-50 p-3 text-sm text-amber-900">
+            <div className="dm-banner-warn mb-4">
               <span>{oh.loadFailed}</span>
               <button
                 type="button"
                 onClick={() => void load()}
-                className="rounded-lg border border-amber-200 bg-white px-3 py-1 text-xs font-medium hover:bg-amber-100"
+                className="dm-oh-chip"
               >
                 {oh.retryLoad}
               </button>
@@ -670,28 +670,25 @@ function StoreOperatingHoursEditorInner({
             }
             aria-disabled={scheduleLocked}
           >
-          <section
-            id={HOURS_SECTION_IDS.mode}
-            className="scroll-mt-24 rounded-xl border border-slate-200 bg-slate-50/60 p-4"
-          >
-            <h4 className="mb-3 text-sm font-semibold text-slate-800">{oh.sectionMode}</h4>
+          <section id={HOURS_SECTION_IDS.mode} className="dm-oh-section scroll-mt-24">
+            <h4 className="mb-3 text-sm font-semibold text-[var(--dm-text)]">{oh.sectionMode}</h4>
             <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
               <div className="flex-1">
-                <label className="mb-1 block text-xs font-medium text-slate-600">
+                <label className="dm-label mb-1 block text-xs">
                   {oh.hoursModeLabel}
                 </label>
                 <select
                   value={hoursMode}
                   onChange={(e) => setHoursMode(e.target.value as StoreHoursMode)}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                  className="dm-input"
                 >
                   <option value="weekly_common">{oh.modeWeeklyCommon}</option>
                   <option value="by_weekday">{oh.modeByWeekday}</option>
                 </select>
-                <p className="mt-1 text-xs text-slate-500">{oh.hoursModeHint}</p>
+                <p className="mt-1 text-xs text-[var(--dm-text-muted)]">{oh.hoursModeHint}</p>
               </div>
               <div className="flex-1">
-                <label className="mb-1 block text-xs font-medium text-slate-600">
+                <label className="dm-label mb-1 block text-xs">
                   {oh.holidayFallbackLabel}
                 </label>
                 <select
@@ -699,30 +696,27 @@ function StoreOperatingHoursEditorInner({
                   onChange={(e) =>
                     setHolidayFallback(e.target.value as StoreHolidayFallbackDayKind)
                   }
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                  className="dm-input"
                 >
                   <option value="closed">{oh.fallbackClosed}</option>
                   <option value="inherit_weekday">{oh.fallbackInherit}</option>
                   <option value="open_24h">{oh.fallback24h}</option>
                 </select>
-                <p className="mt-1 text-xs text-slate-500">{oh.holidayFallbackHint}</p>
+                <p className="mt-1 text-xs text-[var(--dm-text-muted)]">{oh.holidayFallbackHint}</p>
               </div>
             </div>
           </section>
 
           {hoursMode === "weekly_common" ? (
-            <section
-              id={HOURS_SECTION_IDS.schedule}
-              className="scroll-mt-24 rounded-xl border border-slate-200 p-4"
-            >
-              <h4 className="mb-3 text-sm font-semibold text-slate-800">{oh.sectionWeeklyTemplate}</h4>
+            <section id={HOURS_SECTION_IDS.schedule} className="dm-oh-block scroll-mt-24">
+              <h4 className="mb-3 text-sm font-semibold text-[var(--dm-text)]">{oh.sectionWeeklyTemplate}</h4>
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
                 <div>
-                  <label className="mb-1 block text-xs text-slate-600">{oh.dayKindLabel}</label>
+                  <label className="dm-label mb-1 block text-xs">{oh.dayKindLabel}</label>
                   {renderDayKindSelect(common.day_kind, setCommonDayKind, "common-kind")}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <label className="mb-1 block text-xs text-slate-600">{oh.hoursLabel}</label>
+                  <label className="dm-label mb-1 block text-xs">{oh.hoursLabel}</label>
                   {renderSegmentsEditor(
                     common.segments,
                     common.day_kind !== "segments",
@@ -732,16 +726,13 @@ function StoreOperatingHoursEditorInner({
               </div>
             </section>
           ) : (
-            <section
-              id={HOURS_SECTION_IDS.schedule}
-              className="scroll-mt-24 rounded-xl border border-slate-200 p-4"
-            >
+            <section id={HOURS_SECTION_IDS.schedule} className="dm-oh-block scroll-mt-24">
               <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                <h4 className="text-sm font-semibold text-slate-800">{oh.sectionByWeekday}</h4>
+                <h4 className="text-sm font-semibold text-[var(--dm-text)]">{oh.sectionByWeekday}</h4>
                 <button
                   type="button"
                   onClick={copyMondayToAll}
-                  className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                  className="dm-oh-btn text-xs"
                 >
                   {oh.copyMondayToAll}
                 </button>
@@ -750,9 +741,9 @@ function StoreOperatingHoursEditorInner({
                 {byWeekday.map((row) => (
                   <div
                     key={row.weekday}
-                    className="flex flex-col gap-2 border-b border-slate-100 pb-4 last:border-0 last:pb-0 sm:flex-row sm:items-start"
+                    className="flex flex-col gap-2 border-b border-[var(--dm-border)] pb-4 last:border-0 last:pb-0 sm:flex-row sm:items-start"
                   >
-                    <div className="w-28 shrink-0 text-sm font-medium text-slate-800">
+                    <div className="w-28 shrink-0 text-sm font-medium text-[var(--dm-text)]">
                       {oh.weekdayLabels[row.weekday - 1]}
                     </div>
                     <div className="flex flex-1 flex-col gap-2 sm:flex-row">
@@ -773,12 +764,9 @@ function StoreOperatingHoursEditorInner({
             </section>
           )}
 
-          <section
-            id={HOURS_SECTION_IDS.overrides}
-            className="scroll-mt-24 rounded-xl border border-slate-200 p-4"
-          >
+          <section id={HOURS_SECTION_IDS.overrides} className="dm-oh-block scroll-mt-24">
             <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-              <h4 className="text-sm font-semibold text-slate-800">{oh.sectionOverrides}</h4>
+              <h4 className="text-sm font-semibold text-[var(--dm-text)]">{oh.sectionOverrides}</h4>
               <button
                 type="button"
                 onClick={addOverride}
@@ -788,17 +776,17 @@ function StoreOperatingHoursEditorInner({
               </button>
             </div>
             {overrides.length === 0 ? (
-              <p className="text-sm text-slate-500">{oh.noOverrides}</p>
+              <p className="text-sm text-[var(--dm-text-muted)]">{oh.noOverrides}</p>
             ) : (
               <div className="space-y-4">
                 {overrides.map((o) => (
                   <div
                     key={o._key}
-                    className="rounded-lg border border-slate-100 bg-slate-50/50 p-3"
+                    className="dm-oh-nested"
                   >
                     <div className="mb-2 flex flex-wrap items-end gap-3">
                       <div>
-                        <label className="mb-1 block text-xs text-slate-600">{oh.overrideDate}</label>
+                        <label className="dm-label mb-1 block text-xs">{oh.overrideDate}</label>
                         <input
                           type="date"
                           value={o.calendar_date}
@@ -809,11 +797,11 @@ function StoreOperatingHoursEditorInner({
                               ),
                             )
                           }
-                          className="rounded border border-slate-300 px-2 py-1 font-mono text-sm"
+                          className="dm-input-compact font-mono text-sm"
                         />
                       </div>
                       <div>
-                        <label className="mb-1 block text-xs text-slate-600">{oh.dayKindLabel}</label>
+                        <label className="dm-label mb-1 block text-xs">{oh.dayKindLabel}</label>
                         {renderDayKindSelect(
                           o.day_kind,
                           (v) =>
@@ -857,28 +845,25 @@ function StoreOperatingHoursEditorInner({
           </section>
           </div>
 
-          <section
-            id={HOURS_SECTION_IDS.preview}
-            className="scroll-mt-24 rounded-xl border border-slate-200 p-4"
-          >
-            <h4 className="mb-3 text-sm font-semibold text-slate-800">{oh.sectionPreview}</h4>
+          <section id={HOURS_SECTION_IDS.preview} className="dm-oh-block scroll-mt-24">
+            <h4 className="mb-3 text-sm font-semibold text-[var(--dm-text)]">{oh.sectionPreview}</h4>
             <div className="mb-3 flex flex-wrap items-end gap-3">
               <div>
-                <label className="mb-1 block text-xs text-slate-600">{oh.resolveFrom}</label>
+                <label className="dm-label mb-1 block text-xs">{oh.resolveFrom}</label>
                 <input
                   type="date"
                   value={resolveFrom}
                   onChange={(e) => setResolveFrom(e.target.value)}
-                  className="rounded border border-slate-300 px-2 py-1 font-mono text-sm"
+                  className="dm-input-compact font-mono text-sm"
                 />
               </div>
               <div>
-                <label className="mb-1 block text-xs text-slate-600">{oh.resolveTo}</label>
+                <label className="dm-label mb-1 block text-xs">{oh.resolveTo}</label>
                 <input
                   type="date"
                   value={resolveTo}
                   onChange={(e) => setResolveTo(e.target.value)}
-                  className="rounded border border-slate-300 px-2 py-1 font-mono text-sm"
+                  className="dm-input-compact font-mono text-sm"
                 />
               </div>
               <button
@@ -891,9 +876,9 @@ function StoreOperatingHoursEditorInner({
               </button>
             </div>
             {resolveRows && resolveRows.length > 0 ? (
-              <div className="max-h-56 overflow-auto rounded border border-slate-200">
-                <table className="w-full text-left text-xs text-slate-600">
-                  <thead className="sticky top-0 bg-slate-100 text-slate-700">
+              <div className="max-h-56 overflow-auto rounded-lg border border-[var(--dm-border)] bg-[var(--dm-surface)]">
+                <table className="w-full text-left text-xs text-[var(--dm-text-secondary)]">
+                  <thead className="dm-thead sticky top-0">
                     <tr>
                       <th className="px-2 py-2">{oh.previewDate}</th>
                       <th className="px-2 py-2">{oh.previewSource}</th>
@@ -901,9 +886,9 @@ function StoreOperatingHoursEditorInner({
                       <th className="px-2 py-2">{oh.previewHours}</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-[var(--dm-border)]">
                     {resolveRows.map((d) => (
-                      <tr key={d.calendar_date}>
+                      <tr key={d.calendar_date} className="dm-tbody-row">
                         <td className="px-2 py-1.5 font-mono">{d.calendar_date}</td>
                         <td className="px-2 py-1.5">{formatSource(d.resolution_source, oh)}</td>
                         <td className="px-2 py-1.5">{formatDayKind(d.day_kind, oh)}</td>
@@ -920,11 +905,11 @@ function StoreOperatingHoursEditorInner({
 
           <div
             id={HOURS_SECTION_IDS.actions}
-            className="scroll-mt-24 flex flex-wrap justify-end gap-3 border-t border-slate-100 pt-4"
+            className="scroll-mt-24 flex flex-wrap justify-end gap-3 border-t border-[var(--dm-border)] pt-4"
           >
             <Link
               href={staffId ? staffListHref : backHref}
-              className="rounded-lg px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+              className="dm-btn-ghost inline-flex rounded-lg"
             >
               {staffId ? oh.backToStaffList : oh.backToDashboard}
             </Link>

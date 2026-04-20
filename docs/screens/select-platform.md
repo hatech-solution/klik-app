@@ -12,7 +12,8 @@
 ## Thành phần chính
 
 - Page: `app/[locale]/select-platform/page.tsx`
-- Card: `components/platform/platform-card.tsx`
+- View: `components/platform/select-platform-view.tsx`
+- Card: `components/platform/platform-card.tsx` (`data-platform`, class `platform-select-card`; màu dark/light trong `styles/dark-mode.css`)
 - Data config: `lib/platforms.ts`
 - URL helper: `lib/domain.ts` (`buildPlatformUrl`)
 

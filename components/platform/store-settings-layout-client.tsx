@@ -175,9 +175,7 @@ export function StoreSettingsLayoutClient({ locale, storeId, children }: Props) 
     return (
       <Link
         href={href}
-        className={`block rounded-lg px-3 py-2.5 text-sm font-medium transition ${
-          active ? "bg-emerald-50 text-slate-900 ring-1 ring-emerald-200" : "text-slate-700 hover:bg-slate-50"
-        }`}
+        className={`dm-settings-nav-link ${active ? "dm-settings-nav-link--active" : ""}`}
       >
         {label}
       </Link>
@@ -186,7 +184,7 @@ export function StoreSettingsLayoutClient({ locale, storeId, children }: Props) 
 
   if (!platform) {
     return (
-      <div className="flex min-h-screen items-center justify-center text-sm text-slate-500">
+      <div className="dm-route-loading min-h-screen">
         …
       </div>
     );
@@ -194,7 +192,7 @@ export function StoreSettingsLayoutClient({ locale, storeId, children }: Props) 
 
   if (gateLoading) {
     return (
-      <main className="min-h-screen bg-slate-50">
+      <main className="dm-page-muted min-h-screen">
         <StoreHoursChrome
           locale={locale}
           platform={platform}
@@ -211,7 +209,7 @@ export function StoreSettingsLayoutClient({ locale, storeId, children }: Props) 
 
   if (gateError === "no_bot") {
     return (
-      <main className="min-h-screen bg-slate-50">
+      <main className="dm-page-muted min-h-screen">
         <StoreHoursChrome
           locale={locale}
           platform={platform}
@@ -220,7 +218,7 @@ export function StoreSettingsLayoutClient({ locale, storeId, children }: Props) 
           subtitle={st.pageSubtitle}
         />
         <div className="mx-auto max-w-7xl px-6 py-12 text-center">
-          <p className="text-sm text-slate-700">{oh.chooseBotFirst}</p>
+          <p className="text-sm text-[var(--dm-text-secondary)]">{oh.chooseBotFirst}</p>
           <Link
             href={backHref}
             className={`mt-4 inline-block rounded-lg px-4 py-2 text-sm font-medium text-white ${platform.accentClassName} ${platform.hoverClassName}`}
@@ -234,7 +232,7 @@ export function StoreSettingsLayoutClient({ locale, storeId, children }: Props) 
 
   if (gateError === "not_found" || !store) {
     return (
-      <main className="min-h-screen bg-slate-50">
+      <main className="dm-page-muted min-h-screen">
         <StoreHoursChrome
           locale={locale}
           platform={platform}
@@ -243,8 +241,8 @@ export function StoreSettingsLayoutClient({ locale, storeId, children }: Props) 
           subtitle={st.pageSubtitle}
         />
         <div className="mx-auto max-w-7xl px-6 py-12 text-center">
-          <p className="text-sm text-red-700">{oh.storeNotFound}</p>
-          <Link href={backHref} className="mt-4 inline-block text-sm font-medium text-slate-700 underline">
+          <p className="text-sm text-red-600 dark:text-red-300">{oh.storeNotFound}</p>
+          <Link href={backHref} className="dm-link-accent mt-4 inline-block text-sm underline">
             {oh.backToDashboard}
           </Link>
         </div>
@@ -270,7 +268,7 @@ export function StoreSettingsLayoutClient({ locale, storeId, children }: Props) 
 
   return (
     <StoreSettingsGateProvider value={gate}>
-      <main className="min-h-screen bg-slate-50">
+      <main className="dm-page-muted min-h-screen">
         <StoreHoursChrome
           locale={locale}
           platform={platform}
@@ -280,13 +278,10 @@ export function StoreSettingsLayoutClient({ locale, storeId, children }: Props) 
         />
         <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:flex-row lg:items-start">
           <aside className="w-full shrink-0 lg:sticky lg:top-6 lg:w-64 lg:self-start">
-            <nav
-              className="rounded-xl border border-slate-200 bg-white p-2 shadow-sm"
-              aria-label={st.routeNavAriaLabel}
-            >
-              <div className="border-b border-slate-100 px-2 pb-3 pt-1">
-                <p className="text-xs font-semibold text-slate-900">{st.pageTitle}</p>
-                <p className="mt-1 text-[11px] leading-snug text-slate-500">{st.specHint}</p>
+            <nav className="dm-settings-nav" aria-label={st.routeNavAriaLabel}>
+              <div className="dm-settings-nav-head">
+                <p className="dm-settings-nav-title">{st.pageTitle}</p>
+                <p className="dm-settings-nav-hint">{st.specHint}</p>
               </div>
               <div className="mt-2 flex flex-col gap-0.5">
                 <div className="rounded-lg">
@@ -299,15 +294,13 @@ export function StoreSettingsLayoutClient({ locale, storeId, children }: Props) 
                         scrollToHoursSection(HOURS_SECTION_IDS.intro);
                       }
                     }}
-                    className={`flex items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
-                      isHoursRoute
-                        ? "bg-emerald-50 text-slate-900 ring-1 ring-emerald-200"
-                        : "text-slate-700 hover:bg-slate-50"
+                    className={`dm-settings-nav-link flex items-center justify-between gap-2 ${
+                      isHoursRoute ? "dm-settings-nav-link--active" : ""
                     }`}
                   >
                     <span className="min-w-0 flex-1">{st.navRouteHours}</span>
                     <span
-                      className={`shrink-0 ${isHoursRoute ? "text-slate-600" : "text-slate-400"}`}
+                      className={`shrink-0 ${isHoursRoute ? "text-[var(--dm-text-muted)]" : "text-[var(--dm-text-muted)]"}`}
                       aria-hidden
                     >
                       {isHoursRoute ? <ChevronDownNavIcon /> : <ChevronRightNavIcon />}
@@ -316,7 +309,7 @@ export function StoreSettingsLayoutClient({ locale, storeId, children }: Props) 
                   {isHoursRoute ? (
                     <div
                       id="store-settings-hours-subnav"
-                      className="mt-0.5 space-y-px border-t border-slate-100 pt-1"
+                      className="dm-settings-subnav mt-0.5 space-y-px pt-1"
                       role="group"
                       aria-label={oh.navPageTitle}
                     >
@@ -337,8 +330,8 @@ export function StoreSettingsLayoutClient({ locale, storeId, children }: Props) 
                             scrollToHoursSection(id);
                             setActiveHoursSection(id);
                           }}
-                          className={`flex w-full rounded-md px-2.5 py-2 text-left text-xs font-medium text-slate-800 transition hover:bg-slate-50 ${
-                            activeHoursSection === id ? "bg-amber-50 text-slate-900" : ""
+                          className={`dm-settings-subnav-btn ${
+                            activeHoursSection === id ? "dm-settings-subnav-btn--active" : ""
                           }`}
                         >
                           {label}

@@ -154,8 +154,8 @@ export function StoreStaffHomeClient({ locale }: Props) {
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-lg font-semibold text-slate-900">{st.pageTitle}</h2>
-          <p className="mt-1 text-sm text-slate-600">{st.pageSubtitle}</p>
+          <h2 className="text-lg font-semibold text-[var(--dm-text)]">{st.pageTitle}</h2>
+          <p className="mt-1 text-sm text-[var(--dm-text-muted)]">{st.pageSubtitle}</p>
         </div>
         <Link
           href={`${base}/new`}
@@ -165,35 +165,31 @@ export function StoreStaffHomeClient({ locale }: Props) {
         </Link>
       </div>
 
-      {banner ? (
-        <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
-          {banner}
-        </div>
-      ) : null}
+      {banner ? <div className="dm-form-error-banner">{banner}</div> : null}
 
-      <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-        <h3 className="text-sm font-semibold text-slate-900">{st.settingsTitle}</h3>
+      <section className="dm-overview-panel">
+        <h3 className="text-sm font-semibold text-[var(--dm-text)]">{st.settingsTitle}</h3>
         <div className="mt-4 space-y-4">
-          <label className="flex items-center gap-2 text-sm text-slate-800">
+          <label className="flex items-center gap-2 text-sm text-[var(--dm-text-secondary)]">
             <input
               type="checkbox"
               checked={requireStaff}
               onChange={(e) => setRequireStaff(e.target.checked)}
-              className="rounded border-slate-300"
+              className="rounded border-[var(--dm-border)]"
             />
             {st.settingsRequireStaff}
           </label>
-          <label className="flex items-center gap-2 text-sm text-slate-800">
+          <label className="flex items-center gap-2 text-sm text-[var(--dm-text-secondary)]">
             <input
               type="checkbox"
               checked={hidePrice}
               onChange={(e) => setHidePrice(e.target.checked)}
-              className="rounded border-slate-300"
+              className="rounded border-[var(--dm-border)]"
             />
             {st.settingsHidePrice}
           </label>
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-700" htmlFor="staff-max-concurrent">
+            <label className="dm-label mb-1 block text-xs" htmlFor="staff-max-concurrent">
               {st.settingsMaxConcurrent}
             </label>
             <input
@@ -204,9 +200,9 @@ export function StoreStaffHomeClient({ locale }: Props) {
               value={maxConcurrent}
               onChange={(e) => setMaxConcurrent(e.target.value)}
               placeholder="—"
-              className="w-full max-w-xs rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="dm-input max-w-xs"
             />
-            <p className="mt-1 text-xs text-slate-500">{st.settingsMaxConcurrentHint}</p>
+            <p className="mt-1 text-xs text-[var(--dm-text-muted)]">{st.settingsMaxConcurrentHint}</p>
           </div>
           <button
             type="button"
@@ -219,15 +215,15 @@ export function StoreStaffHomeClient({ locale }: Props) {
         </div>
       </section>
 
-      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+      <div className="dm-table-wrap overflow-hidden rounded-xl">
         {loading ? (
           <LoadingRegion aria-label={st.loading} className="p-4 sm:p-6">
             <StoreTableSkeleton />
           </LoadingRegion>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[640px] text-left text-sm text-slate-600">
-              <thead className="bg-slate-50 text-slate-700">
+            <table className="w-full min-w-[640px] text-left text-sm text-[var(--dm-text-secondary)]">
+              <thead className="dm-thead">
                 <tr>
                   <th className="px-4 py-3 font-medium">{st.tableName}</th>
                   <th className="px-4 py-3 font-medium">{st.tableVisible}</th>
@@ -236,17 +232,17 @@ export function StoreStaffHomeClient({ locale }: Props) {
                   <th className="px-4 py-3 text-right font-medium">{st.tableActions}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-200">
+              <tbody className="divide-y divide-[var(--dm-border)]">
                 {staff.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-4 py-8 text-center text-slate-500">
+                    <td colSpan={5} className="px-4 py-8 text-center text-[var(--dm-text-muted)]">
                       {st.empty}
                     </td>
                   </tr>
                 ) : (
                   staff.map((row) => (
-                    <tr key={row.id} className="hover:bg-slate-50">
-                      <td className="px-4 py-3 font-medium text-slate-900">{row.name}</td>
+                    <tr key={row.id} className="dm-tbody-row">
+                      <td className="px-4 py-3 font-medium text-[var(--dm-text)]">{row.name}</td>
                       <td className="px-4 py-3">{row.is_visible ? st.visibleYes : st.visibleNo}</td>
                       <td className="px-4 py-3 font-mono text-xs">
                         {row.price != null ? String(row.price) : "—"}
@@ -255,7 +251,7 @@ export function StoreStaffHomeClient({ locale }: Props) {
                       <td className="px-4 py-3 text-right">
                         <Link
                           href={`${base}/${row.id}/hours`}
-                          className="mr-3 inline-flex text-slate-400 hover:text-slate-700"
+                          className="mr-3 inline-flex text-[var(--dm-text-muted)] hover:text-[var(--dm-text)]"
                           title={st.editHours}
                         >
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -265,7 +261,7 @@ export function StoreStaffHomeClient({ locale }: Props) {
                         </Link>
                         <Link
                           href={`${base}/${row.id}/edit`}
-                          className="mr-3 inline-flex text-slate-400 hover:text-slate-700"
+                          className="mr-3 inline-flex text-[var(--dm-text-muted)] hover:text-[var(--dm-text)]"
                           title={st.editProfile}
                         >
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -279,7 +275,7 @@ export function StoreStaffHomeClient({ locale }: Props) {
                             setDeleteErr(null);
                             setDeleteId(row.id);
                           }}
-                          className="inline-flex text-slate-400 hover:text-red-600"
+                          className="inline-flex text-[var(--dm-text-muted)] hover:text-red-600"
                           title={st.deleteStaff}
                         >
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

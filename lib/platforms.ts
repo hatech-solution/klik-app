@@ -7,7 +7,6 @@ export type PlatformConfig = {
   headerClassName: string;
   accentClassName: string;
   hoverClassName: string;
-  surfaceClassName: string;
   description: string;
 };
 
@@ -26,7 +25,6 @@ export const PLATFORM_CONFIGS: Record<PlatformId, PlatformConfig> = {
     headerClassName: "bg-emerald-600 text-white",
     accentClassName: "bg-emerald-600 text-white",
     hoverClassName: "hover:bg-emerald-700",
-    surfaceClassName: "border-emerald-200 bg-emerald-50",
     description: "Kết nối và chăm sóc khách hàng trên LINE OA.",
   },
   zalo: {
@@ -36,7 +34,6 @@ export const PLATFORM_CONFIGS: Record<PlatformId, PlatformConfig> = {
     headerClassName: "bg-sky-600 text-white",
     accentClassName: "bg-sky-600 text-white",
     hoverClassName: "hover:bg-sky-700",
-    surfaceClassName: "border-sky-200 bg-sky-50",
     description: "Quản lý tương tác người dùng trên Zalo OA.",
   },
   telegram: {
@@ -46,7 +43,6 @@ export const PLATFORM_CONFIGS: Record<PlatformId, PlatformConfig> = {
     headerClassName: "bg-cyan-600 text-white",
     accentClassName: "bg-cyan-600 text-white",
     hoverClassName: "hover:bg-cyan-700",
-    surfaceClassName: "border-cyan-200 bg-cyan-50",
     description: "Tự động hoá chatbot cho Telegram channel và group.",
   },
   instagram: {
@@ -56,7 +52,6 @@ export const PLATFORM_CONFIGS: Record<PlatformId, PlatformConfig> = {
     headerClassName: "bg-fuchsia-600 text-white",
     accentClassName: "bg-fuchsia-600 text-white",
     hoverClassName: "hover:bg-fuchsia-700",
-    surfaceClassName: "border-fuchsia-200 bg-fuchsia-50",
     description: "Chăm sóc inbox Instagram theo workflow bán hàng.",
   },
 };

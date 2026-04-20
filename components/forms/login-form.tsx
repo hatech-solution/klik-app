@@ -49,7 +49,7 @@ export function LoginForm({ locale }: LoginFormProps) {
       footer={
         <p>
           {t.auth.login.noAccount}{" "}
-          <Link href={`/${locale}/register`} className="font-medium text-sky-700">
+          <Link href={`/${locale}/register`} className="dm-link-accent">
             {t.auth.login.createAccount}
           </Link>
         </p>
@@ -57,34 +57,32 @@ export function LoginForm({ locale }: LoginFormProps) {
     >
       <form className="space-y-4" onSubmit={handleSubmit}>
         {errorMessage ? (
-          <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
-            {errorMessage}
-          </p>
+          <p className="dm-alert-error dm-alert-tight">{errorMessage}</p>
         ) : null}
         <label className="block space-y-1 text-sm">
-          <span className="text-slate-700">{t.auth.fields.email}</span>
+          <span className="dm-label">{t.auth.fields.email}</span>
           <input
             name="email"
             required
             type="email"
             placeholder="you@company.com"
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none ring-sky-500 focus:ring"
+            className="dm-input"
           />
         </label>
         <label className="block space-y-1 text-sm">
-          <span className="text-slate-700">{t.auth.fields.password}</span>
+          <span className="dm-label">{t.auth.fields.password}</span>
           <input
             name="password"
             required
             type="password"
             placeholder="********"
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none ring-sky-500 focus:ring"
+            className="dm-input"
           />
         </label>
         <div className="flex justify-end">
           <Link
             href={`/${locale}/reset-password`}
-            className="text-sm font-medium text-sky-700"
+            className="dm-link-accent text-sm"
           >
             {t.auth.login.forgotPassword}
           </Link>

@@ -52,10 +52,10 @@ export function SelectPlatformView({ locale }: SelectPlatformViewProps) {
   }, [locale, router]);
 
   return (
-    <main className="mx-auto min-h-screen w-full max-w-6xl px-4 py-12">
-      <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-        <h1 className="text-3xl font-semibold text-slate-900">{t.selectPlatform.title}</h1>
-        <p className="mt-2 text-slate-600">{t.selectPlatform.description}</p>
+    <main className="select-platform-page mx-auto min-h-screen w-full max-w-6xl px-4 py-12">
+      <div className="select-platform-panel">
+        <h1 className="select-platform-title">{t.selectPlatform.title}</h1>
+        <p className="select-platform-lead">{t.selectPlatform.description}</p>
 
         {phase === "loading" ? (
           <LoadingRegion aria-label={t.selectPlatform.loading} className="mt-8">
@@ -64,13 +64,13 @@ export function SelectPlatformView({ locale }: SelectPlatformViewProps) {
         ) : null}
 
         {phase === "error" ? (
-          <div className="mt-8 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-rose-800">
+          <div className="select-platform-error">
             <p>{t.selectPlatform.loadError}</p>
           </div>
         ) : null}
 
         {phase === "ready" && platforms.length === 0 ? (
-          <p className="mt-8 text-slate-600">{t.selectPlatform.noPlatforms}</p>
+          <p className="select-platform-empty">{t.selectPlatform.noPlatforms}</p>
         ) : null}
 
         {phase === "ready" && platforms.length > 0 ? (

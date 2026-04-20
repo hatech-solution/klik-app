@@ -16,8 +16,9 @@
 |---|---|---|
 | Global app shell | `app/layout.tsx` | Root HTML layout |
 | Locale shell | `app/[locale]/layout.tsx` | Header mount + locale validation |
-| Header | `components/app-header.tsx` | Brand + language dropdown |
+| Header | `components/app-header.tsx` | Brand + language dropdown + theme switcher |
 | Language switch | `components/language-switcher.tsx` | Update locale segment in router + cookie |
+| Theme switch | `components/theme-switcher.tsx` | Dark/light mode toggle + localStorage |
 | Subdomain rewrite | `proxy.ts` | Wildcard platform host -> locale platform route |
 | i18n dictionary | `lib/i18n.ts` | All locale texts and helpers |
 | Server locale resolve | `lib/i18n-server.ts` | Cookie `lang` then `Accept-Language` |

@@ -11,9 +11,10 @@
 - Locale + dictionary:
   - `lib/i18n.ts`
   - `lib/i18n-server.ts`
-- Header global + language select:
+- Header global + language select + theme:
   - `components/app-header.tsx`
   - `components/language-switcher.tsx`
+  - `components/theme-switcher.tsx`
 - Dashboard theo platform: `components/platform/platform-dashboard.tsx`
 - API clients chính:
   - `lib/api/auth/`
@@ -21,6 +22,7 @@
   - `lib/api/bot/`
   - `lib/api/store/`
 - Toast + modal xác nhận + lỗi store: `docs/ai/06-toast-confirm-feedback.md`
+- Dark mode + theme system: `docs/ai/08-dark-mode.md`
 - Shared domain types:
   - `lib/types/bot.ts`
   - `lib/types/store.ts`

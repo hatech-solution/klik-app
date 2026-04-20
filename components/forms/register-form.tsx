@@ -50,7 +50,7 @@ export function RegisterForm({ locale }: RegisterFormProps) {
       footer={
         <p>
           {t.auth.register.hasAccount}{" "}
-          <Link href={`/${locale}/login`} className="font-medium text-sky-700">
+          <Link href={`/${locale}/login`} className="dm-link-accent">
             {t.auth.register.login}
           </Link>
         </p>
@@ -58,47 +58,45 @@ export function RegisterForm({ locale }: RegisterFormProps) {
     >
       <form className="space-y-4" onSubmit={handleSubmit}>
         {errorMessage ? (
-          <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
-            {errorMessage}
-          </p>
+          <p className="dm-alert-error dm-alert-tight">{errorMessage}</p>
         ) : null}
         <label className="block space-y-1 text-sm">
-          <span className="text-slate-700">{t.auth.fields.email}</span>
+          <span className="dm-label">{t.auth.fields.email}</span>
           <input
             name="email"
             required
             type="email"
             placeholder="you@company.com"
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none ring-sky-500 focus:ring"
+            className="dm-input"
           />
         </label>
         <label className="block space-y-1 text-sm">
-          <span className="text-slate-700">{t.auth.fields.phone}</span>
+          <span className="dm-label">{t.auth.fields.phone}</span>
           <input
             name="phone"
             type="tel"
             placeholder="0901234567"
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none ring-sky-500 focus:ring"
+            className="dm-input"
           />
         </label>
         <label className="block space-y-1 text-sm">
-          <span className="text-slate-700">{t.auth.fields.displayName}</span>
+          <span className="dm-label">{t.auth.fields.displayName}</span>
           <input
             name="name"
             required
             type="text"
             placeholder="Nguyen Van A"
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none ring-sky-500 focus:ring"
+            className="dm-input"
           />
         </label>
         <label className="block space-y-1 text-sm">
-          <span className="text-slate-700">{t.auth.fields.password}</span>
+          <span className="dm-label">{t.auth.fields.password}</span>
           <input
             name="password"
             required
             type="password"
             placeholder="********"
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none ring-sky-500 focus:ring"
+            className="dm-input"
           />
         </label>
         <button

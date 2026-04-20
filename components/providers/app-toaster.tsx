@@ -17,7 +17,8 @@ export function AppToaster() {
       visibleToasts={4}
       toastOptions={{
         classNames: {
-          toast: "rounded-xl border border-slate-200/80 shadow-lg backdrop-blur-sm",
+          toast:
+            "rounded-xl border border-[var(--dm-border)] bg-[var(--dm-surface)]/95 text-[var(--dm-text)] shadow-lg backdrop-blur-sm",
         },
       }}
     />

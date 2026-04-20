@@ -32,12 +32,12 @@ export function LanguageSwitcher({
   }
 
   return (
-    <div className={className}>
+    <div className={`language-switcher ${className || ''}`}>
       <select
         aria-label="Language selector"
         value={locale}
         onChange={(event) => changeLanguage(event.target.value as Locale)}
-        className="rounded-md border border-slate-200 bg-white px-2 py-1 text-xs font-medium text-slate-700 outline-none ring-sky-500 focus:ring"
+        className="ring-sky-500 focus:ring"
       >
         <option value="vi">{vietnameseLabel}</option>
         <option value="en">{englishLabel}</option>

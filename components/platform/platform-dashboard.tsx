@@ -71,7 +71,7 @@ export function PlatformDashboard({ locale, flow = "selectBot" }: PlatformDashbo
   return (
     <>
       <main className="min-h-screen">
-        <header className={`${platform.headerClassName} border-b px-6 py-4 shadow-sm`}>
+        <header className={`${platform.headerClassName} dashboard-header border-b px-6 py-4 shadow-sm`}>
           <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
               <h1 className="flex items-center text-xl font-semibold">
@@ -85,7 +85,7 @@ export function PlatformDashboard({ locale, flow = "selectBot" }: PlatformDashbo
               <select
                 value={selectedBotId}
                 onChange={(event) => setSelectedBotId(event.target.value)}
-                className="min-w-56 rounded-lg border border-white/30 bg-white px-3 py-2 text-sm text-slate-900 outline-none"
+                className="dashboard-bot-select"
               >
                 <option value="">{t.dashboard.chooseBot}</option>
                 {bots.map((bot) => (
@@ -100,18 +100,16 @@ export function PlatformDashboard({ locale, flow = "selectBot" }: PlatformDashbo
 
         {errorMessage ? (
           <div className="mx-auto mt-4 w-full max-w-7xl px-6">
-            <div className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
-              {errorMessage}
-            </div>
+            <div className="dm-alert-error dm-alert-tight">{errorMessage}</div>
           </div>
         ) : null}
 
         <div className="mx-auto w-full max-w-5xl p-6">
             <div className="mb-8 mt-12 text-center">
-              <h2 className="text-3xl font-bold text-slate-900">
+              <h2 className="dm-select-bot-hero">
                 {bots.length === 0 ? t.dashboard.noBotTitle(platform.name) : t.dashboard.selectBotTitle}
               </h2>
-              <p className="mt-2 text-slate-600">
+              <p className="dm-select-bot-sub">
                 {bots.length === 0 ? t.dashboard.noBotDescription : t.dashboard.selectBotDescription}
               </p>
             </div>
@@ -148,13 +146,13 @@ export function PlatformDashboard({ locale, flow = "selectBot" }: PlatformDashbo
 
               <div
                 onClick={() => setShowAddModal(true)}
-                className="group flex h-[240px] w-56 cursor-pointer flex-col items-center justify-between rounded-[20px] border-2 border-dashed border-slate-200 bg-white p-5 transition hover:border-slate-300 hover:bg-slate-50"
+                className="dm-bot-add-tile group flex flex-col items-center justify-between"
               >
                 <div className="w-full text-center">
-                  <span className="text-[15px] font-bold text-slate-700">Add</span>
+                  <span className="dm-bot-add-label">Add</span>
                 </div>
                 <div className="flex flex-1 items-center justify-center">
-                  <div className="flex h-[88px] w-[88px] items-center justify-center rounded-full bg-slate-100 text-slate-500 transition-colors group-hover:bg-slate-200">
+                  <div className="dm-bot-add-icon-wrap flex h-[88px] w-[88px] items-center justify-center rounded-full transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                       <line x1="12" y1="5" x2="12" y2="19" />
                       <line x1="5" y1="12" x2="19" y2="12" />
@@ -169,53 +167,53 @@ export function PlatformDashboard({ locale, flow = "selectBot" }: PlatformDashbo
 
       {showAddModal ? (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm animate-in fade-in duration-200"
+          className="dm-modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in duration-200"
           onClick={() => setShowAddModal(false)}
         >
           <div
-            className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-xl animate-in zoom-in-95 duration-200"
+            className="dm-modal-panel relative w-full max-w-md p-6 animate-in zoom-in-95 duration-200"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               type="button"
               onClick={() => setShowAddModal(false)}
-              className="absolute right-4 top-4 rounded-full p-2 text-slate-400 outline-none hover:bg-slate-100 hover:text-slate-600"
+              className="dm-modal-close absolute right-4 top-4 outline-none"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M18 6L6 18M6 6l12 12" />
               </svg>
             </button>
-            <h3 className="mb-2 text-xl font-semibold text-slate-900">{t.dashboard.createBot}</h3>
-            <p className="mb-6 text-sm text-slate-500">{t.dashboard.noBotDescription}</p>
+            <h3 className="mb-2 text-xl font-semibold text-[var(--dm-text)]">{t.dashboard.createBot}</h3>
+            <p className="mb-6 text-sm text-[var(--dm-text-muted)]">{t.dashboard.noBotDescription}</p>
             <form onSubmit={handleCreateBot} className="flex flex-col gap-4">
               <div>
-                <label className="mb-1 block text-sm font-medium text-slate-700">{t.dashboard.inputBotName}</label>
+                <label className="dm-label mb-1 block">{t.dashboard.inputBotName}</label>
                 <input
                   value={newBotName}
                   onChange={(event) => setNewBotName(event.target.value)}
                   placeholder={t.dashboard.inputBotName}
-                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-slate-500"
+                  className="dm-input"
                   required
                 />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium text-slate-700">API Key</label>
+                <label className="dm-label mb-1 block">API Key</label>
                 <input
                   value={apiKey}
                   onChange={(event) => setApiKey(event.target.value)}
                   placeholder="Nhập API Key"
-                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-slate-500"
+                  className="dm-input"
                   required
                 />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium text-slate-700">Secret Key</label>
+                <label className="dm-label mb-1 block">Secret Key</label>
                 <input
                   value={secretKey}
                   onChange={(event) => setSecretKey(event.target.value)}
                   type="password"
                   placeholder="Nhập Secret Key"
-                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-slate-500"
+                  className="dm-input"
                   required
                 />
               </div>
@@ -223,7 +221,7 @@ export function PlatformDashboard({ locale, flow = "selectBot" }: PlatformDashbo
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="rounded-lg px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+                  className="dm-btn-ghost"
                 >
                   {t.dashboard.cancel}
                 </button>
@@ -283,17 +281,17 @@ function BotSelectCard({
           setSelectedBotId(bot.id);
         }
       }}
-      className="relative flex h-[240px] w-56 cursor-pointer flex-col justify-between rounded-[20px] bg-slate-50 p-5 shadow-sm transition hover:shadow-md"
+      className="dm-bot-card"
     >
       <div className="flex w-full items-center justify-between">
-        <span className="max-w-[140px] truncate text-[13px] font-semibold text-slate-700">{bot.id}</span>
+        <span className="dm-bot-card-meta max-w-[140px]">{bot.id}</span>
         <button
           type="button"
           onClick={(e) => {
             e.stopPropagation();
             setOpenMenuId(openMenuId === bot.id ? null : bot.id);
           }}
-          className="rounded-full p-1 text-slate-500 hover:bg-slate-200"
+          className="dm-menu-trigger"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="1" />
@@ -302,18 +300,18 @@ function BotSelectCard({
           </svg>
         </button>
         {openMenuId === bot.id ? (
-          <div className="absolute right-4 top-10 z-10 w-32 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg">
+          <div className="dm-bot-menu">
             <button
               type="button"
               onClick={(e) => onEdit(bot, e)}
-              className="flex w-full items-center px-4 py-2.5 text-sm text-slate-700 outline-none hover:bg-slate-50"
+              className="dm-bot-menu-item"
             >
               {t.dashboard.editBot}
             </button>
             <button
               type="button"
               onClick={(e) => void onDelete(bot, e)}
-              className="flex w-full items-center border-t border-slate-100 px-4 py-2.5 text-sm text-red-600 outline-none hover:bg-red-50"
+              className="dm-bot-menu-item dm-bot-menu-item--danger"
             >
               {t.dashboard.deleteBot}
             </button>
@@ -328,7 +326,7 @@ function BotSelectCard({
           >
             {bot.name.charAt(0).toUpperCase()}
           </div>
-          <div className="absolute bottom-0 right-0 flex h-7 w-7 items-center justify-center rounded-full border border-slate-100 bg-white p-1 shadow-[0_0_4px_rgba(0,0,0,0.1)]">
+          <div className="dm-bot-badge-ring">
             <img src={platform.logo} alt={platform.name} className="h-full w-full object-contain" />
           </div>
         </div>
@@ -344,21 +342,21 @@ function BotSelectCard({
             <input
               value={editingBotName}
               onChange={(e) => setEditingBotName(e.target.value)}
-              className="w-full rounded border border-slate-300 px-2 py-1.5 text-sm outline-none focus:border-slate-500"
+              className="dm-bot-edit-input"
               autoFocus
             />
             <div className="flex gap-1">
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="flex-1 rounded bg-slate-800 py-1 text-[11px] text-white hover:bg-slate-700"
+                className="dm-bot-edit-save"
               >
                 {isSubmitting ? t.auth.common.submitting : t.dashboard.save}
               </button>
               <button
                 type="button"
                 onClick={onCancelEdit}
-                className="flex-1 rounded bg-slate-200 py-1 text-[11px] text-slate-700 hover:bg-slate-300"
+                className="dm-bot-edit-cancel"
               >
                 {t.dashboard.cancel}
               </button>
@@ -366,9 +364,9 @@ function BotSelectCard({
           </form>
         ) : (
           <div className="space-y-1">
-            <span className="block w-full truncate text-[15px] font-medium text-slate-700">{bot.name}</span>
+            <span className="dm-bot-card-name">{bot.name}</span>
             {bot.status ? (
-              <span className="block text-[11px] uppercase tracking-wide text-slate-400">{bot.status}</span>
+              <span className="dm-bot-card-status">{bot.status}</span>
             ) : null}
           </div>
         )}

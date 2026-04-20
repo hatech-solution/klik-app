@@ -34,7 +34,7 @@ export const RouteGuard = ({ children, locale }: RouteGuardProps) => {
 
   if (!isReady) {
     return (
-      <div className="flex h-screen w-screen flex-col items-center justify-center bg-slate-50">
+      <div className="dm-route-loading">
         <div
           aria-busy="true"
           aria-label={t.common.loadingScreen}

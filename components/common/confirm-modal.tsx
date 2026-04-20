@@ -49,7 +49,7 @@ export function ConfirmModal({
 
   return (
     <div
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm animate-in fade-in duration-200"
+      className="dm-modal-backdrop fixed inset-0 z-[60] flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in duration-200"
       role="presentation"
       onClick={() => {
         if (!busy) onCancel();
@@ -59,22 +59,22 @@ export function ConfirmModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="confirm-modal-title"
-        className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl animate-in zoom-in-95 duration-200"
+        className="dm-modal-panel w-full max-w-md p-6 animate-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
-        <h3 id="confirm-modal-title" className="text-lg font-semibold text-slate-900">
+        <h3 id="confirm-modal-title" className="text-lg font-semibold text-[var(--dm-text)]">
           {title}
         </h3>
-        <p className="mt-2 text-sm text-slate-600">{description}</p>
+        <p className="mt-2 text-sm text-[var(--dm-text-muted)]">{description}</p>
         {errorMessage ? (
-          <p className="mt-3 rounded-md bg-red-50 px-3 py-2 text-sm text-red-600">{errorMessage}</p>
+          <p className="dm-alert-error dm-alert-tight mt-3">{errorMessage}</p>
         ) : null}
         <div className="mt-6 flex justify-end gap-3">
           <button
             type="button"
             disabled={busy}
             onClick={onCancel}
-            className="rounded-lg px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 disabled:opacity-50"
+            className="dm-btn-ghost disabled:opacity-50"
           >
             {cancelLabel}
           </button>

@@ -27,7 +27,7 @@ export function StoreSettingsRoutePlaceholder({ kind }: { kind: Kind }) {
         : st.placeholderPublic;
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+    <section className="dm-panel p-8">
       <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
       <p className="mt-3 text-sm text-slate-600">{body}</p>
       <p className="mt-6 text-xs font-semibold uppercase tracking-wide text-slate-400">{st.placeholderTitle}</p>

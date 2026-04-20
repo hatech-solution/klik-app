@@ -33,6 +33,13 @@ const messages = {
       vi: "Tiếng Việt",
       en: "English",
     },
+    theme: {
+      label: "Giao diện",
+      light: "Sáng",
+      dark: "Tối",
+      switchToLight: "Chuyển sang giao diện sáng",
+      switchToDark: "Chuyển sang giao diện tối",
+    },
     header: {
       logout: "Đăng xuất",
     },
@@ -464,6 +471,13 @@ const messages = {
       label: "Language",
       vi: "Tiếng Việt",
       en: "English",
+    },
+    theme: {
+      label: "Theme",
+      light: "Light",
+      dark: "Dark",
+      switchToLight: "Switch to light theme",
+      switchToDark: "Switch to dark theme",
     },
     header: {
       logout: "Logout",

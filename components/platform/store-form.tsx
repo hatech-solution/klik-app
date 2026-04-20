@@ -209,33 +209,33 @@ export function StoreForm({ locale, platform, selectedBot, mode, initialStore }:
       <div>
         <Link
           href={listHref}
-          className="inline-flex items-center gap-1 text-sm font-medium text-slate-600 hover:text-slate-900"
+          className="dm-back-link"
         >
           <span aria-hidden>←</span>
           {t.store.backToStoreList}
         </Link>
-        <h2 className="mt-3 text-2xl font-semibold tracking-tight text-slate-900">{title}</h2>
+        <h2 className="dm-text-heading mt-3">{title}</h2>
       </div>
 
       {formError ? (
-        <div className="rounded-md bg-red-50 p-3 text-sm text-red-600">{formError}</div>
+        <div className="dm-form-error-banner">{formError}</div>
       ) : null}
 
       <form onSubmit={handleSubmit} className="flex max-w-2xl flex-col gap-4">
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700">{t.store.name} *</label>
+          <label className="dm-label mb-1 block">{t.store.name} *</label>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className={`w-full rounded-lg border px-3 py-2 text-sm outline-none ${fieldBorderClass("name")}`}
+            className={`dm-input ${fieldBorderClass("name")}`}
             required
           />
           {fieldErrors.name ? <p className="mt-1 text-xs text-red-600">{fieldErrors.name}</p> : null}
         </div>
 
-        <div className="rounded-lg border border-slate-200 bg-slate-50/80 p-4">
-          <p className="mb-3 text-sm font-semibold text-slate-800">{t.store.bookingLocaleTitle}</p>
-          <label className="mb-1 block text-sm font-medium text-slate-700">{t.store.region}</label>
+        <div className="dm-well">
+          <p className="mb-3 text-sm font-semibold text-[var(--dm-text)]">{t.store.bookingLocaleTitle}</p>
+          <label className="dm-label mb-1 block">{t.store.region}</label>
           <select
             value={regionCode}
             disabled={regionsLoading}
@@ -244,7 +244,7 @@ export function StoreForm({ locale, platform, selectedBot, mode, initialStore }:
               setRegionCode(v);
               applyRegionDefaults(v, regions.length > 0 ? regions : []);
             }}
-            className={`w-full rounded-lg border px-3 py-2 text-sm outline-none disabled:cursor-not-allowed disabled:bg-slate-100 ${fieldBorderClass("regionCode")}`}
+            className={`dm-input disabled:cursor-not-allowed disabled:opacity-70 ${fieldBorderClass("regionCode")}`}
           >
             {(regions.length > 0
               ? regions
@@ -258,7 +258,7 @@ export function StoreForm({ locale, platform, selectedBot, mode, initialStore }:
           {fieldErrors.regionCode ? (
             <p className="mt-1 text-xs text-red-600">{fieldErrors.regionCode}</p>
           ) : null}
-          <p className="mt-1 text-xs text-slate-500">{t.store.regionHint}</p>
+          <p className="mt-1 text-xs text-[var(--dm-text-muted)]">{t.store.regionHint}</p>
           {regionsLoading ? (
             <div className="mt-2 space-y-2" aria-busy="true" aria-label={t.store.loadingRegions} role="status">
               <Skeleton className="h-3 w-44" />
@@ -268,24 +268,24 @@ export function StoreForm({ locale, platform, selectedBot, mode, initialStore }:
 
           <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700">{t.store.timezone}</label>
+              <label className="dm-label mb-1 block">{t.store.timezone}</label>
               <input
                 value={timezone}
                 onChange={(e) => setTimezone(e.target.value)}
                 maxLength={64}
-                className={`w-full rounded-lg border px-3 py-2 font-mono text-sm outline-none ${fieldBorderClass("timezone")}`}
+                className={`dm-input font-mono ${fieldBorderClass("timezone")}`}
               />
               {fieldErrors.timezone ? (
                 <p className="mt-1 text-xs text-red-600">{fieldErrors.timezone}</p>
               ) : null}
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700">{t.store.currency}</label>
+              <label className="dm-label mb-1 block">{t.store.currency}</label>
               <input
                 value={currencyCode}
                 onChange={(e) => setCurrencyCode(e.target.value.toUpperCase().slice(0, 3))}
                 maxLength={3}
-                className={`w-full rounded-lg border px-3 py-2 font-mono text-sm outline-none ${fieldBorderClass("currencyCode")}`}
+                className={`dm-input font-mono ${fieldBorderClass("currencyCode")}`}
               />
               {fieldErrors.currencyCode ? (
                 <p className="mt-1 text-xs text-red-600">{fieldErrors.currencyCode}</p>
@@ -295,45 +295,45 @@ export function StoreForm({ locale, platform, selectedBot, mode, initialStore }:
         </div>
 
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700">{t.store.address}</label>
+          <label className="dm-label mb-1 block">{t.store.address}</label>
           <input
             value={address}
             onChange={(e) => setAddress(e.target.value)}
-            className={`w-full rounded-lg border px-3 py-2 text-sm outline-none ${fieldBorderClass("address")}`}
+            className={`dm-input ${fieldBorderClass("address")}`}
           />
           {fieldErrors.address ? <p className="mt-1 text-xs text-red-600">{fieldErrors.address}</p> : null}
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">{t.store.phone}</label>
+            <label className="dm-label mb-1 block">{t.store.phone}</label>
             <input
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className={`w-full rounded-lg border px-3 py-2 text-sm outline-none ${fieldBorderClass("phone")}`}
+              className={`dm-input ${fieldBorderClass("phone")}`}
             />
             {fieldErrors.phone ? <p className="mt-1 text-xs text-red-600">{fieldErrors.phone}</p> : null}
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">{t.store.email}</label>
+            <label className="dm-label mb-1 block">{t.store.email}</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className={`w-full rounded-lg border px-3 py-2 text-sm outline-none ${fieldBorderClass("email")}`}
+              className={`dm-input ${fieldBorderClass("email")}`}
             />
             {fieldErrors.email ? <p className="mt-1 text-xs text-red-600">{fieldErrors.email}</p> : null}
           </div>
         </div>
 
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700">{t.store.description}</label>
+          <label className="dm-label mb-1 block">{t.store.description}</label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="..."
             rows={2}
-            className={`w-full rounded-lg border px-3 py-2 text-sm outline-none ${fieldBorderClass("description")}`}
+            className={`dm-input ${fieldBorderClass("description")}`}
           />
           {fieldErrors.description ? (
             <p className="mt-1 text-xs text-red-600">{fieldErrors.description}</p>
@@ -342,22 +342,22 @@ export function StoreForm({ locale, platform, selectedBot, mode, initialStore }:
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">{t.store.youtubeUrl}</label>
+            <label className="dm-label mb-1 block">{t.store.youtubeUrl}</label>
             <input
               value={youtubeUrl}
               onChange={(e) => setYoutubeUrl(e.target.value)}
-              className={`w-full rounded-lg border px-3 py-2 text-sm outline-none ${fieldBorderClass("youtubeUrl")}`}
+              className={`dm-input ${fieldBorderClass("youtubeUrl")}`}
             />
             {fieldErrors.youtubeUrl ? (
               <p className="mt-1 text-xs text-red-600">{fieldErrors.youtubeUrl}</p>
             ) : null}
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">{t.store.facebookUrl}</label>
+            <label className="dm-label mb-1 block">{t.store.facebookUrl}</label>
             <input
               value={facebookUrl}
               onChange={(e) => setFacebookUrl(e.target.value)}
-              className={`w-full rounded-lg border px-3 py-2 text-sm outline-none ${fieldBorderClass("facebookUrl")}`}
+              className={`dm-input ${fieldBorderClass("facebookUrl")}`}
             />
             {fieldErrors.facebookUrl ? (
               <p className="mt-1 text-xs text-red-600">{fieldErrors.facebookUrl}</p>
@@ -367,22 +367,22 @@ export function StoreForm({ locale, platform, selectedBot, mode, initialStore }:
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">{t.store.googleMapUrl}</label>
+            <label className="dm-label mb-1 block">{t.store.googleMapUrl}</label>
             <input
               value={googleMapUrl}
               onChange={(e) => setGoogleMapUrl(e.target.value)}
-              className={`w-full rounded-lg border px-3 py-2 text-sm outline-none ${fieldBorderClass("googleMapUrl")}`}
+              className={`dm-input ${fieldBorderClass("googleMapUrl")}`}
             />
             {fieldErrors.googleMapUrl ? (
               <p className="mt-1 text-xs text-red-600">{fieldErrors.googleMapUrl}</p>
             ) : null}
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">{t.store.websiteUrl}</label>
+            <label className="dm-label mb-1 block">{t.store.websiteUrl}</label>
             <input
               value={websiteUrl}
               onChange={(e) => setWebsiteUrl(e.target.value)}
-              className={`w-full rounded-lg border px-3 py-2 text-sm outline-none ${fieldBorderClass("websiteUrl")}`}
+              className={`dm-input ${fieldBorderClass("websiteUrl")}`}
             />
             {fieldErrors.websiteUrl ? (
               <p className="mt-1 text-xs text-red-600">{fieldErrors.websiteUrl}</p>
@@ -393,7 +393,7 @@ export function StoreForm({ locale, platform, selectedBot, mode, initialStore }:
         <div className="flex justify-end gap-3 pt-2">
           <Link
             href={listHref}
-            className="rounded-lg px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+            className="dm-btn-ghost"
           >
             {t.store.cancel}
           </Link>

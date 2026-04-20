@@ -45,8 +45,8 @@ export function DashboardShell({ locale, children }: DashboardShellProps) {
 
   return (
     <>
-      <main className="min-h-screen bg-slate-50/80">
-        <header className={`${platform.headerClassName} border-b px-6 py-4 shadow-sm`}>
+      <main className="dashboard-main">
+        <header className={`${platform.headerClassName} dashboard-header`}>
           <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
               <h1 className="flex items-center text-xl font-semibold">
@@ -60,7 +60,7 @@ export function DashboardShell({ locale, children }: DashboardShellProps) {
               <select
                 value={selectedBotId}
                 onChange={(event) => setSelectedBotId(event.target.value)}
-                className="min-w-56 rounded-lg border border-white/30 bg-white px-3 py-2 text-sm text-slate-900 outline-none"
+                className="dashboard-bot-select"
               >
                 <option value="">{t.dashboard.chooseBot}</option>
                 {bots.map((bot) => (
@@ -89,8 +89,8 @@ export function DashboardShell({ locale, children }: DashboardShellProps) {
           </div>
         ) : (
           <div className="mx-auto grid w-full max-w-7xl gap-6 p-6 lg:grid-cols-[260px_1fr]">
-            <aside className="h-fit rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-              <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-500">
+            <aside className="dashboard-sidebar">
+              <h2 className="dashboard-sidebar-title">
                 {t.dashboard.menuTitle}
               </h2>
               <nav className="space-y-2">
@@ -109,10 +109,10 @@ export function DashboardShell({ locale, children }: DashboardShellProps) {
                     <Link
                       key={item.id}
                       href={href}
-                      className={`block w-full rounded-lg px-3 py-2 text-left text-sm font-medium transition ${
+                      className={`dashboard-nav-link ${
                         active
-                          ? `${platform.accentClassName}`
-                          : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                          ? platform.accentClassName
+                          : "inactive"
                       }`}
                     >
                       {labelKey}
@@ -122,11 +122,11 @@ export function DashboardShell({ locale, children }: DashboardShellProps) {
               </nav>
             </aside>
 
-            <section className="min-h-[480px] rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-              <div className={`mb-6 rounded-xl border p-4 ${platform.surfaceClassName}`}>
-                <p className="text-sm text-slate-700">{t.dashboard.selectedBot}</p>
-                <h3 className="mt-1 text-xl font-semibold text-slate-900">{selectedBot?.name ?? "—"}</h3>
-                <p className="font-mono text-sm text-slate-600">
+            <section className="dashboard-content">
+              <div className="dashboard-selected-bot mb-6 rounded-xl p-4" data-platform={platform.id}>
+                <p className="dashboard-bot-info-text">{t.dashboard.selectedBot}</p>
+                <h3 className="dashboard-bot-name">{selectedBot?.name ?? "—"}</h3>
+                <p className="dashboard-bot-id">
                   bot_id: {selectedBot?.id ?? "—"}
                 </p>
               </div>

@@ -164,75 +164,75 @@ export function StoreStaffFormClient({ locale, mode, staffId }: Props) {
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-lg font-semibold text-slate-900">
+        <h2 className="text-lg font-semibold text-[var(--dm-text)]">
           {mode === "create" ? st.formCreateTitle : st.formEditTitle}
         </h2>
-        <Link href={listHref} className="text-sm font-medium text-slate-600 underline hover:text-slate-900">
+        <Link href={listHref} className="dm-link-accent text-sm underline">
           {st.backToList}
         </Link>
       </div>
 
-      {banner ? <div className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-800">{banner}</div> : null}
+      {banner ? <div className="dm-form-error-banner">{banner}</div> : null}
 
-      <form onSubmit={(e) => void handleSubmit(e)} className="space-y-4 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <form onSubmit={(e) => void handleSubmit(e)} className="dm-overview-panel space-y-4">
         <div>
-          <label className="mb-1 block text-xs font-medium text-slate-700">{st.formName} *</label>
+          <label className="dm-label mb-1 block text-xs">{st.formName} *</label>
           <input
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="dm-input"
           />
         </div>
         <div>
-          <label className="mb-1 block text-xs font-medium text-slate-700">{st.formDescription} *</label>
+          <label className="dm-label mb-1 block text-xs">{st.formDescription} *</label>
           <textarea
             required
             rows={3}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="dm-input min-h-[5rem] resize-y"
           />
         </div>
         <div>
-          <label className="mb-1 block text-xs font-medium text-slate-700">{st.formAddress}</label>
-          <input value={address} onChange={(e) => setAddress(e.target.value)} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          <label className="dm-label mb-1 block text-xs">{st.formAddress}</label>
+          <input value={address} onChange={(e) => setAddress(e.target.value)} className="dm-input" />
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-700">{st.formPhone}</label>
-            <input value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+            <label className="dm-label mb-1 block text-xs">{st.formPhone}</label>
+            <input value={phone} onChange={(e) => setPhone(e.target.value)} className="dm-input" />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-700">{st.formEmail}</label>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+            <label className="dm-label mb-1 block text-xs">{st.formEmail}</label>
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="dm-input" />
           </div>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-700">{st.formPrice}</label>
-            <input type="text" inputMode="decimal" value={price} onChange={(e) => setPrice(e.target.value)} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+            <label className="dm-label mb-1 block text-xs">{st.formPrice}</label>
+            <input type="text" inputMode="decimal" value={price} onChange={(e) => setPrice(e.target.value)} className="dm-input" />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-700">{st.formMaxBookings}</label>
-            <input type="number" min={1} value={maxBookings} onChange={(e) => setMaxBookings(e.target.value)} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+            <label className="dm-label mb-1 block text-xs">{st.formMaxBookings}</label>
+            <input type="number" min={1} value={maxBookings} onChange={(e) => setMaxBookings(e.target.value)} className="dm-input" />
           </div>
         </div>
         <div>
-          <label className="mb-1 block text-xs font-medium text-slate-700">{st.formPrimaryImage}</label>
-          <input value={primaryImage} onChange={(e) => setPrimaryImage(e.target.value)} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          <label className="dm-label mb-1 block text-xs">{st.formPrimaryImage}</label>
+          <input value={primaryImage} onChange={(e) => setPrimaryImage(e.target.value)} className="dm-input" />
         </div>
         <div>
-          <label className="mb-1 block text-xs font-medium text-slate-700">{st.formGallery}</label>
-          <textarea rows={4} value={galleryText} onChange={(e) => setGalleryText(e.target.value)} className="w-full rounded-lg border border-slate-300 px-3 py-2 font-mono text-xs" />
+          <label className="dm-label mb-1 block text-xs">{st.formGallery}</label>
+          <textarea rows={4} value={galleryText} onChange={(e) => setGalleryText(e.target.value)} className="dm-input font-mono text-xs" />
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-700">{st.formSortOrder}</label>
-            <input type="number" value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+            <label className="dm-label mb-1 block text-xs">{st.formSortOrder}</label>
+            <input type="number" value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} className="dm-input" />
           </div>
-          <label className="flex items-center gap-2 pt-6 text-sm text-slate-800">
-            <input type="checkbox" checked={isVisible} onChange={(e) => setIsVisible(e.target.checked)} className="rounded border-slate-300" />
+          <label className="flex items-center gap-2 pt-6 text-sm text-[var(--dm-text-secondary)]">
+            <input type="checkbox" checked={isVisible} onChange={(e) => setIsVisible(e.target.checked)} className="rounded border-[var(--dm-border)]" />
             {st.formVisible}
           </label>
         </div>
@@ -244,10 +244,7 @@ export function StoreStaffFormClient({ locale, mode, staffId }: Props) {
           >
             {saving ? "…" : mode === "create" ? st.formSubmitCreate : st.formSubmitSave}
           </button>
-          <Link
-            href={listHref}
-            className="rounded-lg border border-slate-300 px-5 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-          >
+          <Link href={listHref} className="dm-btn-ghost inline-flex items-center justify-center rounded-lg">
             {st.formCancel}
           </Link>
         </div>

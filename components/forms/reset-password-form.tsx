@@ -27,7 +27,7 @@ export function ResetPasswordForm({ locale }: ResetPasswordFormProps) {
       footer={
         <p>
           {t.auth.reset.backToLogin}{" "}
-          <Link href={`/${locale}/login`} className="font-medium text-sky-700">
+          <Link href={`/${locale}/login`} className="dm-link-accent">
             {t.auth.reset.login}
           </Link>
         </p>
@@ -35,12 +35,12 @@ export function ResetPasswordForm({ locale }: ResetPasswordFormProps) {
     >
       <form className="space-y-4" onSubmit={handleSubmit}>
         <label className="block space-y-1 text-sm">
-          <span className="text-slate-700">{t.auth.fields.email}</span>
+          <span className="dm-label">{t.auth.fields.email}</span>
           <input
             required
             type="email"
             placeholder="you@company.com"
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none ring-sky-500 focus:ring"
+            className="dm-input"
           />
         </label>
         <button
@@ -51,9 +51,7 @@ export function ResetPasswordForm({ locale }: ResetPasswordFormProps) {
         </button>
       </form>
       {sent ? (
-        <p className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-          {t.auth.reset.success}
-        </p>
+        <p className="dm-alert-success mt-4">{t.auth.reset.success}</p>
       ) : null}
     </AuthShell>
   );

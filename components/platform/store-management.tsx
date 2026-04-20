@@ -134,7 +134,7 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
       />
 
       <div className="flex items-center justify-between">
-        <h3 className="text-xl font-semibold text-slate-900">{t.dashboard.section.store.title}</h3>
+        <h3 className="text-xl font-semibold text-[var(--dm-text)]">{t.dashboard.section.store.title}</h3>
         <Link
           href={`/${locale}/store/new`}
           className={`flex items-center gap-1 rounded-lg px-4 py-2 text-sm font-medium ${platform.accentClassName} ${platform.hoverClassName}`}
@@ -147,7 +147,7 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
         </Link>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+      <div className="dm-table-wrap overflow-hidden rounded-xl">
         {loading ? (
           <LoadingRegion aria-label={t.store.loadingStoreList} className="p-4 sm:p-6">
             <StoreTableSkeleton />
@@ -156,8 +156,8 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
           <div className="p-8 text-center text-sm text-red-500">{error}</div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[720px] text-left text-sm text-slate-600">
-              <thead className="bg-slate-50 text-slate-700">
+            <table className="w-full min-w-[720px] text-left text-sm text-[var(--dm-text-secondary)]">
+              <thead className="dm-thead">
                 <tr>
                   <th className="px-4 py-3 font-medium">{t.store.name}</th>
                   <th className="px-4 py-3 font-medium">{t.store.region}</th>
@@ -168,17 +168,17 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
                   <th className="px-4 py-3 text-right font-medium">{t.store.actions}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-200">
+              <tbody className="divide-y divide-[var(--dm-border)]">
                 {stores.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-4 py-8 text-center text-slate-500">
+                    <td colSpan={7} className="px-4 py-8 text-center text-[var(--dm-text-muted)]">
                       {t.store.emptyStoreList}
                     </td>
                   </tr>
                 ) : (
                   stores.map((store) => (
-                    <tr key={store.id} className="hover:bg-slate-50">
-                      <td className="px-4 py-3 font-medium text-slate-900">{store.name}</td>
+                    <tr key={store.id} className="dm-tbody-row">
+                      <td className="px-4 py-3 font-medium text-[var(--dm-text)]">{store.name}</td>
                       <td className="px-4 py-3 font-mono text-xs text-slate-600">
                         {store.regionCode} · {store.currencyCode}
                       </td>

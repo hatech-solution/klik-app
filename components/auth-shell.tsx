@@ -22,20 +22,15 @@ export function AuthShell({
 }: AuthShellProps) {
   return (
     <main className="flex min-h-screen items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-        <Link
-          href={`/${locale}/login`}
-          className="mb-6 inline-flex items-center gap-2 text-sm text-slate-500"
-        >
+      <div className="dm-auth-shell-inner w-full max-w-md">
+        <Link href={`/${locale}/login`} className="dm-auth-brand">
           <span className="text-base">💬</span>
           Klik
         </Link>
-        <h1 className="text-2xl font-semibold text-slate-900">{title}</h1>
-        <p className="mt-2 text-sm text-slate-600">{description}</p>
+        <h1 className="dm-auth-title">{title}</h1>
+        <p className="dm-auth-desc">{description}</p>
         <div className="mt-6 space-y-4">{children}</div>
-        <div className="mt-6 border-t border-slate-200 pt-4 text-sm text-slate-600">
-          {footer}
-        </div>
+        <div className="dm-auth-footer">{footer}</div>
       </div>
     </main>
   );

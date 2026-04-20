@@ -1,13 +1,19 @@
 import { authorizedRequest } from "@/lib/api/authenticated-request";
 import { toApiClientError } from "@/lib/api/error";
 import type {
+  CourseApiItem,
+  CourseSettingsApiItem,
+  CreateCoursePayload,
   CreateStaffPayload,
   CreateStorePayload,
   PatchStoreStatusPayload,
+  PutCourseSettingsPayload,
+  PutStaffCourseLinksPayload,
   PutStaffOperatingHoursPayload,
   PutStaffSettingsPayload,
   PutStoreOperatingHoursPayload,
   RegionApiItem,
+  StaffCourseLinksApiItem,
   StaffApiItem,
   StaffOperatingHoursResolveResponse,
   StaffOperatingHoursResponse,
@@ -15,6 +21,7 @@ import type {
   StoreApiItem,
   StoreOperatingHoursResolveResponse,
   StoreOperatingHoursResponse,
+  UpdateCoursePayload,
   UpdateStaffPayload,
   UpdateStorePayload,
 } from "./types";
@@ -201,6 +208,163 @@ export async function resolveStoreOperatingHours(
   }
 
   return body as StoreOperatingHoursResolveResponse;
+}
+
+export async function fetchCourseList(botId: string, storeId: string): Promise<CourseApiItem[]> {
+  const response = await authorizedRequest({
+    method: "GET",
+    path: `/api/v1/stores/${storeId}/courses`,
+    extraHeaders: { "X-Bot-Id": botId },
+    cache: "no-store",
+    includeJsonContentType: false,
+  });
+  const body = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw toApiClientError(body, "Failed to load courses", response.status);
+  }
+  return body as CourseApiItem[];
+}
+
+export async function createCourse(
+  botId: string,
+  storeId: string,
+  payload: CreateCoursePayload,
+): Promise<CourseApiItem> {
+  const response = await authorizedRequest({
+    method: "POST",
+    path: `/api/v1/stores/${storeId}/courses`,
+    extraHeaders: { "X-Bot-Id": botId },
+    body: payload,
+  });
+  const body = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw toApiClientError(body, "Failed to create course", response.status);
+  }
+  return body as CourseApiItem;
+}
+
+export async function fetchCourse(
+  botId: string,
+  storeId: string,
+  courseId: string,
+): Promise<CourseApiItem> {
+  const response = await authorizedRequest({
+    method: "GET",
+    path: `/api/v1/stores/${storeId}/courses/${courseId}`,
+    extraHeaders: { "X-Bot-Id": botId },
+    cache: "no-store",
+    includeJsonContentType: false,
+  });
+  const body = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw toApiClientError(body, "Failed to load course", response.status);
+  }
+  return body as CourseApiItem;
+}
+
+export async function updateCourse(
+  botId: string,
+  storeId: string,
+  courseId: string,
+  payload: UpdateCoursePayload,
+): Promise<CourseApiItem> {
+  const response = await authorizedRequest({
+    method: "PUT",
+    path: `/api/v1/stores/${storeId}/courses/${courseId}`,
+    extraHeaders: { "X-Bot-Id": botId },
+    body: payload,
+  });
+  const body = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw toApiClientError(body, "Failed to update course", response.status);
+  }
+  return body as CourseApiItem;
+}
+
+export async function deleteCourse(botId: string, storeId: string, courseId: string): Promise<void> {
+  const response = await authorizedRequest({
+    method: "DELETE",
+    path: `/api/v1/stores/${storeId}/courses/${courseId}`,
+    extraHeaders: { "X-Bot-Id": botId },
+  });
+  if (!response.ok) {
+    const body = await response.json().catch(() => null);
+    throw toApiClientError(body, "Failed to delete course", response.status);
+  }
+}
+
+export async function fetchCourseSettings(
+  botId: string,
+  storeId: string,
+): Promise<CourseSettingsApiItem> {
+  const response = await authorizedRequest({
+    method: "GET",
+    path: `/api/v1/stores/${storeId}/course-settings`,
+    extraHeaders: { "X-Bot-Id": botId },
+    cache: "no-store",
+    includeJsonContentType: false,
+  });
+  const body = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw toApiClientError(body, "Failed to load course settings", response.status);
+  }
+  return body as CourseSettingsApiItem;
+}
+
+export async function putCourseSettings(
+  botId: string,
+  storeId: string,
+  payload: PutCourseSettingsPayload,
+): Promise<CourseSettingsApiItem> {
+  const response = await authorizedRequest({
+    method: "PUT",
+    path: `/api/v1/stores/${storeId}/course-settings`,
+    extraHeaders: { "X-Bot-Id": botId },
+    body: payload,
+  });
+  const body = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw toApiClientError(body, "Failed to save course settings", response.status);
+  }
+  return body as CourseSettingsApiItem;
+}
+
+export async function fetchStaffCourseLinks(
+  botId: string,
+  storeId: string,
+  staffId: string,
+): Promise<StaffCourseLinksApiItem> {
+  const response = await authorizedRequest({
+    method: "GET",
+    path: `/api/v1/stores/${storeId}/staff/${staffId}/course-links`,
+    extraHeaders: { "X-Bot-Id": botId },
+    cache: "no-store",
+    includeJsonContentType: false,
+  });
+  const body = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw toApiClientError(body, "Failed to load staff course links", response.status);
+  }
+  return body as StaffCourseLinksApiItem;
+}
+
+export async function putStaffCourseLinks(
+  botId: string,
+  storeId: string,
+  staffId: string,
+  payload: PutStaffCourseLinksPayload,
+): Promise<StaffCourseLinksApiItem> {
+  const response = await authorizedRequest({
+    method: "PUT",
+    path: `/api/v1/stores/${storeId}/staff/${staffId}/course-links`,
+    extraHeaders: { "X-Bot-Id": botId },
+    body: payload,
+  });
+  const body = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw toApiClientError(body, "Failed to save staff course links", response.status);
+  }
+  return body as StaffCourseLinksApiItem;
 }
 
 export async function fetchStaffList(botId: string, storeId: string): Promise<StaffApiItem[]> {

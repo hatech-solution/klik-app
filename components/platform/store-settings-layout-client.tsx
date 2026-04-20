@@ -36,6 +36,7 @@ export function StoreSettingsLayoutClient({ locale, storeId, children }: Props) 
   const oh = t.store.operatingHours;
   const { platformId, loadFromStorage } = usePlatformStore();
   const platform = platformId ? PLATFORM_CONFIGS[platformId as PlatformId] : undefined;
+  const [platformHydrated, setPlatformHydrated] = useState(false);
 
   const [botId, setBotId] = useState("");
   const [store, setStore] = useState<Pick<Store, "id" | "name" | "timezone"> | null>(null);
@@ -116,10 +117,11 @@ export function StoreSettingsLayoutClient({ locale, storeId, children }: Props) 
 
   useEffect(() => {
     loadFromStorage();
+    setPlatformHydrated(true);
   }, [loadFromStorage]);
 
   useEffect(() => {
-    if (typeof window === "undefined" || !platform) return;
+    if (typeof window === "undefined" || !platform || !platformHydrated) return;
 
     const id = localStorage.getItem(SESSION_BOT_STORAGE_KEY) ?? "";
     setBotId(id);
@@ -162,13 +164,14 @@ export function StoreSettingsLayoutClient({ locale, storeId, children }: Props) 
     return () => {
       cancelled = true;
     };
-  }, [storeId, platform]);
+  }, [storeId, platform, platformHydrated]);
 
   useEffect(() => {
+    if (!platformHydrated) return;
     if (!platformId) {
       router.replace(`/${locale}/select-platform`);
     }
-  }, [platformId, router, locale]);
+  }, [platformHydrated, platformId, router, locale]);
 
   const navLink = (href: string, label: string) => {
     const active = pathname === href || pathname.startsWith(`${href}/`);
@@ -341,7 +344,7 @@ export function StoreSettingsLayoutClient({ locale, storeId, children }: Props) 
                   ) : null}
                 </div>
                 {navLink(`${base}/staff`, st.navRouteStaff)}
-                {navLink(`${base}/services`, st.navRouteServices)}
+                {navLink(`${base}/courses`, st.navRouteServices)}
                 {navLink(`${base}/public-booking`, st.navRoutePublicBooking)}
               </div>
             </nav>

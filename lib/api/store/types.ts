@@ -158,6 +158,58 @@ export type PutStaffSettingsPayload = {
   max_concurrent_staff_bookings_per_slot?: number | null;
 };
 
+export type CourseApiItem = {
+  id: string;
+  store_id: string;
+  name: string;
+  description: string;
+  duration_estimate_minutes: number;
+  primary_image: string | null;
+  gallery_images: string[];
+  price: number | null;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type CreateCoursePayload = {
+  name: string;
+  description: string;
+  duration_estimate_minutes: number;
+  primary_image?: string | null;
+  gallery_images?: string[];
+  price?: number | null;
+  sort_order?: number | null;
+};
+
+export type UpdateCoursePayload = CreateCoursePayload;
+
+export type CourseSettingsApiItem = {
+  store_id: string;
+  require_course_on_booking: boolean;
+  hide_course_price_on_public: boolean;
+  show_course_duration_on_public: boolean;
+  default_duration_when_no_course: number | null;
+};
+
+export type PutCourseSettingsPayload = {
+  require_course_on_booking: boolean;
+  hide_course_price_on_public: boolean;
+  show_course_duration_on_public: boolean;
+  default_duration_when_no_course?: number | null;
+};
+
+export type StaffCourseLinksApiItem = {
+  staff_id: string;
+  staff_covers_all_courses: boolean;
+  course_ids: string[];
+};
+
+export type PutStaffCourseLinksPayload = {
+  staff_covers_all_courses: boolean;
+  course_ids: string[];
+};
+
 export type StaffOperatingHoursResponse = {
   staff_id: string;
   store_id: string;

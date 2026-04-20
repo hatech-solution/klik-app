@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { useStoreSettingsGate } from "@/components/platform/store-settings-context";
@@ -26,6 +27,7 @@ function parseGallery(text: string): string[] {
 }
 
 export function StoreStaffFormClient({ locale, mode, staffId }: Props) {
+  const router = useRouter();
   const gate = useStoreSettingsGate();
   const t = getMessages(locale);
   const st = t.store.staff;
@@ -125,7 +127,7 @@ export function StoreStaffFormClient({ locale, mode, staffId }: Props) {
       if (mode === "create") {
         await createStaff(gate.botId, gate.storeId, payload);
         notifySuccess(st.formSaved);
-        window.location.assign(`/${locale}/stores/${gate.storeId}/settings/staff`);
+        router.replace(`/${locale}/stores/${gate.storeId}/settings/staff`);
       } else if (staffId) {
         await updateStaff(gate.botId, gate.storeId, staffId, payload);
         notifySuccess(st.formSaved);

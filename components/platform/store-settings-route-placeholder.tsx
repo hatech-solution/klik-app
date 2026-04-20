@@ -3,7 +3,7 @@
 import { useStoreSettingsGate } from "@/components/platform/store-settings-context";
 import { getMessages } from "@/lib/i18n";
 
-type Kind = "staff" | "services" | "public";
+type Kind = "staff" | "courses" | "public";
 
 export function StoreSettingsRoutePlaceholder({ kind }: { kind: Kind }) {
   const ctx = useStoreSettingsGate();
@@ -16,13 +16,13 @@ export function StoreSettingsRoutePlaceholder({ kind }: { kind: Kind }) {
   const title =
     kind === "staff"
       ? oh.navSection2
-      : kind === "services"
+      : kind === "courses"
         ? oh.navSection3
         : oh.navSection4;
   const body =
     kind === "staff"
       ? st.placeholderStaff
-      : kind === "services"
+      : kind === "courses"
         ? st.placeholderCourse
         : st.placeholderPublic;
 

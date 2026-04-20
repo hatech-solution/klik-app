@@ -4,7 +4,7 @@ type PageProps = {
   params: Promise<{ locale: string; storeId: string }>;
 };
 
-export default async function StoreSettingsServicesPage({ params }: PageProps) {
+export default async function StoreCourseNewPage({ params }: PageProps) {
   const { locale, storeId } = await params;
-  redirect(`/${locale}/stores/${storeId}/settings/courses`);
+  redirect(`/${locale}/stores/${storeId}/settings/courses/new`);
 }

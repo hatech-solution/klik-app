@@ -42,8 +42,8 @@ export function StoreSettingsLayoutClient({ locale, storeId, children }: Props) 
   const [gateLoading, setGateLoading] = useState(true);
   const [gateError, setGateError] = useState<"no_bot" | "not_found" | null>(null);
 
-  const backHref = `/${locale}/dashboard`;
-  const base = `/${locale}/dashboard/stores/${storeId}/settings`;
+  const backHref = `/${locale}/overview`;
+  const base = `/${locale}/stores/${storeId}/settings`;
   const hoursHref = `${base}/hours`;
   const isHoursRoute = pathname === hoursHref;
 

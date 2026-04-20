@@ -40,7 +40,6 @@ export function DashboardShell({ locale, children }: DashboardShellProps) {
 
   const navActive = (segment: string) => {
     const href = dashboardNavHref(locale, segment);
-    if (!segment) return pathname === href || pathname === `${href}/`;
     return pathname === href || pathname.startsWith(`${href}/`);
   };
 

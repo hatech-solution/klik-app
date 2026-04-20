@@ -7,7 +7,7 @@ type PageProps = {
   params: Promise<{ locale: string; storeId: string }>;
 };
 
-export default async function DashboardStoreEditPage({ params }: PageProps) {
+export default async function StoreEditPage({ params }: PageProps) {
   const { locale, storeId } = await params;
 
   if (!isLocale(locale)) {

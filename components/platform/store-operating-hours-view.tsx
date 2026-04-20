@@ -300,7 +300,7 @@ function StoreOperatingHoursEditorInner({
 
   const baseId = useId();
   const scheduleLocked = Boolean(staffId && staffHoursScope === "inherit_store");
-  const staffListHref = `/${locale}/dashboard/stores/${store.id}/settings/staff`;
+  const staffListHref = `/${locale}/stores/${store.id}/settings/staff`;
 
   useEffect(() => {
     if (loading || loadFailed) return;

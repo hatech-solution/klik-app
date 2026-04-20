@@ -1,13 +1,13 @@
-# Screen: Platform Dashboard
+# Screen: Platform Overview
 
 ## Route
 
-- Public URL: `https://<platform>.<domain>/{locale}/dashboard`
-- Internal route: `/{locale}/dashboard` (platform lấy từ `platform_id` trong client storage)
+- Public URL: `https://<platform>.<domain>/{locale}/overview`
+- Internal route: `/{locale}/overview` (platform lấy từ `platform_id` trong client storage)
 
 ## Mục tiêu
 
-- Hiển thị dashboard admin theo từng platform với:
+- Hiển thị trang tổng quan admin theo từng platform với:
   - màu/logo theo platform
   - layout nhất quán
   - chọn bot
@@ -16,8 +16,8 @@
 
 ## Thành phần chính
 
-- Page: `app/[locale]/dashboard/page.tsx`
-- Dashboard UI: `components/platform/platform-dashboard.tsx`
+- Page: `app/[locale]/overview/page.tsx`
+- Overview UI: `components/platform/dashboard-overview.tsx`
 - API clients:
   - `lib/api/bot/client.ts`
   - `lib/api/bot/mapper.ts`
@@ -25,7 +25,7 @@
   - `lib/api/store/client.ts`, `lib/api/store/types.ts`, `lib/api/store/form-field-errors.ts`
 - Shared types/constants:
   - `lib/types/bot.ts`
-  - `lib/constants/dashboard-sections.ts`
+  - `lib/constants/dashboard-nav.ts`
 - Toast toàn app: `lib/toast.ts` + `components/providers/app-toaster.tsx` (Sonner).
 - Modal xác nhận tái sử dụng: `components/common/confirm-modal.tsx` (xóa store).
 - Chi tiết module store: `docs/screens/store-management.md`.
@@ -38,7 +38,7 @@
   - Nếu chưa có bot, tạo bot mới qua form (POST `/api/v1/bots`, kèm header `X-Platform-Id`)
   - Sửa bot (PUT `/api/v1/bots/:id`)
   - Tắt bot (PATCH `/api/v1/bots/:id/deactivate`)
-  - Chọn menu trái (store/user/conversation)
+  - Navigation menu (overview/store/user/conversation) - các route độc lập
   - Store: tải vùng `GET /api/v1/regions` (không `X-Bot-Id`); CRUD `GET/POST/PUT/DELETE /api/v1/stores` với `X-Bot-Id`; payload/response có `region_code`, `timezone`, `currency_code`; lỗi validate map theo `message_key` / `field_errors`
 - Output:
   - Hiển thị nội dung module đang active

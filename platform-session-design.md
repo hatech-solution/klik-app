@@ -19,7 +19,7 @@ Hệ thống sử dụng kiến trúc hoàn toàn ở phía Client-side (Fronten
 Trình duyệt sẽ tự xử lý việc lưu trữ trạng thái người dùng tại `localStorage`.
 - Ghi dữ liệu:
   - `localStorage.setItem('platform_id', platformId)` 
-- Dùng Next.js `useRouter` để chuyển hướng mượt mà `<button onClick={() => router.push('/vi/dashboard')}>`.
+- Dùng Next.js `useRouter` để chuyển hướng mượt mà `<button onClick={() => router.push('/vi/overview')}>`.
 
 ### Bước 3: Đính kèm Header qua Axios Interceptor
 Sử dụng Axios để thiết lập header toàn cục cho mọi lệnh gọi API về sau. Header `X-Platform-ID` sẽ được gửi lên Backend ở mọi request.
@@ -148,7 +148,7 @@ export default function PlatformSelectPage({ params }: { params: { locale: strin
 
   const handleSelect = (platformId: string) => {
     setPlatform(platformId); // Lưu local storage & bật state global
-    router.push(`/${params.locale}/dashboard`);
+    router.push(`/${params.locale}/overview`);
   };
 
   return (

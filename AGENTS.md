@@ -75,8 +75,8 @@ Khi thêm text mới, luôn thêm cả `vi` và `en`.
   - `components/forms/login-form.tsx`
   - `components/forms/register-form.tsx`
   - `components/forms/reset-password-form.tsx`
-- Platform dashboard:
-  - `components/platform/platform-dashboard.tsx`
+- Platform overview:
+  - `components/platform/dashboard-overview.tsx`
   - Lưu bot đã chọn vào session storage theo key từng platform.
 - **Toast (Sonner):** provider `components/providers/app-toaster.tsx` trong `app/layout.tsx`; helper `lib/toast.ts` (`notifySuccess`, `notifyError`, `notifyApiFailure`). Chuỗi trong `lib/i18n.ts` → namespace `toast` (vi + en).
 - **Modal xác nhận dùng chung:** `components/common/confirm-modal.tsx` (ví dụ xóa store trong `store-management.tsx`).
@@ -86,13 +86,13 @@ Khi thêm text mới, luôn thêm cả `vi` và `en`.
 ## 7) Dữ liệu mock
 
 - Platform config: `lib/platforms.ts`
-- Bot/platform/auth/store (trên dashboard) đã dùng backend API thật (`klik-server`).
-- File `lib/mocks/store-mock-data.ts` có thể còn trong repo nhưng **màn store trên dashboard gọi API**, không dùng mock đó.
+- Bot/platform/auth/store đã dùng backend API thật (`klik-server`).
+- File `lib/mocks/store-mock-data.ts` có thể còn trong repo nhưng **màn store gọi API thật**, không dùng mock đó.
 
 ## 8) Nguyên tắc khi AI chỉnh sửa
 
 - Giữ nguyên routing flow hiện tại:
-  - Auth -> Select platform -> subdomain -> dashboard.
+  - Auth -> Select platform -> subdomain -> overview/store/user/conversation (routes độc lập).
 - Không hardcode text mới ngoài dictionary i18n.
 - Ưu tiên tái sử dụng component hiện có.
 - Tránh chỉnh sửa phá vỡ tính nhất quán giao diện giữa các platform (chỉ khác màu/logo).

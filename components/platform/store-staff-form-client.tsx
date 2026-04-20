@@ -125,7 +125,7 @@ export function StoreStaffFormClient({ locale, mode, staffId }: Props) {
       if (mode === "create") {
         await createStaff(gate.botId, gate.storeId, payload);
         notifySuccess(st.formSaved);
-        window.location.assign(`/${locale}/dashboard/stores/${gate.storeId}/settings/staff`);
+        window.location.assign(`/${locale}/stores/${gate.storeId}/settings/staff`);
       } else if (staffId) {
         await updateStaff(gate.botId, gate.storeId, staffId, payload);
         notifySuccess(st.formSaved);
@@ -151,7 +151,7 @@ export function StoreStaffFormClient({ locale, mode, staffId }: Props) {
     return null;
   }
 
-  const listHref = `/${locale}/dashboard/stores/${gate.storeId}/settings/staff`;
+  const listHref = `/${locale}/stores/${gate.storeId}/settings/staff`;
 
   if (loading) {
     return (

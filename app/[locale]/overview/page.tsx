@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function DashboardOverviewPage({ params }: PageProps) {
+export default async function OverviewPage({ params }: PageProps) {
   const { locale } = await params;
   if (!isLocale(locale)) {
     notFound();

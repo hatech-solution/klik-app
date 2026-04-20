@@ -2,9 +2,9 @@
 
 ## Route
 
-- **Không có route riêng** — là một section trong dashboard platform.
-- Cùng URL với dashboard: `https://<platform>.<domain>/{locale}/dashboard` (rewrite subdomain), page `app/[locale]/dashboard/page.tsx`, `platform_id` từ client store (zustand).
-- User phải **đã chọn bot** (`bot_id` trong `localStorage`) thì mới render nội dung store; menu trái chọn mục **Store**.
+- **Route độc lập**: `/{locale}/store`
+- URL: `https://<platform>.<domain>/{locale}/store` (rewrite subdomain), page `app/[locale]/store/page.tsx`, `platform_id` từ client store (zustand).
+- User phải **đã chọn bot** (`bot_id` trong `localStorage`) thì mới render nội dung store; truy cập qua navigation menu **Store**.
 
 ## Mục tiêu
 

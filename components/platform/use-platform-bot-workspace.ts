@@ -114,7 +114,7 @@ export function usePlatformBotWorkspace(locale: Locale, mode: PlatformBotWorkspa
     if (!botsListReady) return;
     if (!selectedBotId) return;
     if (!bots.some((b) => b.id === selectedBotId)) return;
-    router.replace(`/${locale}/dashboard`);
+    router.replace(`/${locale}/overview`);
   }, [mode, botsListReady, selectedBotId, bots, locale, router]);
 
   useEffect(() => {

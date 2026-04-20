@@ -37,7 +37,7 @@ export type StoreFormProps = {
 export function StoreForm({ locale, platform, selectedBot, mode, initialStore }: StoreFormProps) {
   const router = useRouter();
   const t = getMessages(locale);
-  const listHref = `/${locale}/dashboard/store`;
+  const listHref = `/${locale}/store`;
 
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);

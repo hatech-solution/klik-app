@@ -1,6 +1,6 @@
-/** Các route con dưới `/{locale}/dashboard` (nhóm layout shell). */
+/** Các route navigation chính - tất cả đều cùng cấp, độc lập. */
 export const DASHBOARD_MAIN_NAV = [
-  { id: "overview" as const, segment: "" },
+  { id: "overview" as const, segment: "overview" },
   { id: "store" as const, segment: "store" },
   { id: "user" as const, segment: "user" },
   { id: "conversation" as const, segment: "conversation" },
@@ -9,6 +9,6 @@ export const DASHBOARD_MAIN_NAV = [
 export type DashboardMainNavId = (typeof DASHBOARD_MAIN_NAV)[number]["id"];
 
 export function dashboardNavHref(locale: string, segment: string): string {
-  const base = `/${locale}/dashboard`;
-  return segment ? `${base}/${segment}` : base;
+  // Tất cả route đều cùng cấp, độc lập
+  return `/${locale}/${segment}`;
 }

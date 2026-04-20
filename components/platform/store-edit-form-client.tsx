@@ -19,7 +19,7 @@ type Props = {
 export function StoreEditFormClient({ locale, storeId }: Props) {
   const { platform, selectedBot } = useDashboardWorkspace();
   const t = getMessages(locale);
-  const listHref = `/${locale}/dashboard/store`;
+  const listHref = `/${locale}/store`;
 
   const [phase, setPhase] = useState<"loading" | "ready" | "missing">("loading");
   const [store, setStore] = useState<Store | null>(null);

@@ -136,7 +136,7 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
       <div className="flex items-center justify-between">
         <h3 className="text-xl font-semibold text-slate-900">{t.dashboard.section.store.title}</h3>
         <Link
-          href={`/${locale}/dashboard/store/new`}
+          href={`/${locale}/store/new`}
           className={`flex items-center gap-1 rounded-lg px-4 py-2 text-sm font-medium ${platform.accentClassName} ${platform.hoverClassName}`}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -199,7 +199,7 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
                       </td>
                       <td className="px-4 py-3 text-right">
                         <Link
-                          href={`/${locale}/dashboard/stores/${store.id}/settings/hours`}
+                          href={`/${locale}/stores/${store.id}/settings/hours`}
                           className="mr-3 inline-flex text-slate-400 hover:text-slate-700"
                           title={t.store.openingHours}
                         >
@@ -209,7 +209,7 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
                           </svg>
                         </Link>
                         <Link
-                          href={`/${locale}/dashboard/store/${store.id}/edit`}
+                          href={`/${locale}/store/${store.id}/edit`}
                           className="mr-3 inline-flex text-slate-400 hover:text-slate-700"
                           title={t.store.editStore}
                         >

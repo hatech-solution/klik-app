@@ -12,5 +12,5 @@ export default async function StoreOperatingHoursRedirectPage({ params }: PagePr
   if (!isLocale(locale)) {
     redirect("/");
   }
-  redirect(`/${locale}/dashboard/stores/${storeId}/settings/hours`);
+  redirect(`/${locale}/stores/${storeId}/settings/hours`);
 }

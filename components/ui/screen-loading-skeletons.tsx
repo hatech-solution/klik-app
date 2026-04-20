@@ -429,9 +429,9 @@ export function PublicBookingRuntimeSlotsSkeleton({ viewMode }: PublicBookingRun
     return (
       <div className="space-y-2" aria-hidden>
         <div className="mb-2 flex items-center justify-between">
-          <Skeleton className="h-6 w-6 rounded" />
+          <Skeleton className="h-8 w-12 rounded-md" />
           <Skeleton className="h-5 w-36" />
-          <Skeleton className="h-6 w-6 rounded" />
+          <Skeleton className="h-8 w-12 rounded-md" />
         </div>
         <div className="grid grid-cols-7 gap-1">
           {Array.from({ length: 7 }).map((_, idx) => (
@@ -450,9 +450,9 @@ export function PublicBookingRuntimeSlotsSkeleton({ viewMode }: PublicBookingRun
   return (
     <div className="space-y-2" aria-hidden>
       <div className="mb-2 flex items-center justify-between">
-        <Skeleton className="h-6 w-6 rounded" />
+        <Skeleton className="h-8 w-12 rounded-md" />
         <Skeleton className="h-5 w-20" />
-        <Skeleton className="h-6 w-6 rounded" />
+        <Skeleton className="h-8 w-12 rounded-md" />
       </div>
       <div className="grid grid-cols-8 gap-1">
         {Array.from({ length: 8 }).map((_, idx) => (

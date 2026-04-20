@@ -10,16 +10,24 @@ type LogoutButtonProps = {
   label: string;
 };
 
+const HIDE_LOGOUT_ROUTE_PATTERNS: RegExp[] = [
+  // Auth screens.
+  /^\/[^/]+\/login$/,
+  /^\/[^/]+\/register$/,
+  /^\/[^/]+\/reset-password$/,
+  // Public/user-side platform screens.
+  /^\/[^/]+\/store\/[^/]+\/booking$/,
+];
+
+function shouldHideLogout(pathname: string): boolean {
+  return HIDE_LOGOUT_ROUTE_PATTERNS.some((pattern) => pattern.test(pathname));
+}
+
 export function LogoutButton({ locale, label }: LogoutButtonProps) {
   const pathname = usePathname();
   const router = useRouter();
 
-  const isAuthScreen =
-    pathname.endsWith("/login") ||
-    pathname.endsWith("/register") ||
-    pathname.endsWith("/reset-password");
-
-  if (isAuthScreen) {
+  if (shouldHideLogout(pathname)) {
     return null;
   }
 

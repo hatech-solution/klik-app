@@ -44,6 +44,7 @@ type Props = {
 
 type BookingPlatformTheme = {
   stepActiveClassName: string;
+  stepTrailActiveClassName: string;
   selectionActiveClassName: string;
   monthDateSelectedClassName: string;
   slotSelectedClassName: string;
@@ -53,6 +54,7 @@ type BookingPlatformTheme = {
 const BOOKING_PLATFORM_THEMES: Record<PlatformId, BookingPlatformTheme> = {
   line: {
     stepActiveClassName: "bg-emerald-600 text-white",
+    stepTrailActiveClassName: "text-emerald-700 dark:text-emerald-200",
     selectionActiveClassName: "border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20",
     monthDateSelectedClassName: "border-emerald-500 bg-emerald-100 text-emerald-700",
     slotSelectedClassName: "border-emerald-600 bg-emerald-600 text-white",
@@ -60,6 +62,7 @@ const BOOKING_PLATFORM_THEMES: Record<PlatformId, BookingPlatformTheme> = {
   },
   zalo: {
     stepActiveClassName: "bg-sky-600 text-white",
+    stepTrailActiveClassName: "text-sky-700 dark:text-sky-200",
     selectionActiveClassName: "border-sky-500 bg-sky-50 dark:bg-sky-900/20",
     monthDateSelectedClassName: "border-sky-500 bg-sky-100 text-sky-700",
     slotSelectedClassName: "border-sky-600 bg-sky-600 text-white",
@@ -67,6 +70,7 @@ const BOOKING_PLATFORM_THEMES: Record<PlatformId, BookingPlatformTheme> = {
   },
   telegram: {
     stepActiveClassName: "bg-cyan-600 text-white",
+    stepTrailActiveClassName: "text-cyan-700 dark:text-cyan-200",
     selectionActiveClassName: "border-cyan-500 bg-cyan-50 dark:bg-cyan-900/20",
     monthDateSelectedClassName: "border-cyan-500 bg-cyan-100 text-cyan-700",
     slotSelectedClassName: "border-cyan-600 bg-cyan-600 text-white",
@@ -74,6 +78,7 @@ const BOOKING_PLATFORM_THEMES: Record<PlatformId, BookingPlatformTheme> = {
   },
   instagram: {
     stepActiveClassName: "bg-fuchsia-600 text-white",
+    stepTrailActiveClassName: "text-fuchsia-700 dark:text-fuchsia-200",
     selectionActiveClassName: "border-fuchsia-500 bg-fuchsia-50 dark:bg-fuchsia-900/20",
     monthDateSelectedClassName: "border-fuchsia-500 bg-fuchsia-100 text-fuchsia-700",
     slotSelectedClassName: "border-fuchsia-600 bg-fuchsia-600 text-white",
@@ -159,6 +164,7 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
   const platformId: PlatformId = isPlatformId(rawPlatformId) ? rawPlatformId : "zalo";
   const platformConfig = PLATFORM_CONFIGS[platformId];
   const platformTheme = BOOKING_PLATFORM_THEMES[platformId];
+  const stepTrailLabels = [t.stepCourseTrail, t.stepStaff, t.stepTimeSlotTrail, t.stepConfirm, t.stepSubmit];
 
   const weekRange = useMemo(() => {
     const start = startOfWeek(parseDateOnly(weekAnchor));
@@ -172,11 +178,16 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
   }, [monthAnchor]);
 
   const monthRange = useMemo(
-    () => ({
-      from: formatDateOnly(monthDays[0]),
-      to: formatDateOnly(monthDays[monthDays.length - 1]),
-    }),
-    [monthDays],
+    () => {
+      const anchor = parseDateOnly(monthAnchor);
+      const firstOfMonth = new Date(anchor.getFullYear(), anchor.getMonth(), 1);
+      const lastOfMonth = new Date(anchor.getFullYear(), anchor.getMonth() + 1, 0);
+      return {
+        from: formatDateOnly(firstOfMonth),
+        to: formatDateOnly(lastOfMonth),
+      };
+    },
+    [monthAnchor],
   );
 
   const courses = useMemo(
@@ -376,6 +387,11 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
     setStep((prev) => (prev < 4 ? ((prev + 1) as BookingStep) : prev));
   }
 
+  function goBack() {
+    setBanner(null);
+    setStep((prev) => (prev > 1 && prev < 5 ? ((prev - 1) as BookingStep) : prev));
+  }
+
   async function submitBooking() {
     if (!selectedStartAt) return;
     setBanner(null);
@@ -464,29 +480,21 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
       </section>
 
       <section className="dm-overview-panel rounded-2xl p-3">
-        <div className="grid grid-cols-5 gap-1 text-[11px]">
-          {[t.stepService, t.stepStaff, t.stepTime, t.stepConfirm, t.stepSubmit].map((label, idx) => {
-            const number = (idx + 1) as BookingStep;
+        <div className="flex flex-wrap items-center gap-1 text-[11px] font-semibold">
+          {stepTrailLabels.map((label, idx) => {
+            const number = idx + 1;
             const active = step === number;
             const done = step > number;
+            const textClass = active
+              ? platformTheme.stepTrailActiveClassName
+              : done
+                ? "text-(--dm-text)"
+                : "text-(--dm-text-secondary)";
             return (
-              <button
-                key={label}
-                type="button"
-                onClick={() => {
-                  if (number <= 3) setStep(number);
-                }}
-                className={`rounded-lg px-2 py-2 text-center ${
-                  active
-                    ? platformTheme.stepActiveClassName
-                    : done
-                      ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-200"
-                      : "bg-(--dm-nav-inactive-bg) text-(--dm-text-secondary)"
-                }`}
-              >
-                <div className="font-semibold">{number}</div>
-                <div className="truncate">{label}</div>
-              </button>
+              <span key={label} className={`inline-flex items-center ${textClass}`}>
+                <span>{label}</span>
+                {idx < stepTrailLabels.length - 1 ? <span className="px-1 text-(--dm-text-muted)">{">"}</span> : null}
+              </span>
             );
           })}
         </div>
@@ -619,7 +627,7 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
       {step === 3 ? (
         <section className="dm-overview-panel rounded-2xl p-4">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold">{t.stepTime}</h2>
+            <h2 className="text-sm font-semibold"></h2>
             {initData.settings.calendar_view_mode === "month" ? (
               <button
                 type="button"
@@ -640,7 +648,7 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
               <div className="mb-2 flex items-center justify-between">
                 <button
                   type="button"
-                  className="text-xs"
+                  className={`inline-flex min-w-12 items-center justify-center rounded-md px-4 py-1.5 text-sm font-semibold text-white ${platformConfig.accentClassName} ${platformConfig.hoverClassName}`}
                   onClick={() => {
                     const d = parseDateOnly(monthAnchor);
                     d.setMonth(d.getMonth() - 1);
@@ -656,7 +664,7 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
                 </p>
                 <button
                   type="button"
-                  className="text-xs"
+                  className={`inline-flex min-w-12 items-center justify-center rounded-md px-4 py-1.5 text-sm font-semibold text-white ${platformConfig.accentClassName} ${platformConfig.hoverClassName}`}
                   onClick={() => {
                     const d = parseDateOnly(monthAnchor);
                     d.setMonth(d.getMonth() + 1);
@@ -679,12 +687,14 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
                   const available = availableSlotsOfDate(key).length > 0;
                   const selected = selectedDate === key;
                   const inMonth = day.getMonth() === parseDateOnly(monthAnchor).getMonth();
+                  const clickable = inMonth && available;
                   return (
                     <button
                       key={key}
                       type="button"
-                      disabled={!available}
+                      disabled={!clickable}
                       onClick={() => {
+                        if (!clickable) return;
                         setSelectedDate(key);
                         setWeekAnchor(key);
                         setActiveViewMode("week");
@@ -693,10 +703,10 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
                         selected
                           ? platformTheme.monthDateSelectedClassName
                           : "border-(--dm-border) bg-(--dm-surface-muted)"
-                      } ${inMonth ? "" : "opacity-40"} ${available ? "" : "cursor-not-allowed"}`}
+                      } ${inMonth ? "" : "opacity-40"} ${clickable ? "" : "cursor-not-allowed"}`}
                     >
                       <div>{day.getDate()}</div>
-                      <div className="mt-1">{available ? "○" : "⊘"}</div>
+                      <div className="mt-1">{inMonth ? (available ? "○" : "⊘") : ""}</div>
                     </button>
                   );
                 })}
@@ -707,7 +717,7 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
               <div className="mb-2 flex items-center justify-between">
                 <button
                   type="button"
-                  className="text-xs"
+                  className={`inline-flex min-w-12 items-center justify-center rounded-md px-4 py-1.5 text-sm font-semibold text-white ${platformConfig.accentClassName} ${platformConfig.hoverClassName}`}
                   onClick={() => {
                     const prev = addDays(parseDateOnly(weekAnchor), -7);
                     const key = formatDateOnly(prev);
@@ -720,7 +730,7 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
                 <p className="text-sm font-medium">{t.weekLabel}</p>
                 <button
                   type="button"
-                  className="text-xs"
+                  className={`inline-flex min-w-12 items-center justify-center rounded-md px-4 py-1.5 text-sm font-semibold text-white ${platformConfig.accentClassName} ${platformConfig.hoverClassName}`}
                   onClick={() => {
                     const next = addDays(parseDateOnly(weekAnchor), 7);
                     const key = formatDateOnly(next);
@@ -854,24 +864,37 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
 
       </main>
       <div className="fixed inset-x-0 bottom-0 z-20 mx-auto w-full max-w-[430px] border-t border-(--dm-border) bg-(--dm-surface) px-3 py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
-        {step < 4 ? (
-          <button
-            type="button"
-            onClick={goNext}
-            disabled={!canProceed()}
-            className={`w-full rounded-xl px-4 py-3 text-sm font-semibold text-white disabled:opacity-40 ${platformConfig.accentClassName} ${platformConfig.hoverClassName}`}
-          >
-            {t.continueCta}
-          </button>
-        ) : step === 4 ? (
-          <button
-            type="button"
-            onClick={() => void submitBooking()}
-            disabled={!canProceed()}
-            className={`w-full rounded-xl px-4 py-3 text-sm font-semibold text-white disabled:opacity-40 ${platformConfig.accentClassName} ${platformConfig.hoverClassName}`}
-          >
-            {t.submitCta}
-          </button>
+        {step < 5 ? (
+          <div className="flex items-center gap-2">
+            {step > 1 ? (
+              <button
+                type="button"
+                onClick={goBack}
+                className="rounded-xl border border-(--dm-border) bg-(--dm-surface-muted) px-4 py-3 text-sm font-semibold text-(--dm-text)"
+              >
+                {t.backCta}
+              </button>
+            ) : null}
+            {step < 4 ? (
+              <button
+                type="button"
+                onClick={goNext}
+                disabled={!canProceed()}
+                className={`flex-1 rounded-xl px-4 py-3 text-sm font-semibold text-white disabled:opacity-40 ${platformConfig.accentClassName} ${platformConfig.hoverClassName}`}
+              >
+                {t.continueCta}
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => void submitBooking()}
+                disabled={!canProceed()}
+                className={`flex-1 rounded-xl px-4 py-3 text-sm font-semibold text-white disabled:opacity-40 ${platformConfig.accentClassName} ${platformConfig.hoverClassName}`}
+              >
+                {t.submitCta}
+              </button>
+            )}
+          </div>
         ) : (
           <button
             type="button"

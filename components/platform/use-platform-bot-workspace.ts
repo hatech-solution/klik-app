@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { getErrorMessage, isUnauthorizedError } from "@/lib/api/error";
@@ -18,6 +18,14 @@ import type { Bot } from "@/lib/types/bot";
 import { usePlatformStore } from "@/store/usePlatformStore";
 
 const SESSION_BOT_KEY = "bot_id";
+const BOTS_CACHE_TTL_MS = 5 * 60 * 1000;
+
+type BotsCacheEntry = {
+  bots: Bot[];
+  updatedAt: number;
+};
+
+const botsCacheByPlatform: Partial<Record<PlatformId, BotsCacheEntry>> = {};
 
 export type PlatformBotWorkspaceMode = "selectBot" | "dashboardShell";
 
@@ -45,6 +53,23 @@ export function usePlatformBotWorkspace(locale: Locale, mode: PlatformBotWorkspa
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const updateBotsForPlatform = useCallback(
+    (nextBotsOrUpdater: Bot[] | ((prev: Bot[]) => Bot[])) => {
+      setBots((prev) => {
+        const nextBots =
+          typeof nextBotsOrUpdater === "function" ? nextBotsOrUpdater(prev) : nextBotsOrUpdater;
+        if (platform) {
+          botsCacheByPlatform[platform.id] = {
+            bots: nextBots,
+            updatedAt: Date.now(),
+          };
+        }
+        return nextBots;
+      });
+    },
+    [platform],
+  );
+
   useEffect(() => {
     if (!openMenuId) return;
     const handleClick = () => setOpenMenuId(null);
@@ -64,21 +89,40 @@ export function usePlatformBotWorkspace(locale: Locale, mode: PlatformBotWorkspa
     if (!platform) {
       setBots([]);
       setBotsListReady(false);
+      setIsLoadingBots(false);
       return;
     }
 
     const currentPlatform = platform;
+    const cached = botsCacheByPlatform[currentPlatform.id];
+    const hasUsableCache = Boolean(cached && cached.bots.length > 0);
+    const cacheIsFresh = Boolean(cached && Date.now() - cached.updatedAt < BOTS_CACHE_TTL_MS);
     let cancelled = false;
-    setBotsListReady(false);
+
+    if (hasUsableCache && cached) {
+      setBots(cached.bots);
+      setBotsListReady(true);
+    } else {
+      setBotsListReady(false);
+    }
+
+    // In dashboard shell, prefer cached bots to avoid refetching every route.
+    // Select-bot screen still refreshes from API to keep management actions accurate.
+    if (mode === "dashboardShell" && cacheIsFresh) {
+      setIsLoadingBots(false);
+      return () => {
+        cancelled = true;
+      };
+    }
 
     async function loadBots() {
-      setIsLoadingBots(true);
+      setIsLoadingBots(!hasUsableCache);
       setErrorMessage(null);
       try {
         const rows = await listBotsApi(currentPlatform.id);
         if (cancelled) return;
         const mapped = rows.map(mapBotFromApi);
-        setBots(mapped);
+        updateBotsForPlatform(mapped);
       } catch (error) {
         if (cancelled) return;
         if (isUnauthorizedError(error)) {
@@ -100,7 +144,7 @@ export function usePlatformBotWorkspace(locale: Locale, mode: PlatformBotWorkspa
     return () => {
       cancelled = true;
     };
-  }, [platform, locale, router, t.auth.common.defaultError]);
+  }, [platform, mode, locale, router, t.auth.common.defaultError, updateBotsForPlatform]);
 
   useEffect(() => {
     if (!botsListReady) return;
@@ -149,7 +193,7 @@ export function usePlatformBotWorkspace(locale: Locale, mode: PlatformBotWorkspa
         },
       });
       const mapped = mapBotFromApi(created);
-      setBots((prev) => [...prev, mapped]);
+      updateBotsForPlatform((prev) => [...prev, mapped]);
       setSelectedBotId("");
       setNewBotName("");
       setApiKey("");
@@ -180,7 +224,7 @@ export function usePlatformBotWorkspace(locale: Locale, mode: PlatformBotWorkspa
     setErrorMessage(null);
     try {
       await deactivateBotApi(bot.id);
-      setBots((prev) => prev.filter((b) => b.id !== bot.id));
+      updateBotsForPlatform((prev) => prev.filter((b) => b.id !== bot.id));
       if (selectedBotId === bot.id) {
         setSelectedBotId("");
       }
@@ -223,7 +267,7 @@ export function usePlatformBotWorkspace(locale: Locale, mode: PlatformBotWorkspa
         credentials: currentBot.credentials ?? {},
       });
       const mapped = mapBotFromApi(updated);
-      setBots((prev) => prev.map((b) => (b.id === botId ? mapped : b)));
+      updateBotsForPlatform((prev) => prev.map((b) => (b.id === botId ? mapped : b)));
       setEditingBotId(null);
       setEditingBotName("");
       notifySuccess(t.toast.botUpdated);

@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 import { BotSelectCardSkeleton } from "@/components/ui/screen-loading-skeletons";
 import { usePlatformBotWorkspace } from "@/components/platform/use-platform-bot-workspace";
 import { getMessages, type Locale } from "@/lib/i18n";
@@ -33,6 +35,7 @@ type PlatformDashboardProps = {
 };
 
 export function PlatformDashboard({ locale, flow = "selectBot" }: PlatformDashboardProps) {
+  const router = useRouter();
   const { platformId } = usePlatformStore();
   const platform = platformId ? PLATFORM_CONFIGS[platformId as PlatformId] : undefined;
 
@@ -51,16 +54,7 @@ export function PlatformDashboard({ locale, flow = "selectBot" }: PlatformDashbo
     setEditingBotName,
     openMenuId,
     setOpenMenuId,
-    showAddModal,
-    setShowAddModal,
-    newBotName,
-    setNewBotName,
-    apiKey,
-    setApiKey,
-    secretKey,
-    setSecretKey,
     isSubmitting,
-    handleCreateBot,
     handleDeleteBot,
     handleEditBot,
     handleSaveEditBot,
@@ -136,6 +130,7 @@ export function PlatformDashboard({ locale, flow = "selectBot" }: PlatformDashbo
                       isSubmitting={isSubmitting}
                       setSelectedBotId={setSelectedBotId}
                       onEdit={handleEditBot}
+                      onUpdate={(item) => router.push(`/${locale}/select-bot/${item.id}/edit`)}
                       onDelete={handleDeleteBot}
                       onSaveEdit={handleSaveEditBot}
                       onCancelEdit={handleCancelEditBot}
@@ -145,7 +140,7 @@ export function PlatformDashboard({ locale, flow = "selectBot" }: PlatformDashbo
                 : null}
 
               <div
-                onClick={() => setShowAddModal(true)}
+                onClick={() => router.push(`/${locale}/select-bot/new`)}
                 className="dm-bot-add-tile group flex flex-col items-center justify-between"
               >
                 <div className="w-full text-center">
@@ -164,79 +159,6 @@ export function PlatformDashboard({ locale, flow = "selectBot" }: PlatformDashbo
             </div>
           </div>
       </main>
-
-      {showAddModal ? (
-        <div
-          className="dm-modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in duration-200"
-          onClick={() => setShowAddModal(false)}
-        >
-          <div
-            className="dm-modal-panel relative w-full max-w-md p-6 animate-in zoom-in-95 duration-200"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              type="button"
-              onClick={() => setShowAddModal(false)}
-              className="dm-modal-close absolute right-4 top-4 outline-none"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M18 6L6 18M6 6l12 12" />
-              </svg>
-            </button>
-            <h3 className="mb-2 text-xl font-semibold text-[var(--dm-text)]">{t.dashboard.createBot}</h3>
-            <p className="mb-6 text-sm text-[var(--dm-text-muted)]">{t.dashboard.noBotDescription}</p>
-            <form onSubmit={handleCreateBot} className="flex flex-col gap-4">
-              <div>
-                <label className="dm-label mb-1 block">{t.dashboard.inputBotName}</label>
-                <input
-                  value={newBotName}
-                  onChange={(event) => setNewBotName(event.target.value)}
-                  placeholder={t.dashboard.inputBotName}
-                  className="dm-input"
-                  required
-                />
-              </div>
-              <div>
-                <label className="dm-label mb-1 block">API Key</label>
-                <input
-                  value={apiKey}
-                  onChange={(event) => setApiKey(event.target.value)}
-                  placeholder="Nhập API Key"
-                  className="dm-input"
-                  required
-                />
-              </div>
-              <div>
-                <label className="dm-label mb-1 block">Secret Key</label>
-                <input
-                  value={secretKey}
-                  onChange={(event) => setSecretKey(event.target.value)}
-                  type="password"
-                  placeholder="Nhập Secret Key"
-                  className="dm-input"
-                  required
-                />
-              </div>
-              <div className="mt-4 flex justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={() => setShowAddModal(false)}
-                  className="dm-btn-ghost"
-                >
-                  {t.dashboard.cancel}
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className={`rounded-lg px-6 py-2 text-sm font-medium ${platform.accentClassName} ${platform.hoverClassName}`}
-                >
-                  {isSubmitting ? t.auth.common.submitting : t.dashboard.createBot}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      ) : null}
     </>
   );
 }
@@ -254,6 +176,7 @@ function BotSelectCard({
   isSubmitting,
   setSelectedBotId,
   onEdit,
+  onUpdate,
   onDelete,
   onSaveEdit,
   onCancelEdit,
@@ -269,6 +192,7 @@ function BotSelectCard({
   isSubmitting: boolean;
   setSelectedBotId: (id: string) => void;
   onEdit: (bot: Bot, e: React.MouseEvent) => void;
+  onUpdate: (bot: Bot) => void;
   onDelete: (bot: Bot, e: React.MouseEvent) => void | Promise<void>;
   onSaveEdit: (botId: string, e: React.MouseEvent | React.FormEvent) => void | Promise<void>;
   onCancelEdit: (e: React.MouseEvent) => void;
@@ -306,7 +230,17 @@ function BotSelectCard({
               onClick={(e) => onEdit(bot, e)}
               className="dm-bot-menu-item"
             >
-              {t.dashboard.editBot}
+              {t.dashboard.renameBot}
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onUpdate(bot);
+              }}
+              className="dm-bot-menu-item"
+            >
+              {t.dashboard.updateBot}
             </button>
             <button
               type="button"

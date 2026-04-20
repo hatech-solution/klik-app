@@ -1,12 +1,11 @@
 "use client";
 
-import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { getErrorMessage, isUnauthorizedError } from "@/lib/api/error";
 import { notifyError, notifySuccess } from "@/lib/toast";
 import {
-  createBotApi,
   deactivateBotApi,
   listBotsApi,
   mapBotFromApi,
@@ -42,13 +41,9 @@ export function usePlatformBotWorkspace(locale: Locale, mode: PlatformBotWorkspa
     if (typeof window === "undefined") return "";
     return localStorage.getItem(SESSION_BOT_KEY) ?? "";
   });
-  const [newBotName, setNewBotName] = useState("");
-  const [apiKey, setApiKey] = useState("");
-  const [secretKey, setSecretKey] = useState("");
   const [editingBotId, setEditingBotId] = useState<string | null>(null);
   const [editingBotName, setEditingBotName] = useState("");
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
-  const [showAddModal, setShowAddModal] = useState(false);
   const [isLoadingBots, setIsLoadingBots] = useState(false);
   const [botsListReady, setBotsListReady] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -185,46 +180,6 @@ export function usePlatformBotWorkspace(locale: Locale, mode: PlatformBotWorkspa
     [bots, selectedBotId],
   );
 
-  async function handleCreateBot(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setErrorMessage(null);
-
-    if (!platform) return;
-
-    if (!newBotName.trim()) {
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      const created = await createBotApi(platform.id, {
-        name: newBotName.trim(),
-        credentials: {
-          bot_token: apiKey.trim(),
-          secret_key: secretKey.trim(),
-        },
-      });
-      const mapped = mapBotFromApi(created);
-      updateBotsForPlatform((prev) => [...prev, mapped]);
-      setSelectedBotId("");
-      setNewBotName("");
-      setApiKey("");
-      setSecretKey("");
-      setShowAddModal(false);
-      notifySuccess(t.toast.botCreated);
-    } catch (error) {
-      if (isUnauthorizedError(error)) {
-        router.replace(`/${locale}/login`);
-        return;
-      }
-      const msg = getErrorMessage(error, t.auth.common.defaultError);
-      setErrorMessage(msg);
-      notifyError(msg);
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
-
   async function handleDeleteBot(bot: Bot, event: React.MouseEvent) {
     event.stopPropagation();
     setOpenMenuId(null);
@@ -309,24 +264,15 @@ export function usePlatformBotWorkspace(locale: Locale, mode: PlatformBotWorkspa
     selectedBotId,
     setSelectedBotId,
     selectedBot,
-    newBotName,
-    setNewBotName,
-    apiKey,
-    setApiKey,
-    secretKey,
-    setSecretKey,
     editingBotId,
     editingBotName,
     setEditingBotName,
     openMenuId,
     setOpenMenuId,
-    showAddModal,
-    setShowAddModal,
     isLoadingBots,
     botsListReady,
     errorMessage,
     isSubmitting,
-    handleCreateBot,
     handleDeleteBot,
     handleEditBot,
     handleSaveEditBot,

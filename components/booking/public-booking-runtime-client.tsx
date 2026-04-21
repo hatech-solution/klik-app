@@ -607,10 +607,21 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
                     : "border-(--dm-border) bg-(--dm-surface)"
                 }`}
               >
-                <p className="text-sm font-medium">{course.name}</p>
-                <p className="text-xs text-(--dm-text-muted)">
-                  {course.duration_minutes}m {course.price != null ? `· ¥${course.price.toLocaleString()}` : ""}
-                </p>
+                <div className="flex items-center gap-3">
+                  {course.primary_image ? (
+                    <img
+                      src={course.primary_image}
+                      alt={course.name}
+                      className="h-14 w-14 rounded-md object-cover"
+                    />
+                  ) : null}
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium">{course.name}</p>
+                    <p className="text-xs text-(--dm-text-muted)">
+                      {course.duration_minutes}m {course.price != null ? `· ¥${course.price.toLocaleString()}` : ""}
+                    </p>
+                  </div>
+                </div>
               </button>
             ))}
           </div>
@@ -651,7 +662,16 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
                     : "border-(--dm-border) bg-(--dm-surface)"
                 }`}
               >
-                <p className="text-sm font-medium">{staff.name}</p>
+                <div className="flex items-center gap-3">
+                  {staff.primary_image ? (
+                    <img
+                      src={staff.primary_image}
+                      alt={staff.name}
+                      className="h-12 w-12 rounded-full object-cover"
+                    />
+                  ) : null}
+                  <p className="text-sm font-medium">{staff.name}</p>
+                </div>
               </button>
             ))}
           </div>

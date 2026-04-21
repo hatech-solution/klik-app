@@ -8,12 +8,16 @@ export type BookingRuntimeCourse = {
   name: string;
   duration_minutes: number;
   price: number | null;
+  primary_image: string | null;
+  gallery_images: string[];
   is_active: boolean;
 };
 
 export type BookingRuntimeStaff = {
   id: string;
   name: string;
+  primary_image: string | null;
+  gallery_images: string[];
   is_active: boolean;
   course_ids: string[];
 };

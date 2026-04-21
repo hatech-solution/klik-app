@@ -498,7 +498,7 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
   return (
     <div className="dm-page-muted min-h-screen pb-24 pt-3">
       <main className="mx-auto max-w-[430px] space-y-3 px-3">
-      <section className="dm-overview-panel rounded-2xl p-4">
+      {/* <section className="dm-overview-panel rounded-2xl p-4">
         <p className="text-base font-semibold text-(--dm-text)">{initData.store.name}</p>
         <p className="mt-1 text-xs text-(--dm-text-muted)">{t.subtitle}</p>
         <div className="mt-3 inline-flex items-center rounded-full bg-(--dm-surface-muted) px-3 py-1 text-[11px] text-(--dm-text-secondary)">
@@ -507,10 +507,10 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
             {initData.settings.calendar_view_mode === "week" ? t.modeWeek : t.modeMonth}
           </strong>
         </div>
-      </section>
+      </section> */}
 
-      <section className="dm-overview-panel rounded-2xl p-3">
-        <div className="flex flex-wrap items-center gap-1 text-[11px] font-semibold">
+      <section className="dm-overview-panel !rounded-md !px-3 !py-1.5">
+        <div className="flex w-full flex-wrap items-center justify-center gap-x-1 gap-y-0.5 text-center text-[11px] font-semibold leading-tight">
           {stepTrailLabels.map((label, idx) => {
             const number = idx + 1;
             const active = step === number;

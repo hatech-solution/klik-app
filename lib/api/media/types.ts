@@ -1,4 +1,10 @@
-export type MediaUploadScope = "store_primary" | "store_slide";
+export type MediaUploadScope =
+  | "store_primary"
+  | "store_slide"
+  | "staff_primary"
+  | "staff_gallery"
+  | "course_primary"
+  | "course_gallery";
 
 export type CreateMediaUploadAuthPayload = {
   scope?: MediaUploadScope;

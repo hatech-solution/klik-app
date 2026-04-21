@@ -5,26 +5,20 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { useStoreSettingsGate } from "@/components/platform/store-settings-context";
+import { Skeleton } from "@/components/ui/skeleton";
 import { LoadingRegion, StoreStaffFormSkeleton } from "@/components/ui/screen-loading-skeletons";
+import { createMediaUploadAuth, uploadImageToImageKit } from "@/lib/api/media/client";
 import { createStaff, fetchStaff, updateStaff } from "@/lib/api/store/client";
 import type { CreateStaffPayload, StaffApiItem } from "@/lib/api/store/types";
 import { ApiClientError, getErrorMessageByKey } from "@/lib/api/error";
 import { getMessages, type Locale } from "@/lib/i18n";
-import { notifyApiFailure, notifySuccess } from "@/lib/toast";
+import { notifyApiFailure, notifyError, notifySuccess } from "@/lib/toast";
 
 type Props = {
   locale: Locale;
   mode: "create" | "edit";
   staffId?: string;
 };
-
-function parseGallery(text: string): string[] {
-  return text
-    .split(/\r?\n/)
-    .map((s) => s.trim())
-    .filter(Boolean)
-    .slice(0, 10);
-}
 
 export function StoreStaffFormClient({ locale, mode, staffId }: Props) {
   const router = useRouter();
@@ -45,7 +39,10 @@ export function StoreStaffFormClient({ locale, mode, staffId }: Props) {
   const [price, setPrice] = useState("");
   const [maxBookings, setMaxBookings] = useState("");
   const [primaryImage, setPrimaryImage] = useState("");
-  const [galleryText, setGalleryText] = useState("");
+  const [galleryImages, setGalleryImages] = useState<string[]>([]);
+  const [uploadingPrimaryImage, setUploadingPrimaryImage] = useState(false);
+  const [uploadingGalleryImages, setUploadingGalleryImages] = useState(false);
+  const [uploadingGalleryImageCount, setUploadingGalleryImageCount] = useState(0);
   const [sortOrder, setSortOrder] = useState("0");
   const [isVisible, setIsVisible] = useState(true);
 
@@ -81,13 +78,67 @@ export function StoreStaffFormClient({ locale, mode, staffId }: Props) {
     setPrice(row.price != null ? String(row.price) : "");
     setMaxBookings(row.max_bookings_per_slot != null ? String(row.max_bookings_per_slot) : "");
     setPrimaryImage(row.primary_image ?? "");
-    setGalleryText((row.gallery_images ?? []).join("\n"));
+    setGalleryImages(row.gallery_images ?? []);
     setSortOrder(String(row.sort_order));
     setIsVisible(row.is_visible);
   }
 
+  async function uploadPrimaryImageFile(file: File) {
+    if (!gate) return;
+    setUploadingPrimaryImage(true);
+    try {
+      const auth = await createMediaUploadAuth(gate.botId, { scope: "staff_primary" });
+      const uploaded = await uploadImageToImageKit(auth, file);
+      setPrimaryImage(uploaded.url);
+      notifySuccess(t.toast.imageUploadSuccess);
+    } catch {
+      notifyError(t.toast.imageUploadFailed);
+    } finally {
+      setUploadingPrimaryImage(false);
+    }
+  }
+
+  async function uploadGalleryFiles(files: FileList) {
+    if (!gate) return;
+    const nextFiles = Array.from(files);
+    if (nextFiles.length === 0) return;
+
+    const remaining = Math.max(0, 10 - galleryImages.length);
+    if (remaining === 0) {
+      setBanner(st.galleryLimitHint);
+      return;
+    }
+
+    setUploadingGalleryImages(true);
+    setUploadingGalleryImageCount(Math.min(nextFiles.length, remaining));
+    try {
+      const uploadQueue = nextFiles.slice(0, remaining);
+      const uploadedUrls: string[] = [];
+      for (const file of uploadQueue) {
+        const auth = await createMediaUploadAuth(gate.botId, { scope: "staff_gallery" });
+        const uploaded = await uploadImageToImageKit(auth, file);
+        uploadedUrls.push(uploaded.url);
+      }
+      if (uploadedUrls.length > 0) {
+        setGalleryImages((prev) => [...prev, ...uploadedUrls]);
+        notifySuccess(t.toast.imageUploadSuccess);
+      }
+      if (nextFiles.length > remaining) {
+        setBanner(st.galleryLimitHint);
+      }
+    } catch {
+      notifyError(t.toast.imageUploadFailed);
+    } finally {
+      setUploadingGalleryImages(false);
+      setUploadingGalleryImageCount(0);
+    }
+  }
+
+  function removeGalleryImage(index: number) {
+    setGalleryImages((prev) => prev.filter((_, itemIndex) => itemIndex !== index));
+  }
+
   function buildPayload(): CreateStaffPayload {
-    const gallery_images = parseGallery(galleryText);
     const sort = Number.parseInt(sortOrder, 10);
     const payload: CreateStaffPayload = {
       name: name.trim(),
@@ -96,7 +147,7 @@ export function StoreStaffFormClient({ locale, mode, staffId }: Props) {
       phone: phone.trim() || null,
       email: email.trim() || null,
       primary_image: primaryImage.trim() || null,
-      gallery_images,
+      gallery_images: galleryImages,
       sort_order: Number.isFinite(sort) ? sort : 0,
       is_visible: isVisible,
     };
@@ -166,7 +217,7 @@ export function StoreStaffFormClient({ locale, mode, staffId }: Props) {
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-lg font-semibold text-[var(--dm-text)]">
+        <h2 className="text-lg font-semibold text-(--dm-text)">
           {mode === "create" ? st.formCreateTitle : st.formEditTitle}
         </h2>
         <Link href={listHref} className="dm-link-accent text-sm underline">
@@ -193,7 +244,7 @@ export function StoreStaffFormClient({ locale, mode, staffId }: Props) {
             rows={3}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="dm-input min-h-[5rem] resize-y"
+            className="dm-input min-h-20 resize-y"
           />
         </div>
         <div>
@@ -222,26 +273,105 @@ export function StoreStaffFormClient({ locale, mode, staffId }: Props) {
         </div>
         <div>
           <label className="dm-label mb-1 block text-xs">{st.formPrimaryImage}</label>
-          <input value={primaryImage} onChange={(e) => setPrimaryImage(e.target.value)} className="dm-input" />
+          {uploadingPrimaryImage ? (
+            <div className="overflow-hidden rounded-md border border-slate-200 bg-slate-50 p-2">
+              <Skeleton className="h-40 w-full rounded" />
+            </div>
+          ) : primaryImage ? (
+            <div className="overflow-hidden rounded-md border border-slate-200 bg-slate-50 p-2">
+              <img src={primaryImage} alt={st.formPrimaryImage} className="h-40 w-full rounded object-cover" />
+            </div>
+          ) : null}
+          <div className="mt-2 flex flex-wrap items-center gap-3">
+            <label className="dm-btn-ghost cursor-pointer">
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                disabled={uploadingPrimaryImage}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    void uploadPrimaryImageFile(file);
+                  }
+                  e.currentTarget.value = "";
+                }}
+              />
+              {uploadingPrimaryImage ? st.uploadingImage : st.uploadPrimaryImage}
+            </label>
+            {primaryImage ? (
+              <button type="button" className="dm-btn-ghost" onClick={() => setPrimaryImage("")}>
+                {st.removeImage}
+              </button>
+            ) : null}
+          </div>
         </div>
         <div>
           <label className="dm-label mb-1 block text-xs">{st.formGallery}</label>
-          <textarea rows={4} value={galleryText} onChange={(e) => setGalleryText(e.target.value)} className="dm-input font-mono text-xs" />
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {galleryImages.length === 0 ? (
+              <p className="text-xs text-(--dm-text-muted)">{st.noGalleryImages}</p>
+            ) : (
+              galleryImages.map((url, index) => (
+                <div key={`${url}-${index}`} className="overflow-hidden rounded-md border border-slate-200 bg-slate-50 p-2">
+                  <img src={url} alt={`${st.formGallery} ${index + 1}`} className="h-28 w-full rounded object-cover" />
+                  <button
+                    type="button"
+                    className="mt-2 text-xs text-red-600 hover:text-red-700"
+                    onClick={() => removeGalleryImage(index)}
+                  >
+                    {st.removeImage}
+                  </button>
+                </div>
+              ))
+            )}
+            {uploadingGalleryImageCount > 0
+              ? Array.from({ length: uploadingGalleryImageCount }, (_, index) => (
+                  <div
+                    key={`staff-gallery-uploading-${index}`}
+                    className="overflow-hidden rounded-md border border-slate-200 bg-slate-50 p-2"
+                  >
+                    <Skeleton className="h-28 w-full rounded" />
+                    <Skeleton className="mt-2 h-4 w-16" />
+                  </div>
+                ))
+              : null}
+          </div>
+          <div className="mt-2 flex flex-wrap items-center gap-3">
+            <label className="dm-btn-ghost cursor-pointer">
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                disabled={uploadingGalleryImages}
+                onChange={(e) => {
+                  const files = e.target.files;
+                  if (files && files.length > 0) {
+                    void uploadGalleryFiles(files);
+                  }
+                  e.currentTarget.value = "";
+                }}
+              />
+              {uploadingGalleryImages ? st.uploadingImage : st.uploadGalleryImages}
+            </label>
+            <p className="text-xs text-(--dm-text-muted)">{st.galleryLimitHint}</p>
+          </div>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label className="dm-label mb-1 block text-xs">{st.formSortOrder}</label>
             <input type="number" value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} className="dm-input" />
           </div>
-          <label className="flex items-center gap-2 pt-6 text-sm text-[var(--dm-text-secondary)]">
-            <input type="checkbox" checked={isVisible} onChange={(e) => setIsVisible(e.target.checked)} className="rounded border-[var(--dm-border)]" />
+          <label className="flex items-center gap-2 pt-6 text-sm text-(--dm-text-secondary)">
+            <input type="checkbox" checked={isVisible} onChange={(e) => setIsVisible(e.target.checked)} className="rounded border-(--dm-border)" />
             {st.formVisible}
           </label>
         </div>
         <div className="flex flex-wrap gap-3 pt-2">
           <button
             type="submit"
-            disabled={saving}
+            disabled={saving || uploadingPrimaryImage || uploadingGalleryImages}
             className={`rounded-lg px-5 py-2 text-sm font-medium text-white disabled:opacity-50 ${gate.platform.accentClassName} ${gate.platform.hoverClassName}`}
           >
             {saving ? "…" : mode === "create" ? st.formSubmitCreate : st.formSubmitSave}

@@ -336,6 +336,9 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
   useEffect(() => {
     if (!initData) return;
     if (!canLoadSlots) return;
+    // Chỉ cần slot khi đang ở bước lịch (3). Tránh GET /booking/slots dư khi ở bước 4/5
+    // (ví dụ draft/localStorage effect hoặc deps khác khiến effect chạy lại).
+    if (step !== 3) return;
 
     let mounted = true;
     async function loadSlots() {
@@ -374,6 +377,7 @@ export function PublicBookingRuntimeClient({ locale, storeId }: Props) {
     initData,
     monthRange,
     slotRefreshToken,
+    step,
     storeId,
     t.submitInvalid,
     weekRange,

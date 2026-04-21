@@ -1,4 +1,5 @@
 import { getApiBaseUrl } from "@/lib/api-base";
+import { withTraceHeaders } from "@/lib/api/trace-headers";
 import type { AuthTokens } from "@/lib/auth-tokens";
 import {
   ApiClientError,
@@ -8,14 +9,16 @@ import {
 import { mapAuthPayload } from "./mapper";
 import type { LoginRequest, RefreshTokenRequest, RegisterRequest } from "./types";
 
-const JSON_HEADERS: HeadersInit = {
-  "Content-Type": "application/json",
-};
+function jsonHeaders(): Record<string, string> {
+  return withTraceHeaders({
+    "Content-Type": "application/json",
+  });
+}
 
 export async function loginWithApi(payload: LoginRequest): Promise<AuthTokens> {
   const response = await fetch(`${getApiBaseUrl()}/api/v1/auth/login`, {
     method: "POST",
-    headers: JSON_HEADERS,
+    headers: jsonHeaders(),
     body: JSON.stringify(payload),
   });
 
@@ -33,7 +36,7 @@ export async function loginWithApi(payload: LoginRequest): Promise<AuthTokens> {
 export async function registerWithApi(payload: RegisterRequest): Promise<AuthTokens> {
   const response = await fetch(`${getApiBaseUrl()}/api/v1/auth/register`, {
     method: "POST",
-    headers: JSON_HEADERS,
+    headers: jsonHeaders(),
     body: JSON.stringify(payload),
   });
 
@@ -51,7 +54,7 @@ export async function registerWithApi(payload: RegisterRequest): Promise<AuthTok
 export async function refreshWithApi(payload: RefreshTokenRequest): Promise<AuthTokens> {
   const response = await fetch(`${getApiBaseUrl()}/api/v1/auth/refresh`, {
     method: "POST",
-    headers: JSON_HEADERS,
+    headers: jsonHeaders(),
     body: JSON.stringify(payload),
   });
 

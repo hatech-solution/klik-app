@@ -1,5 +1,6 @@
 import { getApiBaseUrl } from "@/lib/api-base";
 import { refreshWithApi } from "@/lib/api/auth";
+import { withTraceHeaders } from "@/lib/api/trace-headers";
 import { clearAuthTokens, getClientAuthTokens, persistAuthTokens } from "@/lib/auth-tokens";
 import { ApiClientError } from "@/lib/api/error";
 
@@ -46,11 +47,11 @@ async function doAuthorizedFetch(options: AuthorizedRequestOptions): Promise<Res
   }
 
   const includeJsonContentType = options.includeJsonContentType ?? true;
-  const headers: Record<string, string> = {
+  const headers: Record<string, string> = withTraceHeaders({
     Accept: "application/json",
     Authorization: `Bearer ${tokens.accessToken}`,
     ...(options.extraHeaders ?? {}),
-  };
+  });
   if (includeJsonContentType) {
     headers["Content-Type"] = "application/json";
   }

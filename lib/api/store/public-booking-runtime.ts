@@ -1,6 +1,7 @@
 import { ApiClientError, toApiClientError } from "@/lib/api/error";
 import type { PublicBookingCalendarViewMode } from "@/lib/api/store/types";
 import { getApiBaseUrl } from "@/lib/api-base";
+import { withTraceHeaders } from "@/lib/api/trace-headers";
 
 export type BookingRuntimeCourse = {
   id: string;
@@ -83,9 +84,9 @@ export async function getPublicBookingRuntimeInit(storeId: string): Promise<Book
   const response = await fetch(`${getApiBaseUrl()}/api/v1/public/stores/${storeId}/booking/init`, {
     method: "GET",
     cache: "no-store",
-    headers: {
+    headers: withTraceHeaders({
       Accept: "application/json",
-    },
+    }),
   });
   const body = await response.json().catch(() => null);
   if (!response.ok) {
@@ -116,9 +117,9 @@ export async function getPublicBookingRuntimeSlots(params: {
     {
       method: "GET",
       cache: "no-store",
-      headers: {
+      headers: withTraceHeaders({
         Accept: "application/json",
-      },
+      }),
     },
   );
   const body = await response.json().catch(() => null);
@@ -178,11 +179,11 @@ export async function postPublicBookingRuntime(
   try {
     const response = await fetch(`${getApiBaseUrl()}/api/v1/public/stores/${payload.store_id}/bookings`, {
       method: "POST",
-      headers: {
+      headers: withTraceHeaders({
         Accept: "application/json",
         "Content-Type": "application/json",
         "Idempotency-Key": payload.idempotency_key,
-      },
+      }),
       body: JSON.stringify({
         course_id: payload.course_id,
         staff_id: payload.staff_id,

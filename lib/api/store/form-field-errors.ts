@@ -2,6 +2,8 @@ import { getErrorMessageByKey, type ApiClientError } from "@/lib/api/error";
 
 export type StoreFormField =
   | "name"
+  | "primaryImageUrl"
+  | "slideImageUrls"
   | "regionCode"
   | "timezone"
   | "currencyCode"
@@ -16,6 +18,8 @@ export type StoreFormField =
 
 const API_FIELD_TO_FORM: Record<string, StoreFormField | undefined> = {
   name: "name",
+  primary_image_url: "primaryImageUrl",
+  slide_image_urls: "slideImageUrls",
   region_code: "regionCode",
   timezone: "timezone",
   currency_code: "currencyCode",

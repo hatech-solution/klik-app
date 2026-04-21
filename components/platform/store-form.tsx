@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useRef, useState } from "react";
 
 import { ApiClientError } from "@/lib/api/error";
+import { createMediaUploadAuth, uploadImageToImageKit } from "@/lib/api/media/client";
 import {
   createStore,
   fetchRegions,
@@ -44,6 +45,11 @@ export function StoreForm({ locale, platform, selectedBot, mode, initialStore }:
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<StoreFormField, string>>>({});
 
   const [name, setName] = useState("");
+  const [primaryImageUrl, setPrimaryImageUrl] = useState("");
+  const [slideImageUrls, setSlideImageUrls] = useState<string[]>([]);
+  const [uploadingPrimaryImage, setUploadingPrimaryImage] = useState(false);
+  const [uploadingSlideImages, setUploadingSlideImages] = useState(false);
+  const [uploadingSlideImageCount, setUploadingSlideImageCount] = useState(0);
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -96,6 +102,8 @@ export function StoreForm({ locale, platform, selectedBot, mode, initialStore }:
   useEffect(() => {
     if (mode !== "edit" || !initialStore) return;
     setName(initialStore.name);
+    setPrimaryImageUrl(initialStore.primaryImageUrl || "");
+    setSlideImageUrls(initialStore.slideImageUrls || []);
     setRegionCode(initialStore.regionCode);
     setTimezone(initialStore.timezone);
     setCurrencyCode(initialStore.currencyCode);
@@ -117,6 +125,64 @@ export function StoreForm({ locale, platform, selectedBot, mode, initialStore }:
       setTimezone(row.default_timezone);
       setCurrencyCode(row.default_currency);
     }
+  }
+
+  async function uploadPrimaryImage(file: File) {
+    setUploadingPrimaryImage(true);
+    try {
+      const auth = await createMediaUploadAuth(selectedBot.id, { scope: "store_primary" });
+      const uploaded = await uploadImageToImageKit(auth, file);
+      setPrimaryImageUrl(uploaded.url);
+      notifySuccess(t.toast.imageUploadSuccess);
+    } catch {
+      notifyError(t.toast.imageUploadFailed);
+    } finally {
+      setUploadingPrimaryImage(false);
+    }
+  }
+
+  async function uploadSlideImages(files: FileList) {
+    const nextFiles = Array.from(files);
+    if (nextFiles.length === 0) {
+      return;
+    }
+
+    const remaining = Math.max(0, 10 - slideImageUrls.length);
+    if (remaining === 0) {
+      notifyError(t.store.validation.slideImageLimit);
+      return;
+    }
+
+    setUploadingSlideImages(true);
+    setUploadingSlideImageCount(Math.min(nextFiles.length, remaining));
+    let uploadedCount = 0;
+    try {
+      const uploadQueue = nextFiles.slice(0, remaining);
+      const uploadedUrls: string[] = [];
+      for (const file of uploadQueue) {
+        const auth = await createMediaUploadAuth(selectedBot.id, { scope: "store_slide" });
+        const uploaded = await uploadImageToImageKit(auth, file);
+        uploadedUrls.push(uploaded.url);
+      }
+      uploadedCount = uploadedUrls.length;
+      if (uploadedUrls.length > 0) {
+        setSlideImageUrls((prev) => [...prev, ...uploadedUrls]);
+      }
+      if (nextFiles.length > remaining) {
+        notifyError(t.store.validation.slideImageLimit);
+      } else if (uploadedCount > 0) {
+        notifySuccess(t.toast.imageUploadSuccess);
+      }
+    } catch {
+      notifyError(t.toast.imageUploadFailed);
+    } finally {
+      setUploadingSlideImages(false);
+      setUploadingSlideImageCount(0);
+    }
+  }
+
+  function removeSlideImage(index: number) {
+    setSlideImageUrls((prev) => prev.filter((_, itemIndex) => itemIndex !== index));
   }
 
   async function handleSubmit(e: FormEvent) {
@@ -155,6 +221,8 @@ export function StoreForm({ locale, platform, selectedBot, mode, initialStore }:
 
     const payload = {
       name: name.trim(),
+      primary_image_url: primaryImageUrl.trim() || null,
+      slide_image_urls: slideImageUrls.map((url) => url.trim()).filter((url) => url.length > 0),
       region_code: regionCode.trim(),
       timezone: timezone.trim(),
       currency_code: currencyCode.trim().toUpperCase(),
@@ -233,8 +301,121 @@ export function StoreForm({ locale, platform, selectedBot, mode, initialStore }:
           {fieldErrors.name ? <p className="mt-1 text-xs text-red-600">{fieldErrors.name}</p> : null}
         </div>
 
+        <div className="dm-well space-y-4">
+          <p className="text-sm font-semibold text-(--dm-text)">{t.store.imageSectionTitle}</p>
+
+          <div>
+            <label className="dm-label mb-1 block">{t.store.primaryImage}</label>
+            {fieldErrors.primaryImageUrl ? (
+              <p className="mt-1 text-xs text-red-600">{fieldErrors.primaryImageUrl}</p>
+            ) : null}
+            {uploadingPrimaryImage ? (
+              <div className="mt-3 overflow-hidden rounded-md border border-slate-200 bg-slate-50 p-2">
+                <Skeleton className="h-40 w-full rounded" />
+              </div>
+            ) : null}
+            {primaryImageUrl ? (
+              <div className="mt-3 overflow-hidden rounded-md border border-slate-200 bg-slate-50 p-2">
+                <img
+                  src={primaryImageUrl}
+                  alt={t.store.primaryImage}
+                  className="h-40 w-full rounded object-cover"
+                />
+              </div>
+            ) : null}
+            <div className="mt-2 flex flex-wrap items-center gap-3">
+              <label className="dm-btn-ghost cursor-pointer">
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  disabled={uploadingPrimaryImage}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      void uploadPrimaryImage(file);
+                    }
+                    e.currentTarget.value = "";
+                  }}
+                />
+                {uploadingPrimaryImage ? t.store.uploadingImage : t.store.uploadPrimaryImage}
+              </label>
+              {primaryImageUrl ? (
+                <button type="button" className="dm-btn-ghost" onClick={() => setPrimaryImageUrl("")}>
+                  {t.store.removeImage}
+                </button>
+              ) : null}
+            </div>
+          </div>
+
+          <div>
+            <label className="dm-label mb-1 block">{t.store.slideImages}</label>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {slideImageUrls.length === 0 ? (
+                <p className="text-xs text-(--dm-text-muted)">{t.store.noSlideImages}</p>
+              ) : (
+                slideImageUrls.map((url, index) => (
+                  <div
+                    key={`${url}-${index}`}
+                    className="overflow-hidden rounded-md border border-slate-200 bg-slate-50 p-2"
+                  >
+                    <img
+                      src={url}
+                      alt={`${t.store.slideImages} ${index + 1}`}
+                      className="h-28 w-full rounded object-cover"
+                    />
+                    <button
+                      type="button"
+                      className="mt-2 text-xs text-red-600 hover:text-red-700"
+                      onClick={() => removeSlideImage(index)}
+                    >
+                      {t.store.removeImage}
+                    </button>
+                  </div>
+                ))
+              )}
+              {uploadingSlideImageCount > 0
+                ? Array.from({ length: uploadingSlideImageCount }, (_, index) => (
+                    <div
+                      key={`slide-uploading-${index}`}
+                      className="overflow-hidden rounded-md border border-slate-200 bg-slate-50 p-2"
+                    >
+                      <Skeleton className="h-28 w-full rounded" />
+                      <Skeleton className="mt-2 h-4 w-16" />
+                    </div>
+                  ))
+                : null}
+            </div>
+            <div className="mt-2 flex flex-wrap items-center gap-3">
+              <label className="dm-btn-ghost cursor-pointer">
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  className="hidden"
+                  disabled={uploadingSlideImages}
+                  onChange={(e) => {
+                    const files = e.target.files;
+                    if (files && files.length > 0) {
+                      void uploadSlideImages(files);
+                    }
+                    e.currentTarget.value = "";
+                  }}
+                />
+                {uploadingSlideImages ? t.store.uploadingImage : t.store.uploadSlideImages}
+              </label>
+              <p className="text-xs text-(--dm-text-muted)">
+                {t.store.validation.slideImageLimitHint}
+              </p>
+            </div>
+            {fieldErrors.slideImageUrls ? (
+              <p className="mt-1 text-xs text-red-600">{fieldErrors.slideImageUrls}</p>
+            ) : null}
+          </div>
+        </div>
+
         <div className="dm-well">
-          <p className="mb-3 text-sm font-semibold text-[var(--dm-text)]">{t.store.bookingLocaleTitle}</p>
+          <p className="mb-3 text-sm font-semibold text-(--dm-text)">{t.store.bookingLocaleTitle}</p>
           <label className="dm-label mb-1 block">{t.store.region}</label>
           <select
             value={regionCode}
@@ -258,7 +439,7 @@ export function StoreForm({ locale, platform, selectedBot, mode, initialStore }:
           {fieldErrors.regionCode ? (
             <p className="mt-1 text-xs text-red-600">{fieldErrors.regionCode}</p>
           ) : null}
-          <p className="mt-1 text-xs text-[var(--dm-text-muted)]">{t.store.regionHint}</p>
+          <p className="mt-1 text-xs text-(--dm-text-muted)">{t.store.regionHint}</p>
           {regionsLoading ? (
             <div className="mt-2 space-y-2" aria-busy="true" aria-label={t.store.loadingRegions} role="status">
               <Skeleton className="h-3 w-44" />
@@ -399,7 +580,7 @@ export function StoreForm({ locale, platform, selectedBot, mode, initialStore }:
           </Link>
           <button
             type="submit"
-            disabled={submitting}
+            disabled={submitting || uploadingPrimaryImage || uploadingSlideImages}
             className={`rounded-lg px-6 py-2 text-sm font-medium disabled:opacity-50 ${platform.accentClassName} ${platform.hoverClassName}`}
           >
             {submitting ? t.auth.common.submitting : t.store.save}

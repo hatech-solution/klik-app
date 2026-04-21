@@ -274,12 +274,12 @@ export function StoreStaffFormClient({ locale, mode, staffId }: Props) {
         <div>
           <label className="dm-label mb-1 block text-xs">{st.formPrimaryImage}</label>
           {uploadingPrimaryImage ? (
-            <div className="overflow-hidden rounded-md border border-slate-200 bg-slate-50 p-2">
-              <Skeleton className="h-40 w-full rounded" />
+            <div className="inline-flex overflow-hidden rounded-xl border border-slate-200 bg-slate-50 p-2">
+              <Skeleton className="h-28 w-28 rounded-full" />
             </div>
           ) : primaryImage ? (
-            <div className="overflow-hidden rounded-md border border-slate-200 bg-slate-50 p-2">
-              <img src={primaryImage} alt={st.formPrimaryImage} className="h-40 w-full rounded object-cover" />
+            <div className="inline-flex overflow-hidden rounded-xl border border-slate-200 bg-slate-50 p-2">
+              <img src={primaryImage} alt={st.formPrimaryImage} className="h-28 w-28 rounded-full object-cover" />
             </div>
           ) : null}
           <div className="mt-2 flex flex-wrap items-center gap-3">

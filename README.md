@@ -14,7 +14,7 @@ npm run dev # hoặc yarn dev
 
 Mở:
 - Giao diện mặc định chạy trên một web domain duy nhất: `http://localhost:3000`
-- Khởi đầu hệ thống sẽ yêu cầu người dùng chọn Nền Tảng tại màn hình `http://localhost:3000/vi/platform-select`.
+- Khởi đầu hệ thống sẽ yêu cầu người dùng chọn Nền Tảng tại màn hình `http://localhost:3000/vi/select-platform`.
 - Sau khi chọn Platform, hệ thống tự lưu `platform_id` vào local storage và chuyển hướng sang Overview chính ở path `http://localhost:3000/vi/overview`. Mọi request gọi API Backend sẽ tự động được gửi kèm header `X-Platform-ID`.
 
 ## Scripts

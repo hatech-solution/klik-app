@@ -32,26 +32,23 @@ Tài liệu này giúp AI agent onboard nhanh vào dự án và chỉnh sửa đ
 
 ## 3) Kiến trúc route chính
 
-- Root redirect: `app/page.tsx` -> `/login`
+Tất cả route đều nằm trong `app/[locale]/` (vi hoặc en).
+
+- Root redirect: `app/page.tsx` -> `/{locale}/login`
 - Auth pages:
-  - `app/login/page.tsx`
-  - `app/register/page.tsx`
-  - `app/reset-password/page.tsx`
+  - `app/[locale]/login/page.tsx`
+  - `app/[locale]/register/page.tsx`
+  - `app/[locale]/reset-password/page.tsx`
 - Chọn nền tảng:
-  - `app/select-platform/page.tsx`
-- Dashboard platform:
-  - `app/platform/[platform]/page.tsx`
+  - `app/[locale]/select-platform/page.tsx`
+- Dashboard:
+  - `app/[locale]/dashboard/page.tsx`
 
-## 4) Wildcard subdomain
+## 4) Quản lý Platform
 
-- File quan trọng: `proxy.ts`
-- Cơ chế:
-  - Đọc host hiện tại.
-  - Nếu host có subdomain thuộc nhóm platform thì rewrite vào:
-    - `/platform/<platform>/<pathname gốc>`
-  - Bỏ qua path nội bộ như `/_next`, `/api`, `/favicon.ico`, `/platform/*`.
-
-Không đổi logic rewrite trừ khi có yêu cầu rõ ràng vì đây là nền tảng của flow subdomain.
+- Platform được chọn tại màn `select-platform` và lưu vào `localStorage` (`platform_id`).
+- Mọi request API gửi kèm header `X-Platform-Id` thông qua `authorizedRequest`.
+- State quản lý bởi Zustand store: `store/usePlatformStore.ts`.
 
 ## 5) i18n (vi/en)
 
@@ -88,7 +85,7 @@ Khi thêm text mới, luôn thêm cả `vi` và `en`.
 
 - Platform config: `lib/platforms.ts`
 - Bot/platform/auth/store đã dùng backend API thật (`klik-server`).
-- File `lib/mocks/store-mock-data.ts` có thể còn trong repo nhưng **màn store gọi API thật**, không dùng mock đó.
+- Màn store gọi API thật từ `klik-server`, không dùng mock data.
 
 ## 8) Nguyên tắc khi AI chỉnh sửa
 

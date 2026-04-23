@@ -197,36 +197,38 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
                           {getStatusText(store.businessStatus)}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-right">
-                        <Link
-                          href={`/${locale}/store/${store.id}`}
-                          className={`mr-3 inline-flex rounded-lg px-3 py-1.5 text-xs font-medium text-white ${platform.accentClassName} ${platform.hoverClassName}`}
-                          title={t.store.manageStore}
-                        >
-                          {t.store.manageStore}
-                        </Link>
-                        <Link
-                          href={`/${locale}/store/${store.id}/edit`}
-                          className="mr-3 inline-flex text-slate-400 hover:text-slate-700"
-                          title={t.store.editStore}
-                        >
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M12 20h9" />
-                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
-                          </svg>
-                        </Link>
-                        <button
-                          type="button"
-                          onClick={() => openDeleteConfirm(store.id)}
-                          className="text-slate-400 hover:text-red-600"
-                          title={t.store.deleteStore}
-                        >
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M3 6h18" />
-                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                          </svg>
-                        </button>
+                      <td className="whitespace-nowrap px-4 py-3 text-right">
+                        <div className="flex items-center justify-end gap-3">
+                          <Link
+                            href={`/${locale}/store/${store.id}`}
+                            className={`inline-flex rounded-lg px-3 py-1.5 text-xs font-medium text-white ${platform.accentClassName} ${platform.hoverClassName}`}
+                            title={t.store.manageStore}
+                          >
+                            {t.store.manageStore}
+                          </Link>
+                          <Link
+                            href={`/${locale}/store/${store.id}/edit`}
+                            className="inline-flex text-slate-400 hover:text-slate-700"
+                            title={t.store.editStore}
+                          >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M12 20h9" />
+                              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                            </svg>
+                          </Link>
+                          <button
+                            type="button"
+                            onClick={() => openDeleteConfirm(store.id)}
+                            className="text-slate-400 hover:text-red-600"
+                            title={t.store.deleteStore}
+                          >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M3 6h18" />
+                              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                            </svg>
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))

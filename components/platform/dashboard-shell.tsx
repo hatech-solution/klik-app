@@ -135,35 +135,16 @@ export function DashboardShell({ locale, children }: DashboardShellProps) {
           </div>
         ) : (
           <div className="mx-auto grid w-full max-w-7xl gap-6 p-6 lg:grid-cols-[260px_1fr]">
-            <aside className="dashboard-sidebar">
-              {storeBaseHref ? (
-                <Link
-                  href={backToAdminHref}
-                  className="mb-3 inline-flex text-xs font-medium text-[var(--dm-text-muted)] hover:text-[var(--dm-text)]"
-                >
-                  {t.storeDashboard.backToAdmin}
-                </Link>
-              ) : null}
-              <h2 className="dashboard-sidebar-title">{sidebarTitle}</h2>
-              <nav className="space-y-2">
-                {navItems.map((item) => {
-                  const active = navActiveByHref(item.href, item.exact);
-                  return (
-                    <Link
-                      key={item.id}
-                      href={item.href}
-                      className={`dashboard-nav-link ${
-                        active
-                          ? platform.accentClassName
-                          : "inactive"
-                      }`}
-                    >
-                      {item.label}
-                    </Link>
-                  );
-                })}
-              </nav>
-            </aside>
+            <MobileSidebarToggle
+              key={pathname}
+              sidebarTitle={sidebarTitle}
+              storeBaseHref={storeBaseHref}
+              backToAdminHref={backToAdminHref}
+              backToAdminLabel={t.storeDashboard.backToAdmin}
+              navItems={navItems}
+              navActiveByHref={navActiveByHref}
+              accentClassName={platform.accentClassName}
+            />
 
             <section className="dashboard-content">
               <div className="dashboard-selected-bot mb-6 rounded-xl p-4" data-platform={platform.id}>
@@ -186,6 +167,79 @@ export function DashboardShell({ locale, children }: DashboardShellProps) {
           </div>
         )}
       </main>
+    </>
+  );
+}
+
+/* ---------- Mobile sidebar (isolated state, reset via key={pathname}) ---------- */
+
+import { useState } from "react";
+
+type MobileSidebarToggleProps = {
+  sidebarTitle: string;
+  storeBaseHref: string | null;
+  backToAdminHref: string;
+  backToAdminLabel: string;
+  navItems: { id: string; href: string; label: string; exact: boolean }[];
+  navActiveByHref: (href: string, exact: boolean) => boolean;
+  accentClassName: string;
+};
+
+function MobileSidebarToggle({
+  sidebarTitle,
+  storeBaseHref,
+  backToAdminHref,
+  backToAdminLabel,
+  navItems,
+  navActiveByHref,
+  accentClassName,
+}: MobileSidebarToggleProps) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex items-center gap-2 rounded-lg border border-[var(--dm-border)] bg-[var(--dm-surface)] px-3 py-2 text-sm font-medium text-[var(--dm-text)] shadow-sm lg:hidden"
+        aria-expanded={open}
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+        {sidebarTitle}
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={`ml-auto transition-transform ${open ? "rotate-180" : ""}`}>
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+
+      <aside className={`dashboard-sidebar ${open ? "" : "hidden"} lg:block`}>
+        {storeBaseHref ? (
+          <Link
+            href={backToAdminHref}
+            className="mb-3 inline-flex text-xs font-medium text-[var(--dm-text-muted)] hover:text-[var(--dm-text)]"
+          >
+            {backToAdminLabel}
+          </Link>
+        ) : null}
+        <h2 className="dashboard-sidebar-title">{sidebarTitle}</h2>
+        <nav className="space-y-2">
+          {navItems.map((item) => {
+            const active = navActiveByHref(item.href, item.exact);
+            return (
+              <Link
+                key={item.id}
+                href={item.href}
+                className={`dashboard-nav-link ${active ? accentClassName : "inactive"}`}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
+        </nav>
+      </aside>
     </>
   );
 }

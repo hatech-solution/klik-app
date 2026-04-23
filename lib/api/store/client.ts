@@ -1,6 +1,10 @@
 import { authorizedRequest } from "@/lib/api/authenticated-request";
 import { toApiClientError } from "@/lib/api/error";
 import type {
+  BookingDetailResponse,
+  BookingListQuery,
+  BookingListResponse,
+  BookingSummaryResponse,
   CourseApiItem,
   CourseSettingsApiItem,
   CreateCoursePayload,
@@ -23,6 +27,8 @@ import type {
   StoreApiItem,
   StoreOperatingHoursResolveResponse,
   StoreOperatingHoursResponse,
+  UpdateBookingStatusPayload,
+  UpdateBookingStatusResponse,
   UpdateCoursePayload,
   UpdateStaffPayload,
   UpdateStorePayload,
@@ -582,4 +588,98 @@ export async function resolveStaffOperatingHours(
     throw toApiClientError(body, "Failed to resolve staff hours", response.status);
   }
   return body as StaffOperatingHoursResolveResponse;
+}
+
+// --- Booking Management ---
+
+export async function fetchBookings(
+  botId: string,
+  storeId: string,
+  query: BookingListQuery,
+): Promise<BookingListResponse> {
+  const params = new URLSearchParams({
+    from_date: query.from_date,
+    to_date: query.to_date,
+  });
+  if (query.status) params.set("status", query.status);
+  if (query.staff_id) params.set("staff_id", query.staff_id);
+  if (query.course_id) params.set("course_id", query.course_id);
+  if (query.platform_provider) params.set("platform_provider", query.platform_provider);
+  if (query.search) params.set("search", query.search);
+  if (query.sort_by) params.set("sort_by", query.sort_by);
+  if (query.sort_order) params.set("sort_order", query.sort_order);
+  if (query.page) params.set("page", String(query.page));
+  if (query.page_size) params.set("page_size", String(query.page_size));
+
+  const response = await authorizedRequest({
+    method: "GET",
+    path: `/api/v1/stores/${storeId}/bookings?${params.toString()}`,
+    extraHeaders: { "X-Bot-Id": botId },
+    cache: "no-store",
+    includeJsonContentType: false,
+  });
+  const body = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw toApiClientError(body, "Failed to load bookings", response.status);
+  }
+  return body as BookingListResponse;
+}
+
+export async function fetchBookingDetail(
+  botId: string,
+  storeId: string,
+  bookingId: string,
+): Promise<BookingDetailResponse> {
+  const response = await authorizedRequest({
+    method: "GET",
+    path: `/api/v1/stores/${storeId}/bookings/${bookingId}`,
+    extraHeaders: { "X-Bot-Id": botId },
+    cache: "no-store",
+    includeJsonContentType: false,
+  });
+  const body = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw toApiClientError(body, "Failed to load booking detail", response.status);
+  }
+  return body as BookingDetailResponse;
+}
+
+export async function updateBookingStatus(
+  botId: string,
+  storeId: string,
+  bookingId: string,
+  payload: UpdateBookingStatusPayload,
+): Promise<UpdateBookingStatusResponse> {
+  const response = await authorizedRequest({
+    method: "PATCH",
+    path: `/api/v1/stores/${storeId}/bookings/${bookingId}/status`,
+    extraHeaders: { "X-Bot-Id": botId },
+    body: payload,
+  });
+  const body = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw toApiClientError(body, "Failed to update booking status", response.status);
+  }
+  return body as UpdateBookingStatusResponse;
+}
+
+export async function fetchBookingSummary(
+  botId: string,
+  storeId: string,
+  fromDate: string,
+  toDate: string,
+): Promise<BookingSummaryResponse> {
+  const params = new URLSearchParams({ from_date: fromDate, to_date: toDate });
+  const response = await authorizedRequest({
+    method: "GET",
+    path: `/api/v1/stores/${storeId}/bookings/summary?${params.toString()}`,
+    extraHeaders: { "X-Bot-Id": botId },
+    cache: "no-store",
+    includeJsonContentType: false,
+  });
+  const body = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw toApiClientError(body, "Failed to load booking summary", response.status);
+  }
+  return body as BookingSummaryResponse;
 }

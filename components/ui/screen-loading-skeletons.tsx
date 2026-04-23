@@ -634,6 +634,81 @@ export function PublicBookingRuntimePageSkeleton() {
   );
 }
 
+export function BookingListSkeleton({ rows = 6 }: { rows?: number }) {
+  return (
+    <div className="space-y-4" aria-hidden>
+      {/* Summary cards */}
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7">
+        {Array.from({ length: 7 }).map((_, i) => (
+          <div
+            key={i}
+            className="rounded-lg border border-[var(--dm-border)] bg-[var(--dm-surface)] p-3 text-center"
+          >
+            <Skeleton className="mx-auto h-3 w-16" />
+            <Skeleton className="mx-auto mt-2 h-6 w-10" />
+          </div>
+        ))}
+      </div>
+
+      {/* Filter bar */}
+      <div className="flex flex-wrap items-center gap-2">
+        <Skeleton className="h-7 w-14 rounded" />
+        <Skeleton className="h-4 w-48" />
+        <Skeleton className="h-7 w-14 rounded" />
+        <Skeleton className="h-7 w-24 rounded" />
+      </div>
+
+      {/* Table */}
+      <div className="overflow-x-auto rounded-lg border border-[var(--dm-border)]">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-[var(--dm-border)] bg-[var(--dm-surface)]">
+              <th className="px-3 py-2"><Skeleton className="h-4 w-20" /></th>
+              <th className="px-3 py-2"><Skeleton className="h-4 w-24" /></th>
+              <th className="hidden px-3 py-2 sm:table-cell"><Skeleton className="h-4 w-16" /></th>
+              <th className="hidden px-3 py-2 md:table-cell"><Skeleton className="h-4 w-20" /></th>
+              <th className="px-3 py-2"><Skeleton className="h-4 w-20" /></th>
+              <th className="px-3 py-2"><Skeleton className="h-4 w-16" /></th>
+            </tr>
+          </thead>
+          <tbody>
+            {Array.from({ length: rows }).map((_, r) => (
+              <tr key={r} className="border-b border-[var(--dm-border)] last:border-b-0">
+                <td className="px-3 py-2"><Skeleton className="h-4 w-28" /></td>
+                <td className="px-3 py-2">
+                  <div className="flex items-center gap-1">
+                    <Skeleton className="h-4 w-8 rounded" />
+                    <Skeleton className="h-3 w-20" />
+                  </div>
+                </td>
+                <td className="hidden px-3 py-2 sm:table-cell"><Skeleton className="h-4 w-20" /></td>
+                <td className="hidden px-3 py-2 md:table-cell"><Skeleton className="h-4 w-20" /></td>
+                <td className="px-3 py-2"><Skeleton className="h-5 w-20 rounded-full" /></td>
+                <td className="px-3 py-2 text-right">
+                  <div className="flex justify-end gap-1">
+                    <Skeleton className="h-5 w-14 rounded" />
+                    <Skeleton className="h-5 w-10 rounded" />
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Pagination */}
+      <div className="flex items-center justify-between">
+        <Skeleton className="h-3 w-20" />
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-6 w-12 rounded" />
+          <Skeleton className="h-3 w-16" />
+          <Skeleton className="h-6 w-12 rounded" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 type PublicBookingRuntimeSlotsSkeletonProps = {
   viewMode: "week" | "month";
 };

@@ -258,3 +258,117 @@ export type StaffOperatingHoursResolveResponse = {
   date_to: string;
   days: StoreOperatingHoursResolvedDay[];
 };
+
+// --- Booking Management ---
+
+export type BookingStatus =
+  | "pending"
+  | "confirmed"
+  | "arrived"
+  | "in_progress"
+  | "completed"
+  | "cancelled";
+
+export type BookingStaffRef = {
+  id: string;
+  name: string;
+};
+
+export type BookingCourseRef = {
+  id: string;
+  name: string;
+};
+
+export type BookingApiItem = {
+  id: string;
+  store_id: string;
+  staff: BookingStaffRef | null;
+  course: BookingCourseRef | null;
+  starts_at: string;
+  ends_at: string;
+  start_local_date: string;
+  status: BookingStatus;
+  platform_provider: string;
+  platform_user_id: string;
+  created_at: string;
+  cancelled_at: string | null;
+};
+
+export type BookingListMeta = {
+  page: number;
+  page_size: number;
+  total_items: number;
+  total_pages: number;
+  timezone: string;
+};
+
+export type BookingListResponse = {
+  data: BookingApiItem[];
+  meta: BookingListMeta;
+};
+
+export type BookingStatusHistoryEntry = {
+  from_status: string | null;
+  to_status: string;
+  changed_at: string;
+  actor_type: string;
+  actor_id: string | null;
+  note: string | null;
+};
+
+export type BookingDetailResponse = {
+  data: {
+    id: string;
+    store_id: string;
+    staff: BookingStaffRef | null;
+    course: (BookingCourseRef & { duration_minutes?: number; price_amount?: string | null }) | null;
+    starts_at: string;
+    ends_at: string;
+    start_local_date: string;
+    store_timezone: string;
+    status: BookingStatus;
+    platform_provider: string;
+    platform_user_id: string;
+    created_at: string;
+    updated_at: string;
+    cancelled_at: string | null;
+    status_histories: BookingStatusHistoryEntry[];
+  };
+};
+
+export type UpdateBookingStatusPayload = {
+  status: BookingStatus;
+  note?: string;
+};
+
+export type UpdateBookingStatusResponse = {
+  data: {
+    id: string;
+    status: BookingStatus;
+    updated_at: string;
+    status_history_entry: BookingStatusHistoryEntry;
+  };
+};
+
+export type BookingSummaryResponse = {
+  data: {
+    total: number;
+    by_status: Record<string, number>;
+    from_date: string;
+    to_date: string;
+  };
+};
+
+export type BookingListQuery = {
+  from_date: string;
+  to_date: string;
+  status?: string;
+  staff_id?: string;
+  course_id?: string;
+  platform_provider?: string;
+  search?: string;
+  sort_by?: string;
+  sort_order?: string;
+  page?: number;
+  page_size?: number;
+};

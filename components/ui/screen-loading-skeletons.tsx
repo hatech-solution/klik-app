@@ -17,7 +17,7 @@ export function LoadingRegion({ "aria-label": ariaLabel, busy = true, children, 
 
 export function SelectPlatformGridSkeleton() {
   return (
-    <div className="mt-8 grid gap-4 md:grid-cols-2" aria-hidden>
+    <div className="grid gap-4 md:grid-cols-2" aria-hidden>
       {[0, 1, 2, 3].map((i) => (
         <div
           key={i}
@@ -25,12 +25,13 @@ export function SelectPlatformGridSkeleton() {
         >
           <div className="flex items-center gap-3">
             <Skeleton className="h-8 w-8 shrink-0 rounded-lg" />
-            <Skeleton className="h-6 w-40" />
+            <Skeleton className="h-5 w-32" />
           </div>
-          <Skeleton className="mt-4 h-3 w-full" />
-          <Skeleton className="mt-2 h-3 w-full max-w-md" />
-          <Skeleton className="mt-2 h-3 w-full max-w-sm" />
-          <Skeleton className="mt-5 h-4 w-48" />
+          <div className="mt-3 space-y-1.5">
+            <Skeleton className="h-3 w-full" />
+            <Skeleton className="h-3 w-[85%]" />
+          </div>
+          <Skeleton className="mt-4 h-4 w-44" />
         </div>
       ))}
     </div>
@@ -134,25 +135,113 @@ export function BotSelectCardSkeleton() {
 export function StoreFormPageSkeleton() {
   return (
     <div className="space-y-6" aria-hidden>
+      {/* Back link + Title */}
       <div>
         <Skeleton className="h-4 w-40" />
-        <Skeleton className="mt-4 h-8 w-56" />
+        <Skeleton className="mt-3 h-7 w-48" />
       </div>
-      <div className="space-y-4">
+
+      <div className="flex max-w-2xl flex-col gap-4">
+        {/* Store Name */}
         <div>
-          <Skeleton className="mb-2 h-3 w-24" />
-          <Skeleton className="h-10 w-full max-w-2xl rounded-lg" />
+          <Skeleton className="mb-1 h-3 w-24" />
+          <Skeleton className="h-10 w-full rounded-lg" />
         </div>
-        <div className="dm-well">
-          <Skeleton className="mb-3 h-4 w-44" />
-          <Skeleton className="mb-2 h-3 w-20" />
-          <Skeleton className="h-10 w-full max-w-2xl rounded-lg" />
-          <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <Skeleton className="h-20 w-full rounded-lg" />
-            <Skeleton className="h-20 w-full rounded-lg" />
+
+        {/* Image Section */}
+        <div className="dm-well space-y-4">
+          <Skeleton className="h-4 w-36" />
+          {/* Primary image */}
+          <div>
+            <Skeleton className="mb-1 h-3 w-28" />
+            <Skeleton className="mt-3 h-40 w-full rounded-md" />
+            <div className="mt-2 flex gap-3">
+              <Skeleton className="h-8 w-32 rounded-lg" />
+            </div>
+          </div>
+          {/* Slide images */}
+          <div>
+            <Skeleton className="mb-1 h-3 w-24" />
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <Skeleton className="h-28 w-full rounded-md" />
+              <Skeleton className="h-28 w-full rounded-md" />
+            </div>
+            <div className="mt-2 flex gap-3">
+              <Skeleton className="h-8 w-36 rounded-lg" />
+              <Skeleton className="h-3 w-28 self-center" />
+            </div>
           </div>
         </div>
-        <Skeleton className="h-10 w-32 rounded-lg" />
+
+        {/* Booking Locale Section */}
+        <div className="dm-well">
+          <Skeleton className="mb-3 h-4 w-36" />
+          <Skeleton className="mb-1 h-3 w-20" />
+          <Skeleton className="h-10 w-full rounded-lg" />
+          <Skeleton className="mt-1 h-3 w-48" />
+          <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <Skeleton className="mb-1 h-3 w-20" />
+              <Skeleton className="h-10 w-full rounded-lg" />
+            </div>
+            <div>
+              <Skeleton className="mb-1 h-3 w-20" />
+              <Skeleton className="h-10 w-full rounded-lg" />
+            </div>
+          </div>
+        </div>
+
+        {/* Address */}
+        <div>
+          <Skeleton className="mb-1 h-3 w-16" />
+          <Skeleton className="h-10 w-full rounded-lg" />
+        </div>
+
+        {/* Phone + Email */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <Skeleton className="mb-1 h-3 w-20" />
+            <Skeleton className="h-10 w-full rounded-lg" />
+          </div>
+          <div>
+            <Skeleton className="mb-1 h-3 w-16" />
+            <Skeleton className="h-10 w-full rounded-lg" />
+          </div>
+        </div>
+
+        {/* Description */}
+        <div>
+          <Skeleton className="mb-1 h-3 w-20" />
+          <Skeleton className="h-16 w-full rounded-lg" />
+        </div>
+
+        {/* Social URLs 2x2 */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <Skeleton className="mb-1 h-3 w-24" />
+            <Skeleton className="h-10 w-full rounded-lg" />
+          </div>
+          <div>
+            <Skeleton className="mb-1 h-3 w-28" />
+            <Skeleton className="h-10 w-full rounded-lg" />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <Skeleton className="mb-1 h-3 w-28" />
+            <Skeleton className="h-10 w-full rounded-lg" />
+          </div>
+          <div>
+            <Skeleton className="mb-1 h-3 w-20" />
+            <Skeleton className="h-10 w-full rounded-lg" />
+          </div>
+        </div>
+
+        {/* Action buttons */}
+        <div className="flex justify-end gap-3 pt-2">
+          <Skeleton className="h-10 w-20 rounded-lg" />
+          <Skeleton className="h-10 w-24 rounded-lg" />
+        </div>
       </div>
     </div>
   );
@@ -160,23 +249,43 @@ export function StoreFormPageSkeleton() {
 
 export function StoreSettingsGateBodySkeleton() {
   return (
-    <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:flex-row lg:items-start" aria-hidden>
-      <aside className="w-full shrink-0 lg:w-64">
-        <div className="dm-settings-nav">
-          <Skeleton className="h-3 w-28" />
-          <Skeleton className="mt-2 h-3 w-full" />
-          <Skeleton className="mt-4 h-9 w-full rounded-lg" />
-          <Skeleton className="mt-2 h-9 w-full rounded-lg" />
-          <Skeleton className="mt-2 h-9 w-full rounded-lg" />
-          <Skeleton className="mt-2 h-9 w-full rounded-lg" />
-        </div>
-      </aside>
-      <div className="dm-overview-panel min-w-0 flex-1">
-        <Skeleton className="h-6 w-48" />
-        <Skeleton className="mt-3 h-4 w-full max-w-lg" />
-        <Skeleton className="mt-8 h-32 w-full rounded-xl" />
-        <Skeleton className="mt-4 h-24 w-full rounded-xl" />
+    <div className="space-y-8" aria-hidden>
+      {/* Store name + subtitle */}
+      <div>
+        <Skeleton className="h-7 w-48" />
+        <Skeleton className="mt-2 h-4 w-72" />
       </div>
+
+      {/* Analytics stats grid */}
+      <div>
+        <Skeleton className="mb-4 h-5 w-32" />
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="dm-stat-card h-24 rounded-xl">
+              <Skeleton className="h-3 w-28" />
+              <Skeleton className="mt-3 h-6 w-16" />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Modules grid */}
+      <div>
+        <Skeleton className="h-5 w-28" />
+        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="dm-overview-panel flex flex-col border border-[var(--dm-border)]">
+              <Skeleton className="h-4 w-36" />
+              <Skeleton className="mt-2 h-3 w-full" />
+              <Skeleton className="mt-1 h-3 w-[70%]" />
+              <Skeleton className="mt-4 h-4 w-20" />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Timezone footer */}
+      <Skeleton className="h-3 w-64" />
     </div>
   );
 }
@@ -184,13 +293,66 @@ export function StoreSettingsGateBodySkeleton() {
 export function StoreOperatingHoursBodySkeleton() {
   return (
     <div className="space-y-6 py-2" aria-hidden>
-      <div className="dm-oh-section">
-        <Skeleton className="h-4 w-36" />
-        <Skeleton className="mt-3 h-10 w-full max-w-md rounded-lg" />
-        <Skeleton className="mt-3 h-10 w-full max-w-md rounded-lg" />
+      {/* Intro section */}
+      <div className="border-b border-[var(--dm-border)] pb-4">
+        <Skeleton className="h-6 w-48" />
+        <Skeleton className="mt-2 h-4 w-64" />
+        <Skeleton className="mt-1 h-3 w-40" />
       </div>
-      <Skeleton className="h-40 w-full rounded-xl border border-[var(--dm-border)]" />
-      <Skeleton className="h-32 w-full rounded-xl border border-[var(--dm-border)]" />
+
+      {/* Mode selection: Hours Mode + Holiday Fallback */}
+      <div className="dm-oh-section">
+        <div className="flex flex-wrap gap-4">
+          <div className="min-w-[200px]">
+            <Skeleton className="mb-1 h-3 w-24" />
+            <Skeleton className="h-9 w-44 rounded-lg" />
+            <Skeleton className="mt-1 h-3 w-full max-w-xs" />
+          </div>
+          <div className="min-w-[200px]">
+            <Skeleton className="mb-1 h-3 w-32" />
+            <Skeleton className="h-9 w-44 rounded-lg" />
+            <Skeleton className="mt-1 h-3 w-full max-w-xs" />
+          </div>
+        </div>
+      </div>
+
+      {/* Schedule section - weekday rows */}
+      <div className="dm-oh-block space-y-3">
+        <Skeleton className="h-5 w-32" />
+        {Array.from({ length: 7 }).map((_, i) => (
+          <div key={i} className="flex flex-wrap items-center gap-3">
+            <Skeleton className="h-4 w-28 shrink-0" />
+            <Skeleton className="h-9 w-36 rounded-lg" />
+            <Skeleton className="h-9 w-24 rounded-lg" />
+            <Skeleton className="mx-1 h-3 w-3" />
+            <Skeleton className="h-9 w-24 rounded-lg" />
+          </div>
+        ))}
+      </div>
+
+      {/* Overrides section */}
+      <div className="dm-oh-block space-y-3">
+        <div className="flex items-center justify-between">
+          <Skeleton className="h-5 w-36" />
+          <Skeleton className="h-8 w-28 rounded-lg" />
+        </div>
+      </div>
+
+      {/* Preview section */}
+      <div className="space-y-3">
+        <Skeleton className="h-5 w-28" />
+        <div className="flex flex-wrap gap-3">
+          <Skeleton className="h-9 w-36 rounded-lg" />
+          <Skeleton className="h-9 w-36 rounded-lg" />
+          <Skeleton className="h-9 w-20 rounded-lg" />
+        </div>
+      </div>
+
+      {/* Action buttons */}
+      <div className="flex flex-wrap justify-end gap-3 border-t border-[var(--dm-border)] pt-4">
+        <Skeleton className="h-9 w-24 rounded-lg" />
+        <Skeleton className="h-9 w-20 rounded-lg" />
+      </div>
     </div>
   );
 }
@@ -198,36 +360,40 @@ export function StoreOperatingHoursBodySkeleton() {
 export function StorePublicBookingSettingsBodySkeleton() {
   return (
     <div className="space-y-5" aria-hidden>
+      {/* Calendar View Mode */}
       <div>
-        <Skeleton className="mb-2 h-3 w-28" />
+        <Skeleton className="mb-1 h-3 w-28" />
         <Skeleton className="h-10 w-full max-w-sm rounded-lg" />
       </div>
 
+      {/* Slot Step: Hours + Minutes */}
       <div>
-        <Skeleton className="mb-2 h-3 w-40" />
+        <Skeleton className="mb-1 h-3 w-24" />
         <div className="grid max-w-lg gap-3 sm:grid-cols-2">
           <Skeleton className="h-10 w-full rounded-lg" />
           <Skeleton className="h-10 w-full rounded-lg" />
         </div>
-        <Skeleton className="mt-2 h-3 w-full max-w-md" />
+        <Skeleton className="mt-1 h-3 w-full max-w-md" />
       </div>
 
+      {/* URL Callback Fields */}
       <div className="grid gap-4">
         <div>
-          <Skeleton className="mb-2 h-3 w-36" />
+          <Skeleton className="mb-1 h-3 w-40" />
           <Skeleton className="h-10 w-full rounded-lg" />
         </div>
         <div>
-          <Skeleton className="mb-2 h-3 w-36" />
+          <Skeleton className="mb-1 h-3 w-36" />
           <Skeleton className="h-10 w-full rounded-lg" />
         </div>
         <div>
-          <Skeleton className="mb-2 h-3 w-36" />
+          <Skeleton className="mb-1 h-3 w-40" />
           <Skeleton className="h-10 w-full rounded-lg" />
         </div>
         <Skeleton className="h-3 w-full max-w-lg" />
       </div>
 
+      {/* Save button */}
       <div>
         <Skeleton className="h-10 w-24 rounded-lg" />
       </div>
@@ -237,46 +403,66 @@ export function StorePublicBookingSettingsBodySkeleton() {
 
 export function StoreCourseFormSkeleton() {
   return (
-    <div className="mx-auto max-w-2xl space-y-6 py-6" aria-hidden>
+    <div className="mx-auto max-w-2xl space-y-6" aria-hidden>
+      {/* Header: Title + Back link */}
       <div className="flex flex-wrap items-center justify-between gap-2">
         <Skeleton className="h-6 w-56" />
         <Skeleton className="h-4 w-20" />
       </div>
+
       <section className="dm-overview-panel space-y-4">
+        {/* Name */}
         <div>
-          <Skeleton className="mb-2 h-3 w-28" />
+          <Skeleton className="mb-1 h-3 w-28" />
           <Skeleton className="h-10 w-full rounded-lg" />
         </div>
+        {/* Description (textarea) */}
         <div>
-          <Skeleton className="mb-2 h-3 w-36" />
+          <Skeleton className="mb-1 h-3 w-36" />
           <Skeleton className="h-20 min-h-20 w-full rounded-lg" />
         </div>
+        {/* Duration: Hours + Minutes */}
         <div>
-          <Skeleton className="mb-2 h-3 w-24" />
+          <Skeleton className="mb-1 h-3 w-24" />
           <div className="grid gap-3 sm:grid-cols-2">
             <Skeleton className="h-10 w-full rounded-lg" />
             <Skeleton className="h-10 w-full rounded-lg" />
           </div>
-          <Skeleton className="mt-2 h-3 w-full max-w-sm" />
+          <Skeleton className="mt-1 h-3 w-full max-w-sm" />
         </div>
+        {/* Price + Sort Order */}
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <Skeleton className="mb-2 h-3 w-20" />
+            <Skeleton className="mb-1 h-3 w-20" />
             <Skeleton className="h-10 w-full rounded-lg" />
           </div>
           <div>
-            <Skeleton className="mb-2 h-3 w-24" />
+            <Skeleton className="mb-1 h-3 w-24" />
             <Skeleton className="h-10 w-full rounded-lg" />
           </div>
         </div>
+        {/* Primary Image */}
         <div>
-          <Skeleton className="mb-2 h-3 w-28" />
-          <Skeleton className="h-10 w-full rounded-lg" />
+          <Skeleton className="mb-1 h-3 w-28" />
+          <Skeleton className="h-40 w-full rounded-md" />
+          <div className="mt-2 flex gap-3">
+            <Skeleton className="h-8 w-32 rounded-lg" />
+            <Skeleton className="h-8 w-20 rounded-lg" />
+          </div>
         </div>
+        {/* Gallery Images */}
         <div>
-          <Skeleton className="mb-2 h-3 w-24" />
-          <Skeleton className="h-24 w-full rounded-lg" />
+          <Skeleton className="mb-1 h-3 w-24" />
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <Skeleton className="h-28 w-full rounded-md" />
+            <Skeleton className="h-28 w-full rounded-md" />
+          </div>
+          <div className="mt-2 flex gap-3">
+            <Skeleton className="h-8 w-36 rounded-lg" />
+            <Skeleton className="h-3 w-28 self-center" />
+          </div>
         </div>
+        {/* Buttons */}
         <div className="flex flex-wrap gap-3 pt-2">
           <Skeleton className="h-10 w-28 rounded-lg" />
           <Skeleton className="h-10 w-20 rounded-lg" />
@@ -288,62 +474,86 @@ export function StoreCourseFormSkeleton() {
 
 export function StoreStaffFormSkeleton() {
   return (
-    <div className="mx-auto max-w-2xl space-y-6 py-6" aria-hidden>
+    <div className="mx-auto max-w-2xl space-y-6" aria-hidden>
+      {/* Header: Title + Back link */}
       <div className="flex flex-wrap items-center justify-between gap-2">
         <Skeleton className="h-6 w-56" />
         <Skeleton className="h-4 w-20" />
       </div>
+
       <section className="dm-overview-panel space-y-4">
+        {/* Name */}
         <div>
-          <Skeleton className="mb-2 h-3 w-28" />
+          <Skeleton className="mb-1 h-3 w-28" />
           <Skeleton className="h-10 w-full rounded-lg" />
         </div>
+        {/* Description (textarea) */}
         <div>
-          <Skeleton className="mb-2 h-3 w-36" />
+          <Skeleton className="mb-1 h-3 w-36" />
           <Skeleton className="h-20 min-h-20 w-full rounded-lg" />
         </div>
+        {/* Address */}
         <div>
-          <Skeleton className="mb-2 h-3 w-24" />
+          <Skeleton className="mb-1 h-3 w-20" />
           <Skeleton className="h-10 w-full rounded-lg" />
         </div>
+        {/* Phone + Email */}
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <Skeleton className="mb-2 h-3 w-20" />
+            <Skeleton className="mb-1 h-3 w-20" />
             <Skeleton className="h-10 w-full rounded-lg" />
           </div>
           <div>
-            <Skeleton className="mb-2 h-3 w-20" />
+            <Skeleton className="mb-1 h-3 w-16" />
             <Skeleton className="h-10 w-full rounded-lg" />
           </div>
         </div>
+        {/* Price + Max Bookings */}
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <Skeleton className="mb-2 h-3 w-16" />
+            <Skeleton className="mb-1 h-3 w-16" />
             <Skeleton className="h-10 w-full rounded-lg" />
           </div>
           <div>
-            <Skeleton className="mb-2 h-3 w-24" />
+            <Skeleton className="mb-1 h-3 w-28" />
             <Skeleton className="h-10 w-full rounded-lg" />
           </div>
         </div>
+        {/* Primary Image (circular) */}
         <div>
-          <Skeleton className="mb-2 h-3 w-28" />
-          <Skeleton className="h-10 w-full rounded-lg" />
+          <Skeleton className="mb-1 h-3 w-28" />
+          <div className="inline-flex rounded-xl border border-slate-200 bg-slate-50 p-2">
+            <Skeleton className="h-28 w-28 rounded-full" />
+          </div>
+          <div className="mt-2 flex gap-3">
+            <Skeleton className="h-8 w-32 rounded-lg" />
+            <Skeleton className="h-8 w-20 rounded-lg" />
+          </div>
         </div>
+        {/* Gallery Images */}
         <div>
-          <Skeleton className="mb-2 h-3 w-24" />
-          <Skeleton className="h-24 w-full rounded-lg" />
+          <Skeleton className="mb-1 h-3 w-24" />
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <Skeleton className="h-28 w-full rounded-md" />
+            <Skeleton className="h-28 w-full rounded-md" />
+          </div>
+          <div className="mt-2 flex gap-3">
+            <Skeleton className="h-8 w-36 rounded-lg" />
+            <Skeleton className="h-3 w-28 self-center" />
+          </div>
         </div>
+        {/* Sort Order + Visibility checkbox */}
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <Skeleton className="mb-2 h-3 w-24" />
+            <Skeleton className="mb-1 h-3 w-24" />
             <Skeleton className="h-10 w-full rounded-lg" />
           </div>
-          <div className="flex items-end gap-2">
+          <div className="flex items-center gap-2 pt-6">
             <Skeleton className="h-4 w-4 rounded-sm" />
             <Skeleton className="h-4 w-32" />
           </div>
         </div>
+        {/* Buttons */}
         <div className="flex flex-wrap gap-3 pt-2">
           <Skeleton className="h-10 w-28 rounded-lg" />
           <Skeleton className="h-10 w-20 rounded-lg" />
@@ -386,27 +596,31 @@ export function PublicBookingRuntimePageSkeleton() {
   return (
     <div className="dm-page-muted min-h-screen pb-24 pt-3" aria-hidden>
       <main className="mx-auto max-w-[430px] space-y-3 px-3">
-        <section className="dm-overview-panel rounded-2xl p-4">
-          <Skeleton className="h-5 w-44" />
-          <Skeleton className="mt-2 h-3 w-60" />
-          <Skeleton className="mt-4 h-7 w-36 rounded-full" />
-        </section>
-
-        <section className="dm-overview-panel rounded-2xl p-3">
-          <div className="grid grid-cols-5 gap-1">
+        {/* Step trail */}
+        <section className="dm-overview-panel !rounded-md !px-3 !py-1.5">
+          <div className="flex w-full items-center justify-center gap-1">
             {Array.from({ length: 5 }).map((_, idx) => (
-              <Skeleton key={idx} className="h-12 rounded-lg" />
+              <span key={idx} className="inline-flex items-center gap-1">
+                <Skeleton className="h-3 w-12" />
+                {idx < 4 ? <Skeleton className="h-3 w-2" /> : null}
+              </span>
             ))}
           </div>
         </section>
 
+        {/* Step 1: Course selection */}
         <section className="dm-overview-panel rounded-2xl p-4">
           <Skeleton className="h-4 w-28" />
           <div className="mt-3 space-y-2">
-            {Array.from({ length: 4 }).map((_, idx) => (
-              <div key={idx} className="rounded-lg border border-(--dm-border) p-3">
-                <Skeleton className="h-4 w-36" />
-                <Skeleton className="mt-2 h-3 w-24" />
+            {Array.from({ length: 3 }).map((_, idx) => (
+              <div key={idx} className="rounded-lg border border-(--dm-border) px-3 py-2">
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-14 w-14 shrink-0 rounded-md" />
+                  <div className="min-w-0 flex-1">
+                    <Skeleton className="h-4 w-36" />
+                    <Skeleton className="mt-1.5 h-3 w-24" />
+                  </div>
+                </div>
               </div>
             ))}
           </div>

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
 
-import { DashboardShell } from "@/components/platform/dashboard-shell";
+import { StoreShellLayoutClient } from "@/components/platform/store-shell-layout-client";
 import { isLocale, type Locale } from "@/lib/i18n";
 
 type StoreLayoutProps = {
@@ -16,5 +16,5 @@ export default async function StoreLayout({ children, params }: StoreLayoutProps
     notFound();
   }
 
-  return <DashboardShell locale={locale as Locale}>{children}</DashboardShell>;
+  return <StoreShellLayoutClient locale={locale as Locale}>{children}</StoreShellLayoutClient>;
 }

@@ -49,10 +49,45 @@ export function DashboardShell({ locale, children }: DashboardShellProps) {
 
   const showRedirectToSelectBot = !selectedBotId && botsListReady;
 
-  const navActive = (segment: string) => {
-    const href = dashboardNavHref(locale, segment);
+  const navActiveByHref = (href: string, exact = false) => {
+    if (exact) {
+      return pathname === href;
+    }
     return pathname === href || pathname.startsWith(`${href}/`);
   };
+
+  const storeScopeMatch = pathname.match(new RegExp(`^/${locale}/store/([^/]+)(?:/.*)?/?$`));
+  const storeIdFromPath = storeScopeMatch?.[1];
+  const storeBaseHref = storeIdFromPath ? `/${locale}/store/${storeIdFromPath}` : null;
+  const backToAdminHref = `/${locale}/store`;
+
+  const sidebarTitle = storeBaseHref ? t.storeDashboard.menuTitle : t.dashboard.menuTitle;
+  const navItems = storeBaseHref
+    ? [
+        { id: "store-overview", href: storeBaseHref, label: t.storeDashboard.navHubSummary, exact: true },
+        { id: "store-hours", href: `${storeBaseHref}/hours`, label: t.store.settings.navRouteHours, exact: false },
+        { id: "store-staff", href: `${storeBaseHref}/staff`, label: t.store.settings.navRouteStaff, exact: false },
+        { id: "store-courses", href: `${storeBaseHref}/courses`, label: t.store.settings.navRouteServices, exact: false },
+        {
+          id: "store-public-booking",
+          href: `${storeBaseHref}/public-booking`,
+          label: t.store.settings.navRoutePublicBooking,
+          exact: false,
+        },
+        { id: "store-bookings", href: `${storeBaseHref}/bookings`, label: t.store.settings.navRouteBookings, exact: false },
+      ]
+    : DASHBOARD_MAIN_NAV.map((item) => {
+        const href = dashboardNavHref(locale, item.segment);
+        const label =
+          item.id === "overview"
+            ? t.dashboard.navOverview
+            : item.id === "store"
+              ? t.dashboard.section.store.title
+              : item.id === "user"
+                ? t.dashboard.section.user.title
+                : t.dashboard.section.conversation.title;
+        return { id: item.id, href, label, exact: false };
+      });
 
   return (
     <>
@@ -101,32 +136,29 @@ export function DashboardShell({ locale, children }: DashboardShellProps) {
         ) : (
           <div className="mx-auto grid w-full max-w-7xl gap-6 p-6 lg:grid-cols-[260px_1fr]">
             <aside className="dashboard-sidebar">
-              <h2 className="dashboard-sidebar-title">
-                {t.dashboard.menuTitle}
-              </h2>
+              {storeBaseHref ? (
+                <Link
+                  href={backToAdminHref}
+                  className="mb-3 inline-flex text-xs font-medium text-[var(--dm-text-muted)] hover:text-[var(--dm-text)]"
+                >
+                  {t.storeDashboard.backToAdmin}
+                </Link>
+              ) : null}
+              <h2 className="dashboard-sidebar-title">{sidebarTitle}</h2>
               <nav className="space-y-2">
-                {DASHBOARD_MAIN_NAV.map((item) => {
-                  const href = dashboardNavHref(locale, item.segment);
-                  const active = navActive(item.segment);
-                  const labelKey =
-                    item.id === "overview"
-                      ? t.dashboard.navOverview
-                      : item.id === "store"
-                        ? t.dashboard.section.store.title
-                        : item.id === "user"
-                          ? t.dashboard.section.user.title
-                          : t.dashboard.section.conversation.title;
+                {navItems.map((item) => {
+                  const active = navActiveByHref(item.href, item.exact);
                   return (
                     <Link
                       key={item.id}
-                      href={href}
+                      href={item.href}
                       className={`dashboard-nav-link ${
                         active
                           ? platform.accentClassName
                           : "inactive"
                       }`}
                     >
-                      {labelKey}
+                      {item.label}
                     </Link>
                   );
                 })}

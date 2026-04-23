@@ -199,14 +199,11 @@ export function StoreManagement({ locale, platform, selectedBot }: StoreManageme
                       </td>
                       <td className="px-4 py-3 text-right">
                         <Link
-                          href={`/${locale}/stores/${store.id}/settings/hours`}
-                          className="mr-3 inline-flex text-slate-400 hover:text-slate-700"
-                          title={t.store.openingHours}
+                          href={`/${locale}/store/${store.id}`}
+                          className={`mr-3 inline-flex rounded-lg px-3 py-1.5 text-xs font-medium text-white ${platform.accentClassName} ${platform.hoverClassName}`}
+                          title={t.store.manageStore}
                         >
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <circle cx="12" cy="12" r="3" />
-                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09c.68 0 1.29-.39 1.51-1a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06c.46.46 1.12.6 1.82.33h.01c.63-.26 1-.87 1-1.51V3a2 2 0 0 1 4 0v.09c0 .68.39 1.29 1 1.51.7.27 1.36.13 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82c.26.63.87 1 1.51 1H21a2 2 0 0 1 0 4h-.09c-.68 0-1.29.39-1.51 1z" />
-                          </svg>
+                          {t.store.manageStore}
                         </Link>
                         <Link
                           href={`/${locale}/store/${store.id}/edit`}

@@ -70,16 +70,20 @@ export function StoreHoursChrome({
   locale,
   platform,
   backHref,
+  backLinkLabel,
   title,
   subtitle,
 }: {
   locale: Locale;
   platform: PlatformConfig;
   backHref: string;
+  /** Nếu có, thay nhãn mặc định `backToDashboard` (ví dụ “Danh sách cửa hàng”). */
+  backLinkLabel?: string;
   title: string;
   subtitle?: string;
 }) {
   const oh = getMessages(locale).store.operatingHours;
+  const backLabel = backLinkLabel ?? oh.backToDashboard;
   return (
     <header className={`${platform.headerClassName} dashboard-header border-b px-4 py-4 shadow-sm sm:px-6`}>
       <div className="mx-auto flex max-w-7xl flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -89,7 +93,7 @@ export function StoreHoursChrome({
               href={backHref}
               className="shrink-0 rounded-lg border border-white/30 px-2 py-1 text-sm text-white/95 hover:bg-white/10"
             >
-              ← {oh.backToDashboard}
+              ← {backLabel}
             </Link>
             <div className="min-w-0">
               <h1 className="text-lg font-semibold text-white">{title}</h1>
@@ -266,7 +270,6 @@ function StoreOperatingHoursEditorInner({
   platform,
   botId,
   store,
-  backHref,
   staffId,
 }: StoreSettingsGateValue & { staffId?: string }) {
   const t = getMessages(locale);
@@ -300,7 +303,7 @@ function StoreOperatingHoursEditorInner({
 
   const baseId = useId();
   const scheduleLocked = Boolean(staffId && staffHoursScope === "inherit_store");
-  const staffListHref = `/${locale}/stores/${store.id}/settings/staff`;
+  const staffListHref = `/${locale}/store/${store.id}/staff`;
 
   useEffect(() => {
     if (loading || loadFailed) return;
@@ -908,10 +911,10 @@ function StoreOperatingHoursEditorInner({
             className="scroll-mt-24 flex flex-wrap justify-end gap-3 border-t border-[var(--dm-border)] pt-4"
           >
             <Link
-              href={staffId ? staffListHref : backHref}
+              href={staffId ? staffListHref : `/${locale}/store/${store.id}`}
               className="dm-btn-ghost inline-flex rounded-lg"
             >
-              {staffId ? oh.backToStaffList : oh.backToDashboard}
+              {staffId ? oh.backToStaffList : oh.backToStoreOverview}
             </Link>
             <button
               type="button"

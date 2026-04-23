@@ -178,7 +178,7 @@ export function StoreStaffFormClient({ locale, mode, staffId }: Props) {
       if (mode === "create") {
         await createStaff(gate.botId, gate.storeId, payload);
         notifySuccess(st.formSaved);
-        router.replace(`/${locale}/stores/${gate.storeId}/settings/staff`);
+        router.replace(`/${locale}/store/${gate.storeId}/staff`);
       } else if (staffId) {
         await updateStaff(gate.botId, gate.storeId, staffId, payload);
         notifySuccess(st.formSaved);
@@ -204,7 +204,7 @@ export function StoreStaffFormClient({ locale, mode, staffId }: Props) {
     return null;
   }
 
-  const listHref = `/${locale}/stores/${gate.storeId}/settings/staff`;
+  const listHref = `/${locale}/store/${gate.storeId}/staff`;
 
   if (loading) {
     return (

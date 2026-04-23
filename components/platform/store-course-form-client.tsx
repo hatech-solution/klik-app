@@ -208,7 +208,7 @@ export function StoreCourseFormClient({ locale, mode, courseId }: Props) {
       if (mode === "create") {
         await createCourse(gate.botId, gate.storeId, built.payload);
         notifySuccess(t.toast.courseCreated);
-        router.replace(`/${locale}/stores/${gate.storeId}/settings/courses`);
+        router.replace(`/${locale}/store/${gate.storeId}/courses`);
       } else if (courseId) {
         await updateCourse(gate.botId, gate.storeId, courseId, built.payload);
         notifySuccess(t.toast.courseUpdated);
@@ -234,7 +234,7 @@ export function StoreCourseFormClient({ locale, mode, courseId }: Props) {
     return null;
   }
 
-  const listHref = `/${locale}/stores/${gate.storeId}/settings/courses`;
+  const listHref = `/${locale}/store/${gate.storeId}/courses`;
 
   if (loading) {
     return (

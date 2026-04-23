@@ -11,5 +11,5 @@ export default async function StoreSettingsIndexPage({ params }: PageProps) {
   if (!isLocale(locale)) {
     notFound();
   }
-  redirect(`/${locale}/stores/${storeId}/settings/hours`);
+  redirect(`/${locale}/store/${storeId}/hours`);
 }

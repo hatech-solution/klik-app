@@ -13,6 +13,7 @@ Tài liệu theo màn hình để AI/dev hiểu nhanh mục tiêu UI, flow và s
 - `select-platform.md` - màn hình chọn nền tảng
 - `platform-dashboard.md` - dashboard theo platform + chọn bot
 - `store-management.md` - section quản lý store: regions API, locale booking (timezone/currency), bảng + modal (trong dashboard)
+- `store-dashboard.md` - hub quản lý theo từng store: thống kê, module giờ / nhân viên / public booking / danh sách booking; từ bảng store bấm **Quản lý** vào `/{locale}/store/[storeId]`
 - `not-found.md` - màn hình 404
 
 ## Quy tắc đọc nhanh

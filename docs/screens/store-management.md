@@ -28,6 +28,9 @@
 - **Bảng** (`overflow-x-auto`, `min-width` để không vỡ cột trên màn hẹp):
   - Cột: tên, **vùng · tiền tệ** (`region_code` + `currency_code`), **múi giờ** (truncate, hover/`title` xem đủ chuỗi IANA), địa chỉ, SĐT, trạng thái, hành động.
   - Trạng thái tải / rỗng: dùng i18n `store.loadingStoreList`, `store.emptyStoreList` (không hardcode).
+- **Cột hành động (theo spec mới)**:
+  - Nút / link **Quản lý** (text hoặc button rõ nghĩa, i18n) thay cho icon “cài đặt nhanh” trỏ thẳng vào một màn setting đơn lẻ — điều hướng tới **dashboard cửa hàng**: `/{locale}/store/[storeId]` (chi tiết module & route con: `docs/screens/store-dashboard.md`).
+  - Giữ các thao tác **sửa thông tin store** (ví dụ `/{locale}/store/[storeId]/edit` hoặc route edit hiện hành) và **xóa** (modal xác nhận) như luồng CRUD hiện tại.
 - **Modal thêm/sửa**:
   - Khung rộng (`max-w-2xl`), chiều cao tối đa + scroll nội dung dài.
   - Khối **“Vùng & giờ (booking / lễ)”** (`store.bookingLocaleTitle`): select vùng (disabled khi `regionsLoading`), hint `store.regionHint`, dòng `store.loadingRegions` khi đang tải regions; hai ô **timezone** và **currency** (có thể chỉnh tay sau khi chọn vùng).
@@ -74,3 +77,4 @@ Luôn gửi `Authorization` (Bearer) qua `authorizedRequest` như trong `lib/api
 - Không hardcode text ngoài dictionary.
 - Đừng đồng bộ “bot đã chọn” với list bot trước khi API list trả về (xử lý tương tự `botsListReady` trên `platform-dashboard.tsx`).
 - Chi tiết toast / modal / parse lỗi: `docs/ai/06-toast-confirm-feedback.md`.
+- Sau khi có hub store, tránh để link “Quản lý” trỏ tới path cũ `stores/.../settings/...` (đã loại bỏ khỏi codebase); mọi cấu hình theo store đi qua `/{locale}/store/[storeId]/...` như `store-dashboard.md`.

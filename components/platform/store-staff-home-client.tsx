@@ -134,7 +134,7 @@ export function StoreStaffHomeClient({ locale }: Props) {
     return null;
   }
 
-  const base = `/${locale}/stores/${gate.storeId}/settings/staff`;
+  const base = `/${locale}/store/${gate.storeId}/staff`;
 
   return (
     <div className="space-y-8">

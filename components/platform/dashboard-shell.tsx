@@ -61,6 +61,9 @@ export function DashboardShell({ locale, children }: DashboardShellProps) {
   const storeBaseHref = storeIdFromPath ? `/${locale}/store/${storeIdFromPath}` : null;
   const backToAdminHref = `/${locale}/store`;
 
+  // Hide sidebar on create/edit/hours form routes
+  const isFormRoute = /\/(new|edit)(\/|$)/.test(pathname) || /\/staff\/[^/]+\/hours(\/|$)/.test(pathname);
+
   const sidebarTitle = storeBaseHref ? t.storeDashboard.menuTitle : t.dashboard.menuTitle;
   const navItems = storeBaseHref
     ? [
@@ -134,17 +137,18 @@ export function DashboardShell({ locale, children }: DashboardShellProps) {
             </LoadingRegion>
           </div>
         ) : (
-          <div className="mx-auto grid w-full max-w-7xl gap-6 p-6 lg:grid-cols-[260px_1fr]">
-            <MobileSidebarToggle
-              key={pathname}
-              sidebarTitle={sidebarTitle}
-              storeBaseHref={storeBaseHref}
-              backToAdminHref={backToAdminHref}
-              backToAdminLabel={t.storeDashboard.backToAdmin}
-              navItems={navItems}
-              navActiveByHref={navActiveByHref}
-              accentClassName={platform.accentClassName}
-            />
+          <div className={`mx-auto grid w-full max-w-7xl gap-6 p-6 ${isFormRoute ? "" : "lg:grid-cols-[260px_1fr]"}`}>
+            {isFormRoute ? null : (
+              <MobileSidebarToggle
+                sidebarTitle={sidebarTitle}
+                storeBaseHref={storeBaseHref}
+                backToAdminHref={backToAdminHref}
+                backToAdminLabel={t.storeDashboard.backToAdmin}
+                navItems={navItems}
+                navActiveByHref={navActiveByHref}
+                accentClassName={platform.accentClassName}
+              />
+            )}
 
             <section className="dashboard-content">
               <div className="dashboard-selected-bot mb-6 rounded-xl p-4" data-platform={platform.id}>
@@ -171,7 +175,7 @@ export function DashboardShell({ locale, children }: DashboardShellProps) {
   );
 }
 
-/* ---------- Mobile sidebar (isolated state, reset via key={pathname}) ---------- */
+/* ---------- Mobile sidebar ---------- */
 
 import { useState } from "react";
 
@@ -195,6 +199,7 @@ function MobileSidebarToggle({
   accentClassName,
 }: MobileSidebarToggleProps) {
   const [open, setOpen] = useState(false);
+  const close = () => setOpen(false);
 
   return (
     <>
@@ -219,6 +224,7 @@ function MobileSidebarToggle({
         {storeBaseHref ? (
           <Link
             href={backToAdminHref}
+            onClick={close}
             className="mb-3 inline-flex text-xs font-medium text-[var(--dm-text-muted)] hover:text-[var(--dm-text)]"
           >
             {backToAdminLabel}
@@ -232,6 +238,7 @@ function MobileSidebarToggle({
               <Link
                 key={item.id}
                 href={item.href}
+                onClick={close}
                 className={`dashboard-nav-link ${active ? accentClassName : "inactive"}`}
               >
                 {item.label}

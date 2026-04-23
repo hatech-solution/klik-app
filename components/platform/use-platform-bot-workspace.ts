@@ -34,7 +34,10 @@ export function usePlatformBotWorkspace(locale: Locale, mode: PlatformBotWorkspa
   const { platformId, loadFromStorage } = usePlatformStore();
 
   const platform = platformId ? PLATFORM_CONFIGS[platformId as PlatformId] : undefined;
-  const [platformHydrated, setPlatformHydrated] = useState(false);
+  const [platformHydrated, setPlatformHydrated] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return Boolean(localStorage.getItem("platform_id"));
+  });
 
   const [bots, setBots] = useState<Bot[]>([]);
   const [selectedBotId, setSelectedBotId] = useState<string>(() => {

@@ -30,9 +30,15 @@ export function StoreSettingsLayoutClient({ locale, storeId, children }: Props) 
   const t = getMessages(locale);
   const { platformId, loadFromStorage } = usePlatformStore();
   const platform = platformId ? PLATFORM_CONFIGS[platformId as PlatformId] : undefined;
-  const [platformHydrated, setPlatformHydrated] = useState(false);
+  const [platformHydrated, setPlatformHydrated] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return Boolean(localStorage.getItem("platform_id"));
+  });
 
-  const [botId, setBotId] = useState("");
+  const [botId, setBotId] = useState(() => {
+    if (typeof window === "undefined") return "";
+    return localStorage.getItem(SESSION_BOT_STORAGE_KEY) ?? "";
+  });
   const [store, setStore] = useState<Pick<Store, "id" | "name" | "timezone"> | null>(null);
   const [gateLoading, setGateLoading] = useState(true);
   const [gateError, setGateError] = useState<"no_bot" | "not_found" | null>(null);

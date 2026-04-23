@@ -27,9 +27,7 @@ export const RouteGuard = ({ children, locale }: RouteGuardProps) => {
       router.replace(`/${locale}/select-platform`);
       return;
     }
-    queueMicrotask(() => {
-      setIsReady(true);
-    });
+    setIsReady(true);
   }, [router, locale, platformId, loadFromStorage]);
 
   if (!isReady) {
